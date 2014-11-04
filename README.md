@@ -10,6 +10,10 @@ Tohme repository
 4. Wait for a code to be reviewed. (You can work on other stuff by branching )
 
 ## References
+### JavaScript
+* Jasmine testing framework
+  * http://jasmine.github.io/2.0/introduction.html
+### Git/GitHub
 * Branching:
   * https://www.atlassian.com/git/tutorials/using-branches/
   * https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
