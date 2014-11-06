@@ -28,7 +28,6 @@ describe("The Point module's basic API", function () {
     });
 
     // Todo for Alex
-    /*
     it("should initialize canvas y-coordinate to 0", function () {
       expect(p1.getCanvasY()).toBe(0);
     });
@@ -41,7 +40,6 @@ describe("The Point module's basic API", function () {
     it("should initialize canvas y-coordinate to 0", function () {
       expect(p3.getCanvasY()).toBe(1);
     });
-    */
 
   });
 
@@ -57,8 +55,6 @@ describe("The Point module's constructor", function () {
   var param = {};
   var p1 = Point(0, 0, pov, {});
 
-  // Todo for Alex
-  /*
   it("should initialize fillStyle with 'rgba(255,255,255,0.5)'", function () {
       expect(p1.getFill()).toBe("rgba(255,255,255,0.5)");
   });
@@ -76,9 +72,8 @@ describe("The Point module's constructor", function () {
   it("should not initialize fillStyle with 'rgba(255,255,255,0.5)'", function () {
     expect(p3.getFill()).not.toBe("rgba(255,255,255,0.5)");
   });
-  it("should initialize fillStyle with 'rgba(255,255,255,0.5)'", function () {
-    expect(p3.getFill()).not.toBe("rgba(0,0,0,0.5)");
+  it("should initialize fillStyle with 'rgba(0,0,0,0.5)'", function () {
+    expect(p3.getFill()).toBe('rgba(0,0,0,0.5)');
   });
-  */
 
 });
