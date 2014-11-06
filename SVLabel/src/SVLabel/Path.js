@@ -14,12 +14,13 @@ function Path (points, params) {
          className : 'Path',
          points : undefined
     };
-    var belongsTo = undefined;
+    var belongsTo;
     var properties = {
         fillStyle: undefined,
         lineCap : 'round', // ['butt','round','square']
         lineJoin : 'round', // ['round','bevel','miter']
         lineWidth : '3',
+        numPoints: 0,
         originalFillStyle: undefined,
         originalStrokeStyle: undefined,
         strokeStyle : 'rgba(255,255,255,1)',
@@ -32,6 +33,30 @@ function Path (points, params) {
     ////////////////////////////////////////
     // Private functions
     ////////////////////////////////////////
+    function _init(points, params) {
+        var lenPoints;
+        var i;
+        oPublic.points = points;
+        lenPoints = points.length;
+
+        // Set belongs to of the points
+        for (i = 0; i < lenPoints; i += 1) {
+            points[i].setBelongsTo(oPublic);
+        }
+
+        if (params) {
+            for (var attr in params) {
+                if (attr in properties) {
+                    properties[attr] = params[attr];
+                }
+            }
+        }
+
+        properties.fillStyle = changeAlphaRGBA(points[0].getProperty('fillStyleInnerCircle'), 0.5);
+        properties.originalFillStyle = properties.fillStyle;
+        properties.originalStrokeStyle = properties.strokeStyle;
+    }
+
     function getBoundingBox() {
         // This function checks if a mouse cursor is on any of a points and return
         var j;
@@ -71,6 +96,16 @@ function Path (points, params) {
             width: xMax - xMin,
             height: yMax - yMin
         };
+    }
+
+    function getLineWidth () {
+      // return line width
+      return false;
+    }
+
+    function getFill() {
+      // get fill
+      return false;
     }
 
     function getSvImageBoundingBox() {
@@ -131,7 +166,7 @@ function Path (points, params) {
                 width: (svw.svImageWidth - xMin) + xMax,
                 height: yMax - yMin,
                 boundary: true
-            }
+            };
         } else {
             return {
                 x: xMin,
@@ -139,7 +174,7 @@ function Path (points, params) {
                 width: xMax - xMin,
                 height: yMax - yMin,
                 boundary: false
-            }
+            };
         }
     }
 
@@ -199,6 +234,11 @@ function Path (points, params) {
         return coords;
     }
 
+    function getPoints() {
+      // return point objects in this path
+      return false;
+    }
+
     function renderBoundingBox (ctx) {
         // This function takes a bounding box returned by a method getBoundingBox()
         var boundingBox = getBoundingBox();
@@ -219,29 +259,6 @@ function Path (points, params) {
         return;
     }
 
-    function init(points, params) {
-        var lenPoints, i;
-        oPublic.points = points;
-        lenPoints = points.length;
-
-        // Set belongs to of the points
-        for (i = 0; i < lenPoints; i += 1) {
-            points[i].setBelongsTo(oPublic);
-        }
-
-        if (params) {
-            for (attr in params) {
-                if (attr in properties) {
-                    properties[attr] = params[attr];
-                }
-            }
-        }
-
-        properties.fillStyle = changeAlphaRGBA(points[0].getProperty('fillStyleInnerCircle'), 0.5);
-        properties.originalFillStyle = properties.fillStyle;
-        properties.originalStrokeStyle = properties.strokeStyle;
-    }
-
     ////////////////////////////////////////
     // oPublic functions
     ////////////////////////////////////////
@@ -255,16 +272,29 @@ function Path (points, params) {
         }
     };
 
-
     oPublic.getBoundingBox = function () {
         // Get a bounding box of this path
         return getBoundingBox();
+    };
+
+    oPublic.getLineWidth = function () {
+      // get line width
+      return getLineWidth();
+    };
+
+    oPublic.getFill = function () {
+      return getFill();
     };
 
     oPublic.getFillStyle = function () {
         // Get the fill style.
         return properties.fillStyle;
     };
+
+    oPublic.getPoints = function () {
+      // return points in this path
+      return getPoints();
+    }
 
     oPublic.getSvImageBoundingBox = function () {
         // Get a boudning box
@@ -506,6 +536,10 @@ function Path (points, params) {
         return this;
     };
 
+    oPublic.setLineWidth = function (lineWidth) {
+      return this;
+    };
+
     oPublic.setFillStyle = function (fill) {
         // This method sets the fillStyle of the path
         properties.fillStyle = fill;
@@ -527,8 +561,7 @@ function Path (points, params) {
     };
 
     // Initialize
-    init(points, params);
+    _init(points, params);
 
     return oPublic;
 }
-

@@ -7,6 +7,10 @@ function Point (x, y, pov, params) {
     // Parameters:
     // - x: x-coordinate of the point on a canvas
     // - y: y-coordinate of the point on a canvas
+    if(params.fillStyle==undefined){
+        params.fillStyle = 'rgba(255,255,255,0.5)';
+    }
+    console.log(params.fillStyle);
     var oPublic = {
             className : 'Point',
             svImageCoordinate : undefined,
@@ -17,7 +21,7 @@ function Point (x, y, pov, params) {
         };
     var belongsTo = undefined;
     var properties = {
-        fillStyleInnerCircle: 'rgba(255,255,255,0.5)',
+        fillStyleInnerCircle: params.fillStyle,
         lineWidthOuterCircle: 2,
         iconImagePath: undefined,
         originalFillStyleInnerCircle: undefined,
@@ -113,11 +117,12 @@ function Point (x, y, pov, params) {
     }
 
     function getCanvasY () {
-      return oPobulic.canvasCoordiante.y;
+      return oPublic.canvasCoordinate.y;
     }
 
     function getFill () {
-      return false;
+        // return the fill color of this point
+      return properties.fillStyleInnerCircle;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +155,7 @@ function Point (x, y, pov, params) {
     oPublic.getFillStyle = function () {
         // Get the fill style.
         // return properties.fillStyle;
-        return  getFill;
+        return  getFill();
     };
 
     oPublic.getGSVImageCoordinate = function () {
