@@ -1,5 +1,4 @@
 import scala.slick.driver.H2Driver.simple._
-//import scala.slick.driver.MySQLDriver.simple._
 import scala.slick.lifted.{ProvenShape, ForeignKeyQuery}
 
 // A Suppliers table with 6 columns: id, name, street, city, state, zip
