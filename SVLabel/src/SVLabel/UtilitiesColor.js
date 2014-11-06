@@ -10,6 +10,10 @@ var svw = svw || {};
 svw.util = svw.util || {};
 svw.util.color = {};
 
+svw.util.color.RGBToTRGBA = function (rgb, alpha) {
+  return false;
+};
+
 function changeAlphaRGBA(rgba, alpha) {
     // This function updates alpha value of the given rgba value.
     // Ex. if the input is rgba(200,200,200,0.5) and alpha 0.8,
@@ -152,12 +156,14 @@ svw.util.color.hslToRgb = hslToRgb;
  * @return  Array           The HSV representation
  */
 function rgbToHsv(r, g, b){
-    r = r/255, g = g/255, b = b/255;
+    r = r / 255;
+    g = g / 255;
+    b = b / 255;
     var max = Math.max(r, g, b), min = Math.min(r, g, b);
     var h, s, v = max;
 
     var d = max - min;
-    s = max == 0 ? 0 : d / max;
+    s = max === 0 ? 0 : d / max;
 
     if(max == min){
         h = 0; // achromatic
