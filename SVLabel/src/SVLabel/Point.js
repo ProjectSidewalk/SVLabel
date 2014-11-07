@@ -10,7 +10,6 @@ function Point (x, y, pov, params) {
     if(params.fillStyle==undefined){
         params.fillStyle = 'rgba(255,255,255,0.5)';
     }
-    console.log(params.fillStyle);
     var oPublic = {
             className : 'Point',
             svImageCoordinate : undefined,
