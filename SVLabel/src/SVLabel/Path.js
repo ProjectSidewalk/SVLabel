@@ -16,11 +16,11 @@ function Path (points, params) {
     };
     var belongsTo;
     var properties = {
-        fillStyle: undefined,
+        fillStyle: 'rgba(255,255,255,0.5)',
         lineCap : 'round', // ['butt','round','square']
         lineJoin : 'round', // ['round','bevel','miter']
         lineWidth : '3',
-        numPoints: 0,
+        numPoints: points.length,
         originalFillStyle: undefined,
         originalStrokeStyle: undefined,
         strokeStyle : 'rgba(255,255,255,1)',
@@ -100,12 +100,16 @@ function Path (points, params) {
 
     function getLineWidth () {
       // return line width
-      return false;
+      return properties.lineWidth;
     }
 
     function getFill() {
       // get fill
-      return false;
+      return properties.fillStyle;
+    }
+
+    function setFill(fill) {
+        properties.fillStyle = fill;
     }
 
     function getSvImageBoundingBox() {
@@ -236,7 +240,8 @@ function Path (points, params) {
 
     function getPoints() {
       // return point objects in this path
-      return false;
+      console.log(properties.numPoints);
+      return properties.numPoints;
     }
 
     function renderBoundingBox (ctx) {
@@ -291,10 +296,10 @@ function Path (points, params) {
         return properties.fillStyle;
     };
 
-    oPublic.getPoints = function () {
-      // return points in this path
-      return getPoints();
-    }
+    // oPublic.getPoints = function () {
+    //   // return points in this path
+    //   return getPoints();
+    // }
 
     oPublic.getSvImageBoundingBox = function () {
         // Get a boudning box
@@ -530,19 +535,34 @@ function Path (points, params) {
         properties.strokeStyle = properties.originalStrokeStyle;
         return this;
     };
-
+    oPublic.setFill = function(fill) {
+        // console.log(fill[1]);
+        // console.log(fill.substring(4, fill.length-1));
+        if(fill.substring(0,4)=='rgba'){
+            setFill(fill);
+        }
+        else{
+            setFill('rgba'+fill.substring(3,fill.length-1)+',0.5)');
+        } 
+        return this;
+    }
     oPublic.setBelongsTo = function (obj) {
         belongsTo = obj;
         return this;
     };
 
     oPublic.setLineWidth = function (lineWidth) {
-      return this;
+        if(!isNaN(lineWidth)){
+            properties.lineWidth  = ''+lineWidth;
+        }
+        return this;
     };
 
     oPublic.setFillStyle = function (fill) {
         // This method sets the fillStyle of the path
-        properties.fillStyle = fill;
+        if(fill!=undefined){
+            properties.fillStyle = fill;
+        };
         return this;
     };
 

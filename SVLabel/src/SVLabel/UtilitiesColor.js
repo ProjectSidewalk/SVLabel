@@ -10,18 +10,24 @@ var svw = svw || {};
 svw.util = svw.util || {};
 svw.util.color = {};
 
-svw.util.color.RGBToTRGBA = function (rgb, alpha) {
-  return false;
+svw.util.color.RGBToRGBA = function (rgb, alpha) {
+    if(!alpha){
+        alpha = '0.5'
+    }
+    if(rgb!=undefined){
+         var newRGBA = 'rgba(';
+         newRGBA+=rgb.substring(4,rgb.length-1)+','+alpha+')';
+    }
+    // else newRGBA='rgba(255,255,255,0.5)';
+    return newRGBA;
 };
 
 function changeAlphaRGBA(rgba, alpha) {
     // This function updates alpha value of the given rgba value.
     // Ex. if the input is rgba(200,200,200,0.5) and alpha 0.8,
     // the out put will be rgba(200,200,200,0.8)
-
     var rgbaList = rgba.replace('rgba(','').replace(')','').split(",");
-
-    if (rgbaList.length === 4) {
+    if (rgbaList.length === 4 && !isNaN(parseInt(alpha))) {
         var newRgba;
         newRgba = 'rgba(' +
             rgbaList[0].trim() + ',' +
