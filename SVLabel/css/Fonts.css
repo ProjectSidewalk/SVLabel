@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'SegoeUILight';
+    src: url('fonts/segoeuil.ttf');
+}
+
+@font-face {
+    font-family: 'SegoeUISemiBold';
+    src: url('fonts/seguisb.ttf');
+}
+
+@font-face {
+    font-family: 'SegoePrint';
+    src: url('fonts/segoepr.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Journal';
+    src: url('fonts/journal.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
