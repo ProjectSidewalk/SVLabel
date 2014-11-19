@@ -11,6 +11,8 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val assignments = TableQuery[Assignments]
   val LabelingTasks = TableQuery[LabelingTasks]
   val binnedLabels = TableQuery[binnedLabels]
+  val goldenLabels = TableQuery[goldenLabels]
+
   implicit var session: Session = _
 
   // String to Timestamp (joda time)
@@ -20,11 +22,12 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl).create // Todo: Akash
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl).create // Todo: Akash
 
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
+  def insertGoldenLabels(): Int = goldenLabels += (1,1,3)
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -35,7 +38,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 3)
+    assert(tables.size == 4)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -185,6 +188,30 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assert(results.head._2 == "TestTurkerId")
 
     }}
+  // Test by Akash Magoon 11/19/2014
+  test("Query goldenLables works") {
+    session.withTransaction {
+      createSchema()
+      insertGoldenLabels()
+      val results = goldenLabels.list
+      assert(results.size == 1)
+      assert(results.head._1 == 1)
+      session.rollback()
+    }
+  }
+  test("Inserting GoldenLabels works") {
+    createSchema()
+    goldenLabels += (1,1,3)
+    goldenLabels += (2,2,3)
+    goldenLabels += (3,3,3)
+
+    val results = goldenLabels.list
+    assert(results.size == 3)
+    assert(results.head._1 == 1)
+    assert(results.head._2 == 1)
+    assert(results.head._3 == 3)
+
+  }
 after {
     session.close()
   }
