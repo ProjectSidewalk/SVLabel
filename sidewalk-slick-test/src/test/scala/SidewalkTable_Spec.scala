@@ -164,9 +164,9 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
       createSchema()
 
-      assignments += (1,	"TestTurkerId",	"TestHit",	"TestAssignment",	"StreetViewLabeler",	"3", 1,	0, "PilotTask",	"2013-06-21 18:03:28")
-      assignments += (2,	"Test_Kotaro",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"PilotTask",	"2013-06-28 14:19:17")
-      assignments += (3,	"Researcher_Jonah",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"ResearcherTask",	"2013-07-03 12:24:36")
+      assignments += Assignment(1,	"TestTurkerId",	"TestHit",	"TestAssignment",	"StreetViewLabeler",	"3", 1,	0, "PilotTask",	dtf.parseDateTime("2013-06-21 18:03:28"))
+      assignments += Assignment(2,	"Test_Kotaro",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"PilotTask",	dtf.parseDateTime("2013-06-28 14:19:17"))
+      assignments += Assignment(3,	"Researcher_Jonah",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"ResearcherTask",	dtf.parseDateTime("2013-07-03 12:24:36"))
 
       binnedLabels += (1,1,3291)
       binnedLabels += (2,1,3292)
