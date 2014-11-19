@@ -14,11 +14,10 @@ svw.util.color.RGBToRGBA = function (rgb, alpha) {
     if(!alpha){
         alpha = '0.5'
     }
-    if(rgb!=undefined){
+    if(rgb){
          var newRGBA = 'rgba(';
          newRGBA+=rgb.substring(4,rgb.length-1)+','+alpha+')';
     }
-    // else newRGBA='rgba(255,255,255,0.5)';
     return newRGBA;
 };
 
