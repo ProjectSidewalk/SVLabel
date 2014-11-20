@@ -11,6 +11,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelingTasks = TableQuery[LabelingTasks]
   val binnedLabels = TableQuery[binnedLabels]
   val goldenLabels = TableQuery[GoldenLabels]
+  val Images = TableQuery[Images]
 
   implicit var session: Session = _
 
@@ -21,11 +22,13 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl).create
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
+  def insertImages(): Int = Images += Image(1,67885, "-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/");
+
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -36,7 +39,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 4)
+    assert(tables.size == 5)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -217,6 +220,33 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.head.GoldenLabelId == 1)
     assert(results.head.TaskImageId == 1)
     assert(results.head.LabelTypeId == 3)
+
+  }
+  // Test by Akash Magoon 11/20/2014
+  test("Query images works") {
+    session.withTransaction {
+      createSchema()
+      insertImages()
+      val results = Images.list
+
+      assert(results.size == 1)
+      assert(results.head.ImageId == 1)
+      assert(results.head.ImageId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting images works") {
+    createSchema()
+    Images += Image(1,67885,"-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/")
+
+    Images += Image(2,67886,"-dlUzxwCI_-k5RbGw6IlEg","-dlUzxwCI_-k5RbGw6IlEg_1.jpg","public/img/QuickVerification/VerificationImages_v2/")
+    Images += Image(3,67887, "-dlUzxwCI_-k5RbGw6IlEg","-dlUzxwCI_-k5RbGw6IlEg_2.jpg","public/img/QuickVerification/VerificationImages_v2/")
+    val results = Images.list
+    assert(results.size == 3)
+    assert(results.head.GSVPanoramaId == "-dlUzxwCI_-k5RbGw6IlEg")
+    assert(results.head.Url == "-dlUzxwCI_-k5RbGw6IlEg_0.jpg")
+    assert(results.head.Path == "public/img/QuickVerification/VerificationImages_v2/")
+
 
   }
 after {
