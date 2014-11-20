@@ -14,7 +14,6 @@ describe("The Point module's basic API", function () {
 
     // Test X-coordinate
     var p1 = new Point(1, 1, pov, param);
-    console.log(p1);
     it("should initialize canvas x-coordinate to 0", function () {
       expect(p1.getCanvasX()).toBe(0);
     });

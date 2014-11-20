@@ -112,8 +112,7 @@ function Path (points, params) {
         properties.fillStyle = fill;
     }
 
-    function get
-    BoundingBox() {
+    function getBoundingBox() {
         // this method returns a bounding box in terms of svImage coordinates.
         var i;
         var coord;
