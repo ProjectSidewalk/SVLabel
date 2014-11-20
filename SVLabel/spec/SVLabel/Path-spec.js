@@ -20,7 +20,7 @@ describe("The Path module's basic API", function () {
 
   describe("Fill coordinate API", function () {
     it("this Path should have three points", function () {
-      expect(path.getPoints()).toBe(3);
+      expect(path.getPoints().length).toBe(3);
     });
 
     it("should have default color 'rgba(255,255,255,0.5)''", function () {
@@ -33,7 +33,7 @@ describe("The Path module's basic API", function () {
 
       // convert 'rgb' to 'rgba'. Set default alpha to be 0.5
       path.setFill('rgb(20,20,20)');
-      expect(path.getFill()).toBe('rgba(10,10,10,0.5)');
+      expect(path.getFill()).toBe('rgba(20,20,20,0.5)');
     });
   });
 
@@ -45,7 +45,7 @@ describe("The Path module's basic API", function () {
 
     it("should allow one to set line width", function () {
       path.setLineWidth('5');
-      expect(path.getLineWidth()).toBe('5');
+      expect(path.getLineWidth()).toBe('5');  
 
       path.setLineWidth(15);
       expect(path.getLineWidth()).toBe('15');
