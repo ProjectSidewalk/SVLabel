@@ -9,6 +9,7 @@ Tohme repository
 2. Make changes to the code in your branch
 3. Once you are done with editing the code, issue a "pull request"
 4. Wait for a code to be reviewed. (You can work on other stuff by branching )
+5. Merge the code once reviewed. If there are conflicts, resolve it. (http://stackoverflow.com/questions/161813/fix-merge-conflicts-in-git)
 
 ## References
 
@@ -22,5 +23,7 @@ Tohme repository
   * https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 * Pull Request:
   * https://help.github.com/articles/using-pull-requests/
+* Rebase:
+  * http://stackoverflow.com/questions/5340724/get-changes-from-master-into-branch-in-git
 * GitHub Markdown:
   * https://help.github.com/articles/markdown-basics/
