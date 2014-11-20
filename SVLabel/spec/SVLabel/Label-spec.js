@@ -35,11 +35,87 @@ describe("The Label module's basic API", function () {
 
   var label = new Label(path, param);
 
+  describe("Test, getBoundingBox", function () {
+    var boundingBoxA = label.getBoundingBox();
+    var boundingBoxB = {
+        x: 0,
+        y: 0,
+        width: 9,
+        height: 5
+    };
 
-  describe("Get path", function () {
-    it("path exists", function () {
-      expect(label.getPath()).not.toBeUndefined();
+    it("boundingBox should exist", function () {
+      expect(boundingBoxA).not.toBeUndefined();
+    });
+
+    it("boundingBoxA should match boundingBox B", function () {
+      expect(boudningBoxA.x).toBe(boundingBoxB.x);
+      // Todo: Alex. Check for y, width, and height
+    });
+  });
+
+  // Todo. Alex. Please review this.
+  describe("Test getCoordinate", function () {
+    var coordinateA = label.getCoordinate();
+    var coordinateB = {x: 0, y: 0};
+    it("it should return the coordinate of the first point", function () {
+      expect(coordinateA.x).toBe(coordinateB.x);
+      expect(coordinateA.y).toBe(coordinateB.y);
     });
 
   });
+
+  describe("Test getGSVImageCoordinate", function () {
+    // Todo. Kotaro. Write a test.
+  });
+
+  describe("Test getImageCoordinate", function () {
+    // Todo. Either this or getCoordinate should be deprecated.
+    var coordinateA = label.getImageCoordinate();
+    var coordinateB = {x: 0, y: 0};
+    it("it should return the coordinate of the first point", function () {
+      expect(coordinateA.x).toBe(coordinateB.x);
+      expect(coordinateA.y).toBe(coordinateB.y);
+    });
+  });
+
+  // Todo. Alex. Please write tests for this.
+  describe("Test getLabelId", function () {
+
+  });
+
+  // Todo. Alex. Please write tests for this.
+  describe("Test getLabelType", function () {
+
+  });
+
+  // Todo: Alex. Please fix these tests.
+  describe("Test getPath method", function () {
+    var extractedPath = label.getPath();
+
+    it("path should exist", function () {
+      expect(extractedPath).not.toBeUndefined();
+    });
+
+    it("should get a reference", function () {
+      expect(extractedPath).toBe(path);
+    });
+
+    it("should get a deep copy", function () {
+      var deepCopy = label.getPath(false);
+      expect(deepCopy).not.toBe(path);
+    });
+
+    it("should get a path that has same points", function () {
+      var extractedPoints = extractedPath.getPoints();
+      var len = extractedPoints.length;
+      var i;
+      for (i = 0; i < len; i++) {
+        expect(extractedPoints[i]).toBe(points[i]);
+      }
+    });
+  });
+
+  // Todo. This
+
 });
