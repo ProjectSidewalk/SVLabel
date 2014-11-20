@@ -13,7 +13,7 @@ describe("The Point module's basic API", function () {
     var param = {};
 
     // Test X-coordinate
-    var p1 = new Point(1, 1, pov, param);
+    var p1 = new Point(0, 0, pov, param);
     it("should initialize canvas x-coordinate to 0", function () {
       expect(p1.getCanvasX()).toBe(0);
     });
@@ -27,7 +27,6 @@ describe("The Point module's basic API", function () {
       expect(p2.getCanvasX()).toBe(1);
     });
 
-    // Todo for Alex
     it("should initialize canvas y-coordinate to 0", function () {
       expect(p1.getCanvasY()).toBe(0);
     });
