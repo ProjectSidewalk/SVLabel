@@ -1,6 +1,5 @@
 import org.scalatest._
 import scala.slick.driver.H2Driver.simple._
-//import scala.slick.driver.MySQLDriver.simple._
 import scala.slick.jdbc.meta._
 
 
@@ -16,7 +15,7 @@ class TablesSuite extends FunSuite with BeforeAndAfter {
   def insertSupplier(): Int = suppliers += (101, "Acme, Inc.", "99 Market Street", "Groundsville", "CA", "95199")
   
   before {
-    session = Database.forURL("jdbc:h2:mem:test1", driver = "org.h2.Driver").createSession()
+    session = Database.forURL("jdbc:h2:mem:tablesuite", driver = "org.h2.Driver").createSession()
   }
   
   test("Creating the Schema works") {

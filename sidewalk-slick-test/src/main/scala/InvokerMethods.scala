@@ -1,5 +1,4 @@
 import scala.slick.driver.H2Driver.simple._
-//import scala.slick.driver.MySQLDriver.simple._
 
 // Demonstrates various ways of reading data from an Invoker.
 object InvokerMethods extends App {
