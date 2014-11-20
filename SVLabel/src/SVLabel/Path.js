@@ -24,7 +24,7 @@ function Path (points, params) {
         originalFillStyle: undefined,
         originalStrokeStyle: undefined,
         strokeStyle : 'rgba(255,255,255,1)',
-        strokeStyle_bg : 'rgba(255,255,255,1)'
+        strokeStyle_bg : 'rgba(255,255,255,1)' //potentially delete
     };
     var status = {
         visibility: 'visible'
@@ -112,7 +112,8 @@ function Path (points, params) {
         properties.fillStyle = fill;
     }
 
-    function getSvImageBoundingBox() {
+    function get
+    BoundingBox() {
         // this method returns a bounding box in terms of svImage coordinates.
         var i;
         var coord;

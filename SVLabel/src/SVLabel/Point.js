@@ -46,7 +46,7 @@ function Point (x, y, pov, params) {
         // Adjust the zoom level
         var zoom = pov.zoom;
         var zoomFactor = svw.zoomFactor[zoom];
-        var svImageHeight = svImageWidth.svImageHeight;
+        var svImageHeight = svw.svImageHeight;
         var svImageWidth = svw.svImageWidth;
 
         oPublic.svImageCoordinate = {};
@@ -359,7 +359,7 @@ svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     var y;
     var zoom = pov.zoom;
     var svImageWidth = svw.svImageWidth * svw.zoomFactor[zoom];
-    var svImageHeight = svw.svImageHeight * svw.zoomFactor[zoom];
+    var  = svw.svImageHeight * svw.zoomFactor[zoom];
 
     xIn = xIn * svw.zoomFactor[zoom];
     yIn = yIn * svw.zoomFactor[zoom];

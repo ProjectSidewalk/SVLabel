@@ -14,7 +14,7 @@ svw.util.color.RGBToRGBA = function (rgb, alpha) {
     if(!alpha){
         alpha = '0.5'
     }
-    if(rgb){
+    if(rgb!=undefined){
          var newRGBA = 'rgba(';
          newRGBA+=rgb.substring(4,rgb.length-1)+','+alpha+')';
     }
