@@ -6,6 +6,7 @@
 describe("The UtilitiesColor", function () {
   describe("RGBToRGBA", function () {
     var rgb = "rgb(255,255,255)";
+    var rgbnull = "";
     it("should convert rgb to RGBA", function () {
       expect(svw.util.color.RGBToRGBA(rgb, 0.5)).toBe('rgba(255,255,255,0.5)');
       expect(svw.util.color.RGBToRGBA(rgb, 0.5)).not.toBe('rgba(0,0,0,0.5)');
@@ -15,6 +16,10 @@ describe("The UtilitiesColor", function () {
       expect(svw.util.color.RGBToRGBA(rgb)).toBe('rgba(255,255,255,0.5)');
       expect(svw.util.color.RGBToRGBA(rgb)).not.toBe('rgba(255,255,255,0.2)');
     });
+
+    // it("should set default color to 255,255,255,0.5", function(){
+    //   expect(svw.util.color.RGBToRGBA(rgbnull).toBe('rgba(255,255,255,0.5)'));  
+    // })
   });
 
   describe("svw.util.color.changeAlphaRGBA", function () {
