@@ -13,6 +13,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val goldenLabels = TableQuery[GoldenLabels]
   val Images = TableQuery[Images]
   val Intersections = TableQuery[Intersections]
+  val IpAddresses = TableQuery[IpAddresses]
 
 
   implicit var session: Session = _
@@ -25,13 +26,16 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl).create
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
   def insertImages(): Int = Images += Image(1,67885, "-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/");
   def insertIntersections(): Int = Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+  def insertIpAddresses(): Int = IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
+
+
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -42,7 +46,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 6)
+    assert(tables.size == 7)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -276,6 +280,33 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.head.IntersectionId == 1)
     assert(results.head.Lat == "38.894799")
     assert(results.head.Note == "NULL")
+
+
+  }
+  // Test by Akash Magoon 11/20/2014
+  test("Query IpAddresses works") {
+    session.withTransaction {
+      createSchema()
+      insertIpAddresses()
+      val results = IpAddresses.list
+
+      assert(results.size == 1)
+      assert(results.head.IpAddressId == 1)
+      assert(results.head.IpAddressId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting IpAddresses works") {
+    createSchema()
+    IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
+    IpAddresses += IPAddress(2, "LabelingTask", "3486","1")
+    IpAddresses += IPAddress(3, "LabelingTask", "3584", "1")
+
+    val results = IpAddresses.list
+    assert(results.size == 3)
+    assert(results.head.IpAddressId == 1)
+    assert(results.head.TaskType == "NULL")
+    assert(results.head.TaskId == "NULL")
 
 
   }
