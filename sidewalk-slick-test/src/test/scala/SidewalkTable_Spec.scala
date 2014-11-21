@@ -12,6 +12,8 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val binnedLabels = TableQuery[binnedLabels]
   val goldenLabels = TableQuery[GoldenLabels]
   val Images = TableQuery[Images]
+  val Intersections = TableQuery[Intersections]
+
 
   implicit var session: Session = _
 
@@ -20,15 +22,16 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   // http://stackoverflow.com/questions/5272312/joda-time-library-in-scala-returning-incorrect-date
   val dtf:DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"); // "2013-06-21 18:03:28"
 
+
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl).create
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
   def insertImages(): Int = Images += Image(1,67885, "-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/");
-
+  def insertIntersections(): Int = Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -39,7 +42,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 5)
+    assert(tables.size == 6)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -246,6 +249,33 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.head.GSVPanoramaId == "-dlUzxwCI_-k5RbGw6IlEg")
     assert(results.head.Url == "-dlUzxwCI_-k5RbGw6IlEg_0.jpg")
     assert(results.head.Path == "public/img/QuickVerification/VerificationImages_v2/")
+
+
+  }
+  // Test by Akash Magoon 11/20/2014
+  test("Query Intersections works") {
+    session.withTransaction {
+      createSchema()
+      insertIntersections()
+      val results = Intersections.list
+
+      assert(results.size == 1)
+      assert(results.head.IntersectionId == 1)
+      assert(results.head.IntersectionId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting Intersections works") {
+    createSchema()
+    Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+    Intersections += Intersection(2, "38.897327", "-77.023986", "5J5Fm8t9Azuo1nA1_WpsGw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+    Intersections += Intersection(3, "38.899928", "-77.030276", "N5EGvkfw9AaCsUX4MOdkDA", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+
+    val results = Intersections.list
+    assert(results.size == 3)
+    assert(results.head.IntersectionId == 1)
+    assert(results.head.Lat == "38.894799")
+    assert(results.head.Note == "NULL")
 
 
   }
