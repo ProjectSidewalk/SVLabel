@@ -18,6 +18,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelConfidenceScores = TableQuery[LabelConfidenceScores]
   val LabelCorrectnessClass = TableQuery[LabelCorrectnessClass]
   val LabelingTaskAttributes = TableQuery[LabelingTaskAttributes]
+  val LabelingTaskComments = TableQuery[LabelingTaskComments]
 
 
 
@@ -33,7 +34,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -44,6 +45,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelConfidenceScores(): Int = LabelConfidenceScores += LabelConfidenceScore(1,2851,-0.998391)
   def insertLabelCorrectnessClass(): Int = LabelCorrectnessClass += LabelCorrectness1(1,17345,1)
   def insertLabelingTaskAttributes(): Int = LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
+  def insertLabelingTaskComments(): Int = LabelingTaskComments += LabelingTaskComment(1, 169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
 
 
 
@@ -57,7 +59,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 11)
+    assert(tables.size == 12)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -423,6 +425,33 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.size == 3)
     assert(results.head.LabelingTaskAttributeId == 1)
     assert(results.head.LabelingTaskId == 18565)
+
+
+
+  }
+  // Test by Akash Magoon 11/21/2014
+  test("Query LabelingTaskComments works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelingTaskComments()
+      val results = LabelingTaskComments.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelingTaskCommentId == 1)
+      assert(results.head.LabelingTaskCommentId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelingTaskComments works") {
+    createSchema()
+    LabelingTaskComments += LabelingTaskComment(1,169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
+    LabelingTaskComments += LabelingTaskComment(2, 180, "Kotaro: This scene is too complex because of two reasons: more than two streets intersecting, and there is an island in the middle of the street and it has a pedestrians\' path but not curb ramps.")
+    LabelingTaskComments += LabelingTaskComment(3, 182, "Kotaro: Too bright to see")
+
+    val results = LabelingTaskComments.list
+    assert(results.size == 3)
+    assert(results.head.LabelingTaskCommentId == 1)
+    assert(results.head.LabelingTaskId == 169)
 
 
 
