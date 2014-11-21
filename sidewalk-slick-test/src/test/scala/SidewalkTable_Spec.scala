@@ -19,6 +19,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelCorrectnessClass = TableQuery[LabelCorrectnessClass]
   val LabelingTaskAttributes = TableQuery[LabelingTaskAttributes]
   val LabelingTaskComments = TableQuery[LabelingTaskComments]
+  val LabelingTaskCounts = TableQuery[LabelingTaskCounts]
 
 
 
@@ -34,7 +35,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -46,8 +47,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelCorrectnessClass(): Int = LabelCorrectnessClass += LabelCorrectness1(1,17345,1)
   def insertLabelingTaskAttributes(): Int = LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
   def insertLabelingTaskComments(): Int = LabelingTaskComments += LabelingTaskComment(1, 169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
-
-
+  def insertLabelingTaskCounts(): Int = LabelingTaskCounts += LabelingTaskCount(3,2,0)
 
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
@@ -59,7 +59,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 12)
+    assert(tables.size == 13)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -452,11 +452,34 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.size == 3)
     assert(results.head.LabelingTaskCommentId == 1)
     assert(results.head.LabelingTaskId == 169)
+  }
+  // Test by Akash Magoon 11/21/2014
+  test("Query LabelingTaskCounts works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelingTaskCounts()
+      val results = LabelingTaskCounts.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelingTaskCountId == 3)
+      assert(results.head.LabelingTaskCountId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelingTaskCounts works") {
+    createSchema()
+    LabelingTaskCounts += LabelingTaskCount(3,2,0)
+    LabelingTaskCounts += LabelingTaskCount(4,220,0)
+    LabelingTaskCounts += LabelingTaskCount(5,221,0)
+
+    val results = LabelingTaskCounts.list
+    assert(results.size == 3)
+    assert(results.head.LabelingTaskCountId == 3)
+    assert(results.head.TaskPanoramaId == 2)
 
 
 
   }
-
 after {
     session.close()
   }
