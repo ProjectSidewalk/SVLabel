@@ -16,6 +16,9 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val IpAddresses = TableQuery[IpAddresses]
   val LabelBins = TableQuery[LabelBins]
   val LabelConfidenceScores = TableQuery[LabelConfidenceScores]
+  val LabelCorrectnessClass = TableQuery[LabelCorrectnessClass]
+  val LabelingTaskAttributes = TableQuery[LabelingTaskAttributes]
+
 
 
 
@@ -27,10 +30,10 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val dtf:DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"); // "2013-06-21 18:03:28"
 
 
+  def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl).create
-  def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -39,6 +42,10 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertIpAddresses(): Int = IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
   def insertLabelBins(): Int = LabelBins += LabelBin(1, "NULL", "NULL", "FirstDetectionResult", 0)
   def insertLabelConfidenceScores(): Int = LabelConfidenceScores += LabelConfidenceScore(1,2851,-0.998391)
+  def insertLabelCorrectnessClass(): Int = LabelCorrectnessClass += LabelCorrectness1(1,17345,1)
+  def insertLabelingTaskAttributes(): Int = LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
+
+
 
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
@@ -50,7 +57,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 9)
+    assert(tables.size == 11)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -367,6 +374,60 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
 
   }
+  // Test by Akash Magoon 11/21/2014
+  test("Query LabelCorrectnessIDs works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelCorrectnessClass()
+      val results = LabelCorrectnessClass.list
+
+      assert(results.size == 1)
+     assert(results.head.LabelCorrectnessId == 1)
+      assert(results.head.LabelCorrectnessId != 2)
+    }
+  }
+  test("Inserting LabelCorrectnessIDs works") {
+    createSchema()
+
+    LabelCorrectnessClass += LabelCorrectness1(1,17345, 1)
+    LabelCorrectnessClass += LabelCorrectness1(2,17346, 1)
+    LabelCorrectnessClass += LabelCorrectness1(3,17347, 1)
+
+    val results = LabelCorrectnessClass.list
+    assert(results.size == 3)
+    assert(results.head.LabelId == 17345)
+
+
+
+  }
+  // Test by Akash Magoon 11/21/2014
+  test("Query LabelingTaskAttributes works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelingTaskAttributes()
+      val results = LabelingTaskAttributes.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelingTaskAttributeId== 1)
+      assert(results.head.LabelingTaskAttributeId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelingTaskAttributes works") {
+    createSchema()
+    LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
+    LabelingTaskAttributes += LabelingTaskAttribute(2, 18566, "FalseNegative")
+    LabelingTaskAttributes += LabelingTaskAttribute(3, 18567, "FalseNegative")
+
+    val results = LabelingTaskAttributes.list
+    assert(results.size == 3)
+    assert(results.head.LabelingTaskAttributeId == 1)
+    assert(results.head.LabelingTaskId == 18565)
+
+
+
+  }
+
 after {
     session.close()
   }
