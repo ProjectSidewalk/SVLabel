@@ -15,6 +15,8 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val Intersections = TableQuery[Intersections]
   val IpAddresses = TableQuery[IpAddresses]
   val LabelBins = TableQuery[LabelBins]
+  val LabelConfidenceScores = TableQuery[LabelConfidenceScores]
+
 
 
   implicit var session: Session = _
@@ -27,7 +29,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl).create
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
@@ -36,6 +38,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertIntersections(): Int = Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
   def insertIpAddresses(): Int = IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
   def insertLabelBins(): Int = LabelBins += LabelBin(1, "NULL", "NULL", "FirstDetectionResult", 0)
+  def insertLabelConfidenceScores(): Int = LabelConfidenceScores += LabelConfidenceScore(1,2851,-0.998391)
 
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
@@ -47,7 +50,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 8)
+    assert(tables.size == 9)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -334,6 +337,32 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.size == 3)
     assert(results.head.TaskPanoramaId == "NULL")
     assert(results.head.NoLabel == 0)
+
+
+
+  }
+  // Test by Akash Magoon 11/21/2014
+  test("Query LabelConfidenceScores works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelConfidenceScores()
+      val results = LabelConfidenceScores.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelConfidenceScoreId== 1)
+      assert(results.head.LabelConfidenceScoreId != 2)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelConfidenceScores works") {
+    createSchema()
+    LabelConfidenceScores += LabelConfidenceScore(1,2851,-0.998391)
+    LabelConfidenceScores += LabelConfidenceScore(2, 2852, -0.998322)
+    LabelConfidenceScores += LabelConfidenceScore(3,2853, -0.997478 )
+
+    val results = LabelConfidenceScores.list
+    assert(results.size == 3)
+    assert(results.head.LabelId == 2851)
 
 
 
