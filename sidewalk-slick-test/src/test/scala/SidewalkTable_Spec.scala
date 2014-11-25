@@ -34,7 +34,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelingTaskCounts = TableQuery[LabelingTaskCounts]
   val LabelingTaskEnvironments = TableQuery[LabelingTaskEnvironments]
   val LabelingTaskInteractions = TableQuery[LabelingTaskInteractions]
-
+  val LabelPhotographerPovs = TableQuery[LabelPhotographerPovs]
 
   implicit var session: Session = _
 
@@ -47,7 +47,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl ++ LabelPhotographerPovs.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -62,7 +62,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelingTaskCounts(): Int = LabelingTaskCounts += LabelingTaskCount(3,2,0)
   def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
   def insertLabelingTaskInteractions(): Int = LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
-
+  def insertLabelPhotographerPovs(): Int = LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
 
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
@@ -74,7 +74,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 15)
+    assert(tables.size == 16)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -548,6 +548,36 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.size == 3)
     assert(results.head.Action == "Click_ModeSwitch_CurbRamp")
     assert(results.head.LabelingTaskId == 1)
+
+
+
+  }
+
+
+  // Test by Akash Magoon 11/25/2014
+  test("Query LabelPhotographerPovs works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelPhotographerPovs()
+      val results = LabelPhotographerPovs.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelPhotographerPovId == 1)
+      assert(results.head.LabelPhotographerPovId != 6)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelPhotographerPovs works") {
+    createSchema()
+    LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
+    LabelPhotographerPovs += LabelPhotographerPov(2,18098,357.76f,-2.08f)
+    LabelPhotographerPovs += LabelPhotographerPov(3,18099,357.76f,-2.08f)
+
+
+    val results = LabelPhotographerPovs.list
+    assert(results.size == 3)
+    assert(results.head.LabelId == 18097)
+    assert(results.head.LabelId != 1)
 
 
 
