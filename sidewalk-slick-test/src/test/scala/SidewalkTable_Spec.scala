@@ -35,6 +35,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelingTaskEnvironments = TableQuery[LabelingTaskEnvironments]
   val LabelingTaskInteractions = TableQuery[LabelingTaskInteractions]
   val LabelPhotographerPovs = TableQuery[LabelPhotographerPovs]
+  val LabelPoints = TableQuery[LabelPoints]
 
   implicit var session: Session = _
 
@@ -47,7 +48,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl ++ LabelPhotographerPovs.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl ++ LabelPhotographerPovs.ddl ++ LabelPoints.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -63,7 +64,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
   def insertLabelingTaskInteractions(): Int = LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
   def insertLabelPhotographerPovs(): Int = LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
-
+  def insertLabelPoints(): Int = LabelPoints += LabelPoint(1, 2, 12562, 542, 197, 44, 0, -10, 1, 197, 44, 0, -10, 1, 6656, 13312, 480, 720, 4.6d, -4.65d, 38.935869d, -77.01921d)
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -74,7 +75,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 16)
+    assert(tables.size == 17)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -582,6 +583,36 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
 
   }
+  // Test by Akash Magoon 11/25/2014
+  test("Query LabelPoints works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelPoints()
+      val results = LabelPoints.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelPointId == 1)
+      assert(results.head.LabelPointId != 6)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelPoints works") {
+    createSchema()
+    LabelPoints += LabelPoint(1, 2, 12562, 542, 197, 44, 0, -10, 1, 197, 44, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
+    LabelPoints+= LabelPoint(2, 2, 12631, 225, 212, 112, 0, -10, 1, 212, 112, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
+    LabelPoints+= LabelPoint(3, 2, 12939, 207, 279, 116, 0, -10, 1, 279, 116, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
+
+
+    val results = LabelPoints.list
+    assert(results.size == 3)
+    assert(results.head.LabelPointId == 1)
+    assert(results.head.LabelPointId != 123)
+
+
+
+  }
+
+
   after {
     session.close()
   }
