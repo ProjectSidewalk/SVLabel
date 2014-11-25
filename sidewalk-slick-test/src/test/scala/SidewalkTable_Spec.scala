@@ -33,7 +33,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelingTaskComments = TableQuery[LabelingTaskComments]
   val LabelingTaskCounts = TableQuery[LabelingTaskCounts]
   val LabelingTaskEnvironments = TableQuery[LabelingTaskEnvironments]
-
+  val LabelingTaskInteractions = TableQuery[LabelingTaskInteractions]
 
 
   implicit var session: Session = _
@@ -47,7 +47,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -61,6 +61,9 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelingTaskComments(): Int = LabelingTaskComments += LabelingTaskComment(1, 169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
   def insertLabelingTaskCounts(): Int = LabelingTaskCounts += LabelingTaskCount(3,2,0)
   def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
+  def insertLabelingTaskInteractions(): Int = LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
+
+
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -71,7 +74,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 14)
+    assert(tables.size == 15)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -516,6 +519,35 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.size == 3)
     assert(results.head.LabelingTaskEnvironmentId == 4)
     assert(results.head.LabelingTaskId == 4)
+
+
+
+  }
+
+  // Test by Akash Magoon 11/25/2014
+  test("Query LabelingTaskInteractions works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelingTaskInteractions()
+      val results = LabelingTaskInteractions.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelingTaskInteractionId == 1)
+      assert(results.head.LabelingTaskInteractionId != 6)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelingTaskInteractions works") {
+    createSchema()
+    LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
+    LabelingTaskInteractions += LabelingTaskInteraction(2,1,"LabelingCanvas_MouseDown", "3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "x:212,y:100", "1371852933945" )
+    LabelingTaskInteractions += LabelingTaskInteraction(3,1,"LabelingCanvas_MouseUp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "x:212,y:100", "1371852934010" )
+
+
+    val results = LabelingTaskInteractions.list
+    assert(results.size == 3)
+    assert(results.head.Action == "Click_ModeSwitch_CurbRamp")
+    assert(results.head.LabelingTaskId == 1)
 
 
 
