@@ -1,5 +1,17 @@
 import org.scalatest._
 import scala.slick.driver.H2Driver.simple._
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+import scala.slick.lifted.TableQuery
+
 // import scala.slick.driver.MySQLDriver.simple._
 import scala.slick.jdbc.meta._
 //import java.sql.Timestamp
@@ -20,7 +32,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val LabelingTaskAttributes = TableQuery[LabelingTaskAttributes]
   val LabelingTaskComments = TableQuery[LabelingTaskComments]
   val LabelingTaskCounts = TableQuery[LabelingTaskCounts]
-
+  val LabelingTaskEnvironments = TableQuery[LabelingTaskEnvironments]
 
 
 
@@ -35,7 +47,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
@@ -48,7 +60,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelingTaskAttributes(): Int = LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
   def insertLabelingTaskComments(): Int = LabelingTaskComments += LabelingTaskComment(1, 169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
   def insertLabelingTaskCounts(): Int = LabelingTaskCounts += LabelingTaskCount(3,2,0)
-
+  def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
   before {
     session = Database.forURL("jdbc:h2:mem:sidewalktable", driver = "org.h2.Driver").createSession()
     //session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", driver="com.mysql.jdbc.Driver", user="root", password="").createSession()
@@ -59,7 +71,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
     val tables = MTable.getTables.list
 
-    assert(tables.size == 13)
+    assert(tables.size == 14)
     assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
   }
 
@@ -139,11 +151,11 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       LabelingTasks += (3, 2, 3,	"3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, "undefined")
       LabelingTasks += (4, 2, 4, "_AUz5cV_ofocoDbesxY3Kw", 0, "undefined",	0, "undefined")
 
-     //Slick inner join
-     //http://slick.typesafe.com/doc/2.1.0/queries.html
-     /*val joined = for {
-        (a, l) <- assignments innerJoin LabelingTasks on (_.AssignmentId === _.AssignmentId)
-      } yield (a.AssignmentId, a.AmazonTurkerId, l.LabelingTaskId)*/
+      //Slick inner join
+      //http://slick.typesafe.com/doc/2.1.0/queries.html
+      /*val joined = for {
+         (a, l) <- assignments innerJoin LabelingTasks on (_.AssignmentId === _.AssignmentId)
+       } yield (a.AssignmentId, a.AmazonTurkerId, l.LabelingTaskId)*/
 
       val innerjoin = for {
         a <- assignments
@@ -156,7 +168,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assert(results.head._1 == 1)
       assert(results.head._2 == "TestTurkerId")
 
-  }}
+    }}
 
   // Test by Akash Magoon 11/15/2014
   test("Query binnedLabels works") {
@@ -171,17 +183,17 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   }
   test("Inserting binnedLabels works") {
     createSchema()
-      binnedLabels += (1,1,3291)
-      binnedLabels += (2,1,3292)
-      binnedLabels += (3,1,3293)
+    binnedLabels += (1,1,3291)
+    binnedLabels += (2,1,3292)
+    binnedLabels += (3,1,3293)
 
-      val results = binnedLabels.list
-      assert(results.size == 3)
-      assert(results.head._1 == 1)
-      assert(results.head._2 == 1)
-      assert(results.head._3 == 3291)
+    val results = binnedLabels.list
+    assert(results.size == 3)
+    assert(results.head._1 == 1)
+    assert(results.head._2 == 1)
+    assert(results.head._3 == 3291)
 
-    }
+  }
   test("Inner join test: assignments, LabelingTasks, binned labels") {
 
     session.withTransaction {
@@ -196,7 +208,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       binnedLabels += (2,1,3292)
       binnedLabels += (3,1,3293)
 
-        val innerjoin = for {
+      val innerjoin = for {
         a <- assignments
         b <- binnedLabels
         if a.AssignmentId === b.BinnedLabelId
@@ -217,7 +229,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       val results = goldenLabels.list
 
       assert(results.size == 1)
-//      assert(results.head._1 == 1)
+      //      assert(results.head._1 == 1)
       assert(results.head.GoldenLabelId == 1)
       assert(results.head.GoldenLabelId != 2)
       session.rollback()
@@ -225,18 +237,18 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   }
   test("Inserting GoldenLabels works") {
     createSchema()
-//    goldenLabels += (1,1,3)
-//    goldenLabels += (2,2,3)
-//    goldenLabels += (3,3,3)
+    //    goldenLabels += (1,1,3)
+    //    goldenLabels += (2,2,3)
+    //    goldenLabels += (3,3,3)
     goldenLabels += GoldenLabel(1, 1, 3)
     goldenLabels += GoldenLabel(2, 2, 3)
     goldenLabels += GoldenLabel(3, 3, 3)
 
     val results = goldenLabels.list
     assert(results.size == 3)
-//    assert(results.head._1 == 1)
-//    assert(results.head._2 == 1)
-//    assert(results.head._3 == 3)
+    //    assert(results.head._1 == 1)
+    //    assert(results.head._2 == 1)
+    //    assert(results.head._3 == 3)
     assert(results.head.GoldenLabelId == 1)
     assert(results.head.TaskImageId == 1)
     assert(results.head.LabelTypeId == 3)
@@ -384,7 +396,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       val results = LabelCorrectnessClass.list
 
       assert(results.size == 1)
-     assert(results.head.LabelCorrectnessId == 1)
+      assert(results.head.LabelCorrectnessId == 1)
       assert(results.head.LabelCorrectnessId != 2)
     }
   }
@@ -480,7 +492,35 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
 
   }
-after {
+  // Test by Akash Magoon 11/25/2014
+  test("Query LabelingTaskEnvironments works") {
+    session.withTransaction {
+      createSchema()
+      insertLabelingTaskEnvironments()
+      val results = LabelingTaskEnvironments.list
+
+      assert(results.size == 1)
+      assert(results.head.LabelingTaskEnvironmentId == 4)
+      assert(results.head.LabelingTaskEnvironmentId != 6)
+      session.rollback()
+    }
+  }
+  test("Inserting LabelingTaskEnvironments works") {
+    createSchema()
+    LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
+    LabelingTaskEnvironments += LabelingTaskEnvironment(5,5,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:19:32")
+    LabelingTaskEnvironments += LabelingTaskEnvironment(6, 6, "chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:33:29")
+
+
+    val results = LabelingTaskEnvironments.list
+    assert(results.size == 3)
+    assert(results.head.LabelingTaskEnvironmentId == 4)
+    assert(results.head.LabelingTaskId == 4)
+
+
+
+  }
+  after {
     session.close()
   }
 }
