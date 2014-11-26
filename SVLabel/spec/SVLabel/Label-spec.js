@@ -4,10 +4,12 @@ describe("The Label module's basic API", function () {
     pitch: 0,
     zoom: 1
   };
+  var testCanvas = new Canvas(param, pov);
   var param = {};
   var p1 = new Point(0, 0, pov, param);
   var p2 = new Point(9, 0, pov, param);
   var p3 = new Point(5, 5, pov, param);
+  var points = [p1,p2,p3];
   var path = new Path([p1, p2, p3], {});
 
   var labelColors = svw.misc.getLabelColors();
@@ -32,7 +34,7 @@ describe("The Label module's basic API", function () {
       svImageHeight: svw.svImageHeight,
       svMode: 'html4'
   };
-
+  console.log(svw.svImageHeight);
   var label = new Label(path, param);
 
   describe("Test, getBoundingBox", function () {
@@ -49,7 +51,7 @@ describe("The Label module's basic API", function () {
     });
 
     it("boundingBoxA should match boundingBox B", function () {
-      expect(boudningBoxA.x).toBe(boundingBoxB.x);
+      expect(boundingBoxA.x).toBe(boundingBoxB.x);
       // Todo: Alex. Check for y, width, and height
     });
   });
@@ -81,12 +83,17 @@ describe("The Label module's basic API", function () {
 
   // Todo. Alex. Please write tests for this.
   describe("Test getLabelId", function () {
-
+    it("Label ID should be set to 1", function(){
+          expect(label.getLabelId).toBe(1);
+    })
   });
 
   // Todo. Alex. Please write tests for this.
   describe("Test getLabelType", function () {
-
+    it("Label ID should not be 0 or undefined", function(){
+          expect(label.getLabelId).not.toBe(0);
+          expect(label.getLabelId).not.toBeUndefined();
+    });
   });
 
   // Todo: Alex. Please fix these tests.
@@ -109,6 +116,7 @@ describe("The Label module's basic API", function () {
     it("should get a path that has same points", function () {
       var extractedPoints = extractedPath.getPoints();
       var len = extractedPoints.length;
+      console.log(points[0].svw.svImageHeight);
       var i;
       for (i = 0; i < len; i++) {
         expect(extractedPoints[i]).toBe(points[i]);

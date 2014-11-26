@@ -1,5 +1,4 @@
 var svw = svw || {}; // Street View Walker namespace.
-
 function Point (x, y, pov, params) {
   'use strict';
     // Point object constructor.
@@ -48,17 +47,14 @@ function Point (x, y, pov, params) {
         var zoomFactor = svw.zoomFactor[zoom];
         var svImageHeight = svw.svImageHeight;
         var svImageWidth = svw.svImageWidth;
-
+        console.log(svw.svImageHeight);
         oPublic.svImageCoordinate = {};
         oPublic.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svw.alpha_x * (x - (svw.canvasWidth / 2)) / zoomFactor);
         oPublic.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svw.alpha_y * (y - (svw.canvasHeight / 2)) / zoomFactor);
-
-
         // svImageCoordinate.x could be negative, so adjust it.
         if (oPublic.svImageCoordinate.x < 0) {
             oPublic.svImageCoordinate.x = oPublic.svImageCoordinate.x + svImageWidth;
         }
-
         // Keep the original canvas coordinate and
         // canvas pov just in case.
         oPublic.canvasCoordinate = {
@@ -123,6 +119,9 @@ function Point (x, y, pov, params) {
         // return the fill color of this point
       return properties.fillStyleInnerCircle;
     }
+    function getPOV () {
+        return pov;
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
@@ -137,12 +136,16 @@ function Point (x, y, pov, params) {
         }
     };
 
+    oPublic.getPOV = function() {
+        return getPOV();
+    };
+
     oPublic.getCanvasCoordinate = function (pov) {
         // This function takes current pov of the Street View as a parameter
         // and returns a canvas coordinate of a point.
 
         //
-        // POV adjsutment
+        // POV adjustment
         oPublic.canvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(oPublic.svImageCoordinate.x, oPublic.svImageCoordinate.y, pov);
         return svw.gsvImageCoordinate2CanvasCoordinate(oPublic.svImageCoordinate.x, oPublic.svImageCoordinate.y, pov);
     };
@@ -360,7 +363,6 @@ svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     var zoom = pov.zoom;
     var svImageWidth = svw.svImageWidth * svw.zoomFactor[zoom];
     var svImageHeight = svw.svImageHeight * svw.zoomFactor[zoom];
-
     xIn = xIn * svw.zoomFactor[zoom];
     yIn = yIn * svw.zoomFactor[zoom];
 

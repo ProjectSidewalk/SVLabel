@@ -1,5 +1,4 @@
 var svw = svw || {}; // Street View Walker namespace.
-
 ////////////////////////////////////////////////////////////////////////////////
 // Path class
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,15 +41,15 @@ function Path (points, params) {
         // Set belongs to of the points
         for (i = 0; i < lenPoints; i += 1) {
             points[i].setBelongsTo(oPublic);
-        }
+        };
 
         if (params) {
             for (var attr in params) {
                 if (attr in properties) {
                     properties[attr] = params[attr];
-                }
-            }
-        }
+                };
+            };
+        };
 
         properties.fillStyle = changeAlphaRGBA(points[0].getProperty('fillStyleInnerCircle'), 0.5);
         properties.originalFillStyle = properties.fillStyle;
@@ -62,17 +61,16 @@ function Path (points, params) {
         var j;
         var len;
         var canvasCoords;
-        var pov = getPOV();
+        var pov = oPublic.getPOV();
         var xMax = -1;
         var xMin = 1000000;
         var yMax = -1;
         var yMin = 1000000;
-
         //
         // Check on points
         canvasCoords = getCanvasCoordinates(pov);
         len = canvasCoords.length;
-
+        console.log(canvasCoords);
         for (j = 0; j < len; j += 1) {
             var coord = canvasCoords[j];
 
@@ -98,11 +96,13 @@ function Path (points, params) {
         };
     }
 
+    function getPOV(){
+        return points[0].getPOV();
+    }
     function getLineWidth () {
       // return line width
       return properties.lineWidth;
     }
-
     function getFill() {
       // get fill
       return properties.fillStyle;
@@ -190,7 +190,6 @@ function Path (points, params) {
         var len = imCoords.length;
         var canvasCoord;
         var canvasCoords = [];
-
         var min = 10000000;
         var max = -1;
 
@@ -231,16 +230,15 @@ function Path (points, params) {
         var i;
         var len = oPublic.points.length;
         var coords = [];
-
         for (i = 0; i < len; i += 1) {
             coords.push(oPublic.points[i].getGSVImageCoordinate());
         }
+        console.log(coords);
         return coords;
     }
 
     function getPoints() {
       // return point objects in this path
-      console.log(properties.numPoints);
       return properties.numPoints;
     }
 
@@ -276,6 +274,10 @@ function Path (points, params) {
             return false;
         }
     };
+
+    oPublic.getPOV = function() {
+        return getPOV();
+    }
 
     oPublic.getBoundingBox = function () {
         // Get a bounding box of this path
@@ -545,7 +547,7 @@ function Path (points, params) {
             setFill('rgba'+fill.substring(3,fill.length-1)+',0.5)');
         } 
         return this;
-    }
+    };
     oPublic.setBelongsTo = function (obj) {
         belongsTo = obj;
         return this;

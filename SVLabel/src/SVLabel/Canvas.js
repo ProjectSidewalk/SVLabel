@@ -8,10 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Global variables
 ////////////////////////////////////////////////////////////////////////////////
-//var canvasWidth = 720;
-//var canvasHeight = 480;
-//var svImageHeight = 6656;
-//var svImageWidth = 13312;
+// var canvasWidth = 720;
+// var canvasHeight = 480;
+// var svImageHeight = 6656;
+// var svImageWidth = 13312;
 
 // Image distortion coefficient. Need to figure out how to compute these.
 // It seems like these constants do not depend on browsers... (tested on Chrome, Firefox, and Safari.)
@@ -22,10 +22,8 @@ svw.canvasWidth = 720;
 svw.canvasHeight = 480;
 svw.svImageHeight = 6656;
 svw.svImageWidth = 13312;
-
 svw.alpha_x = 4.6;
 svw.alpha_y = -4.65;
-
 svw._labelCounter = 0;
 svw.getLabelCounter = function () {
     return svw._labelCounter++;
@@ -35,6 +33,7 @@ svw.getLabelCounter = function () {
 // Canvas Class Constructor
 ////////////////////////////////////////////////////////////////////////////////
 function Canvas (param, $) {
+    console.log("hi");
     var oPublic = {
             className : 'Canvas',
             testCases: {}};

@@ -116,7 +116,7 @@ function Label (pathIn, params) {
             console.error(oPublic.className, ':', 'Error initializing the Label object.', e);
             return false;
         }
-    }
+    };
 
     function renderTag(ctx) {
         // This function renders a tag on a canvas to show a property of the label
@@ -243,7 +243,7 @@ function Label (pathIn, params) {
         ctx.restore();
 
         return;
-    }
+    };
 
     function showDelete() {
         if (status.tagVisibility !== 'hidden') {
@@ -259,7 +259,7 @@ function Label (pathIn, params) {
                 'top' : y
             });
         }
-    }
+    };
 
     ////////////////////////////////////////
     // Public functions
@@ -354,7 +354,7 @@ function Label (pathIn, params) {
     oPublic.getCoordinate = function () {
         // This function returns the coordinate of a point.
         if (path && path.points.length > 0) {
-            var pov = getPOV();
+            var pov = path.getPOV();
             return $.extend(true, {}, path.points[0].getCanvasCoordinate(pov));
         }
         return path;
@@ -390,6 +390,7 @@ function Label (pathIn, params) {
         // If reference is true, return a reference to the path instead of a copy of the path
         if (path) {
             if (reference) {
+                console.log("hide");
                 return path;
             } else {
                 return $.extend(true, {}, path);
