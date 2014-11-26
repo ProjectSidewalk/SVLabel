@@ -10,7 +10,5 @@ class GoldenLabels(tag: Tag)
   def TaskImageId: Column[Int] = column[Int]("TaskImageId")
   def LabelTypeId: Column[Int] = column[Int]("LabelTypeId")
 
-//  def * : ProvenShape[(Int,Int,Int)] =
-//    (GoldenLabelId,TaskImageId,LabelTypeId)
   def * = (GoldenLabelId, TaskImageId, LabelTypeId) <> (GoldenLabel.tupled, GoldenLabel.unapply _)
 }

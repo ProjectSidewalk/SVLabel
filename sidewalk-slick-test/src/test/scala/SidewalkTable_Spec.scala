@@ -1,16 +1,6 @@
 import org.scalatest._
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
 
 // import scala.slick.driver.MySQLDriver.simple._
 import scala.slick.jdbc.meta._
@@ -21,7 +11,7 @@ import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val assignments = TableQuery[Assignments]
   val LabelingTasks = TableQuery[LabelingTasks]
-  val binnedLabels = TableQuery[binnedLabels]
+  val binnedLabels = TableQuery[BinnedLabels]
   val goldenLabels = TableQuery[GoldenLabels]
   val Images = TableQuery[Images]
   val Intersections = TableQuery[Intersections]
@@ -49,10 +39,10 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
   def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl ++ LabelPhotographerPovs.ddl ++ LabelPoints.ddl).create
-  def insertLabelingTasks(): Int = LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, "NULL")
+  def insertLabelingTasks(): Int = LabelingTasks += LabelingTask(2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, dtf.parseDateTime("2013-06-30 22:08:14"))
   def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
-  def insertImages(): Int = Images += Image(1,67885, "-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/");
+  def insertImages(): Int = Images += Image(1,67885, "-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/")
   def insertIntersections(): Int = Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
   def insertIpAddresses(): Int = IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
   def insertLabelBins(): Int = LabelBins += LabelBin(1, "NULL", "NULL", "FirstDetectionResult", 0)
@@ -130,13 +120,13 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       session.rollback()
     }
     session.withTransaction {
-      LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, "undefined")
-      LabelingTasks += (3,	2, 3,	"3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, "undefined")
-      LabelingTasks += (4, 2, 4, "_AUz5cV_ofocoDbesxY3Kw", 0, "undefined",	0, "undefined")
+      LabelingTasks += LabelingTask(2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, dtf.parseDateTime("2013-06-21 18:03:28"))
+      LabelingTasks += LabelingTask(3,	2, 3,	"3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, dtf.parseDateTime("2013-06-21 18:03:28"))
+      LabelingTasks += LabelingTask(4, 2, 4, "_AUz5cV_ofocoDbesxY3Kw", 0, "undefined",	0, dtf.parseDateTime("2013-06-21 18:03:28"))
 
       val results = LabelingTasks.list
       assert(results.size == 3)
-      assert(results.head._1 == 2)
+      assert(results.head.LabelingTaskId == 2)
     }
   }
 
@@ -151,9 +141,9 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assignments += Assignment(2,	"Test_Kotaro",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"PilotTask",	dtf.parseDateTime("2013-06-28 14:19:17"))
       assignments += Assignment(3,	"Researcher_Jonah",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"ResearcherTask",	dtf.parseDateTime("2013-07-03 12:24:36"))
 
-      LabelingTasks += (2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, "undefined")
-      LabelingTasks += (3, 2, 3,	"3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, "undefined")
-      LabelingTasks += (4, 2, 4, "_AUz5cV_ofocoDbesxY3Kw", 0, "undefined",	0, "undefined")
+      LabelingTasks += LabelingTask(2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, dtf.parseDateTime("2013-06-21 18:03:28"))
+      LabelingTasks += LabelingTask(3, 2, 3,	"3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, dtf.parseDateTime("2013-06-21 18:03:28"))
+      LabelingTasks += LabelingTask(4, 2, 4, "_AUz5cV_ofocoDbesxY3Kw", 0, "undefined",	0, dtf.parseDateTime("2013-06-21 18:03:28"))
 
       //Slick inner join
       //http://slick.typesafe.com/doc/2.1.0/queries.html
