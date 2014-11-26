@@ -1,9 +1,5 @@
-/**
- * Created by kotarohara on 11/5/14.
- */
 import scala.slick.driver.H2Driver.simple._
 //import scala.slick.driver.MySQLDriver.simple._
-import scala.slick.lifted.ProvenShape
 import java.sql.Timestamp
 import org.joda.time.DateTime
 
