@@ -1,8 +1,4 @@
-/**
- * Created by Akash on 11/25/2014.
- */
 import scala.slick.driver.H2Driver.simple._
-import scala.slick.lifted.ProvenShape
 
 case class LabelPoint(LabelPointId: Int,LabelId: Int,svImageX: Int,svImageY: Int,originalCanvasX: Int,originalCanvasY: Int,
                       originalHeading: Int,originalPitch: Int,originalZoom: Int,canvasX: Int, canvasY:Int, heading: Int, pitch: Int, zoom: Int,
@@ -37,13 +33,6 @@ class LabelPoints(tag: Tag)
   def labelLng: Column[Double] = column[Double]("labelLng")
 
 
-
-
-
-
-
-  //  def * : ProvenShape[(Int,Int,Int)] =
-  //    (GoldenLabelId,TaskImageId,LabelTypeId)
   def * = (LabelPointId,LabelId,svImageX,svImageY,originalCanvasX,originalCanvasY,
     originalHeading,originalPitch,originalZoom,canvasX, canvasY, heading, pitch, zoom,
     svImageHeight,svImageWidth,canvasHeight, canvasWidth,
