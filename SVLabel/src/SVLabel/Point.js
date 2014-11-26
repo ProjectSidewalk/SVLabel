@@ -10,7 +10,6 @@ function Point (x, y, pov, params) {
     if(params.fillStyle==undefined){
         params.fillStyle = 'rgba(255,255,255,0.5)';
     }
-    console.log(params.fillStyle);
     var oPublic = {
             className : 'Point',
             svImageCoordinate : undefined,
@@ -360,7 +359,7 @@ svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     var y;
     var zoom = pov.zoom;
     var svImageWidth = svw.svImageWidth * svw.zoomFactor[zoom];
-    var svImageHeight = svw.svImageHeight * svw.zoomFactor[zoom];
+    var svImageHeight= svw.svImageHeight * svw.zoomFactor[zoom];
 
     xIn = xIn * svw.zoomFactor[zoom];
     yIn = yIn * svw.zoomFactor[zoom];
