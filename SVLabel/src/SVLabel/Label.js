@@ -390,7 +390,6 @@ function Label (pathIn, params) {
         // If reference is true, return a reference to the path instead of a copy of the path
         if (path) {
             if (reference) {
-                console.log("hide");
                 return path;
             } else {
                 return $.extend(true, {}, path);

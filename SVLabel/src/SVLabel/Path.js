@@ -70,10 +70,8 @@ function Path (points, params) {
         // Check on points
         canvasCoords = getCanvasCoordinates(pov);
         len = canvasCoords.length;
-        console.log(canvasCoords);
         for (j = 0; j < len; j += 1) {
             var coord = canvasCoords[j];
-
             if (coord.x < xMin) {
                 xMin = coord.x;
             }
@@ -87,7 +85,6 @@ function Path (points, params) {
                 yMax = coord.y;
             }
         }
-
         return {
             x: xMin,
             y: yMin,
@@ -201,7 +198,6 @@ function Path (points, params) {
                 max = imCoords[i].x;
             }
         }
-
         // Note canvasWidthInGSVImage is approximately equals to the image width of GSV image that fits in one canvas view
         var canvasWidthInGSVImage = 3328;
         for (i = 0; i < len; i += 1) {
@@ -233,7 +229,6 @@ function Path (points, params) {
         for (i = 0; i < len; i += 1) {
             coords.push(oPublic.points[i].getGSVImageCoordinate());
         }
-        console.log(coords);
         return coords;
     }
 

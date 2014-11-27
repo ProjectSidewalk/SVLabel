@@ -47,7 +47,6 @@ function Point (x, y, pov, params) {
         var zoomFactor = svw.zoomFactor[zoom];
         var svImageHeight = svw.svImageHeight;
         var svImageWidth = svw.svImageWidth;
-        console.log(svw.svImageHeight);
         oPublic.svImageCoordinate = {};
         oPublic.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svw.alpha_x * (x - (svw.canvasWidth / 2)) / zoomFactor);
         oPublic.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svw.alpha_y * (y - (svw.canvasHeight / 2)) / zoomFactor);

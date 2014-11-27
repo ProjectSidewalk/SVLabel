@@ -4,7 +4,6 @@ describe("The Label module's basic API", function () {
     pitch: 0,
     zoom: 1
   };
-  var testCanvas = new Canvas(param, pov);
   var param = {};
   var p1 = new Point(0, 0, pov, param);
   var p2 = new Point(9, 0, pov, param);
@@ -34,7 +33,6 @@ describe("The Label module's basic API", function () {
       svImageHeight: svw.svImageHeight,
       svMode: 'html4'
   };
-  console.log(svw.svImageHeight);
   var label = new Label(path, param);
 
   describe("Test, getBoundingBox", function () {
@@ -51,7 +49,16 @@ describe("The Label module's basic API", function () {
     });
 
     it("boundingBoxA should match boundingBox B", function () {
+      if(Math.abs(boundingBoxA.width-boundingBoxB.width)<.001){
+          boundingBoxB.width=boundingBoxA.width;
+      }
+      if(Math.abs(boundingBoxA.y-boundingBoxB.y)<.001){
+          boundingBoxB.y=boundingBoxA.y;
+      }
       expect(boundingBoxA.x).toBe(boundingBoxB.x);
+      expect(boundingBoxA.y).toBe(boundingBoxB.y);
+      expect(boundingBoxA.width).toBe(boundingBoxB.width);
+      expect(boundingBoxA.height).toBe(boundingBoxB.height);
       // Todo: Alex. Check for y, width, and height
     });
   });
@@ -59,7 +66,7 @@ describe("The Label module's basic API", function () {
   // Todo. Alex. Please review this.
   describe("Test getCoordinate", function () {
     var coordinateA = label.getCoordinate();
-    var coordinateB = {x: 0, y: 0};
+    var coordinateB = {x: points[0].getCanvasCoordinate(pov).x, y: points[0].getCanvasCoordinate(pov).y};
     it("it should return the coordinate of the first point", function () {
       expect(coordinateA.x).toBe(coordinateB.x);
       expect(coordinateA.y).toBe(coordinateB.y);
@@ -72,9 +79,9 @@ describe("The Label module's basic API", function () {
   });
 
   describe("Test getImageCoordinate", function () {
-    // Todo. Either this or getCoordinate should be deprecated.
-    var coordinateA = label.getImageCoordinate();
-    var coordinateB = {x: 0, y: 0};
+    // Todo.  
+    var coordinateA = label.getImageCoordinates()[0];
+    var coordinateB = {x: points[0].getGSVImageCoordinate().x, y: points[0].getGSVImageCoordinate().y};
     it("it should return the coordinate of the first point", function () {
       expect(coordinateA.x).toBe(coordinateB.x);
       expect(coordinateA.y).toBe(coordinateB.y);
@@ -83,40 +90,41 @@ describe("The Label module's basic API", function () {
 
   // Todo. Alex. Please write tests for this.
   describe("Test getLabelId", function () {
-    it("Label ID should be set to 1", function(){
-          expect(label.getLabelId).toBe(1);
+    it("Label ID should be 1 and then 2", function(){
+          expect(label.getLabelId()).toBe(1);
     })
   });
 
   // Todo. Alex. Please write tests for this.
   describe("Test getLabelType", function () {
     it("Label ID should not be 0 or undefined", function(){
-          expect(label.getLabelId).not.toBe(0);
-          expect(label.getLabelId).not.toBeUndefined();
+          expect(label.getLabelId()).not.toBe(0);
+          expect(label.getLabelId()).not.toBeUndefined();
     });
   });
 
   // Todo: Alex. Please fix these tests.
   describe("Test getPath method", function () {
-    var extractedPath = label.getPath();
-
+    var extractedPath = label.getPath(true);
     it("path should exist", function () {
       expect(extractedPath).not.toBeUndefined();
     });
 
     it("should get a reference", function () {
-      expect(extractedPath).toBe(path);
+      var referenceCopy = label.getPath(true);
+      referenceCopy.labelId = 2;
+      expect(referenceCopy).toBe(path);
     });
 
     it("should get a deep copy", function () {
       var deepCopy = label.getPath(false);
+      deepCopy.labelId = 2;
       expect(deepCopy).not.toBe(path);
     });
 
     it("should get a path that has same points", function () {
-      var extractedPoints = extractedPath.getPoints();
+      var extractedPoints = extractedPath.getPoints(true);
       var len = extractedPoints.length;
-      console.log(points[0].svw.svImageHeight);
       var i;
       for (i = 0; i < len; i++) {
         expect(extractedPoints[i]).toBe(points[i]);

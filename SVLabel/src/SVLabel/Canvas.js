@@ -26,7 +26,6 @@ svw.getLabelCounter = function () {
 // Canvas Class Constructor
 ////////////////////////////////////////////////////////////////////////////////
 function Canvas (param, $) {
-    console.log("hi");
     var oPublic = {
             className : 'Canvas',
             testCases: {}};
