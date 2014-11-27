@@ -11,7 +11,7 @@ import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   val assignments = TableQuery[Assignments]
   val LabelingTasks = TableQuery[LabelingTasks]
-  val binnedLabels = TableQuery[BinnedLabels]
+  val BinnedLabels = TableQuery[BinnedLabels]
   val goldenLabels = TableQuery[GoldenLabels]
   val Images = TableQuery[Images]
   val Intersections = TableQuery[Intersections]
@@ -38,9 +38,9 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertAssignment(): Int = assignments += Assignment(1,"TestTurkerId","TestHit","TestAssignment","StreetViewLabeler","3", 1,	0,"PilotTask", dtf.parseDateTime("2013-06-21 18:03:28"))
   // Create table
   // Data Definition Language (DDL): http://slick.typesafe.com/doc/2.0.3/schemas.html#data-definition-language
-  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ binnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl ++ LabelPhotographerPovs.ddl ++ LabelPoints.ddl).create
+  def createSchema() = (assignments.ddl ++ LabelingTasks.ddl ++ BinnedLabels.ddl ++ goldenLabels.ddl ++ Images.ddl ++ Intersections.ddl ++ IpAddresses.ddl ++ LabelBins.ddl ++ LabelConfidenceScores.ddl ++ LabelCorrectnessClass.ddl ++ LabelingTaskAttributes.ddl ++ LabelingTaskComments.ddl ++ LabelingTaskCounts.ddl ++ LabelingTaskEnvironments.ddl ++ LabelingTaskInteractions.ddl ++ LabelPhotographerPovs.ddl ++ LabelPoints.ddl).create
   def insertLabelingTasks(): Int = LabelingTasks += LabelingTask(2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg", 0, "undefined", 0, dtf.parseDateTime("2013-06-30 22:08:14"))
-  def insertBinnedLabels(): Int = binnedLabels += (1,1,3291)
+  def insertBinnedLabels(): Int = BinnedLabels += BinnedLabel(1,1,3291)
   def insertGoldenLabels(): Int = goldenLabels += GoldenLabel(1,1,3)
   def insertImages(): Int = Images += Image(1,67885, "-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/")
   def insertIntersections(): Int = Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
@@ -169,23 +169,23 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     session.withTransaction {
       createSchema()
       insertBinnedLabels()
-      val results = binnedLabels.list
+      val results = BinnedLabels.list
       assert(results.size == 1)
-      assert(results.head._1 == 1)
+      assert(results.head.BinnedLabelId == 1)
       session.rollback()
     }
   }
   test("Inserting binnedLabels works") {
     createSchema()
-    binnedLabels += (1,1,3291)
-    binnedLabels += (2,1,3292)
-    binnedLabels += (3,1,3293)
+    BinnedLabels += BinnedLabel(1,1,3291)
+    BinnedLabels += BinnedLabel(2,1,3292)
+    BinnedLabels += BinnedLabel(3,1,3293)
 
-    val results = binnedLabels.list
+    val results = BinnedLabels.list
     assert(results.size == 3)
-    assert(results.head._1 == 1)
-    assert(results.head._2 == 1)
-    assert(results.head._3 == 3291)
+    assert(results.head.BinnedLabelId == 1)
+    assert(results.head.LabelBinId == 1)
+    assert(results.head.LabelId == 3291)
 
   }
   test("Inner join test: assignments, LabelingTasks, binned labels") {
@@ -198,13 +198,13 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assignments += Assignment(2,	"Test_Kotaro",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"PilotTask",	dtf.parseDateTime("2013-06-28 14:19:17"))
       assignments += Assignment(3,	"Researcher_Jonah",	"Test_Hit",	"Test_Assignment",	"StreetViewLabeler",	"3",	1,	0,	"ResearcherTask",	dtf.parseDateTime("2013-07-03 12:24:36"))
 
-      binnedLabels += (1,1,3291)
-      binnedLabels += (2,1,3292)
-      binnedLabels += (3,1,3293)
+      BinnedLabels += BinnedLabel(1,1,3291)
+      BinnedLabels += BinnedLabel(2,1,3292)
+      BinnedLabels += BinnedLabel(3,1,3293)
 
       val innerjoin = for {
         a <- assignments
-        b <- binnedLabels
+        b <- BinnedLabels
         if a.AssignmentId === b.BinnedLabelId
       } yield(a.AssignmentId, a.AmazonTurkerId, b.LabelId, b.LabelBinId)
 
