@@ -51,7 +51,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelingTaskAttributes(): Int = LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
   def insertLabelingTaskComments(): Int = LabelingTaskComments += LabelingTaskComment(1, 169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
   def insertLabelingTaskCounts(): Int = LabelingTaskCounts += LabelingTaskCount(3,2,0)
-  def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
+  def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", dtf.parseDateTime(2013-06-30 22:08:14))
   def insertLabelingTaskInteractions(): Int = LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
   def insertLabelPhotographerPovs(): Int = LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
   def insertLabelPoints(): Int = LabelPoints += LabelPoint(1, 2, 12562, 542, 197, 44, 0, -10, 1, 197, 44, 0, -10, 1, 6656, 13312, 480, 720, 4.6d, -4.65d, 38.935869d, -77.01921d)
