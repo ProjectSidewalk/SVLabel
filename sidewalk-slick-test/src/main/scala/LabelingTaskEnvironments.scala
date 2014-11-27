@@ -4,6 +4,8 @@
 
 import java.sql.Timestamp
 
+import org.joda.time.DateTime
+
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.lifted.ProvenShape
 
@@ -25,7 +27,15 @@ class LabelingTaskEnvironments(tag: Tag)
   def ScreenWidth: Column[String] = column[String]("ScreenWidth")
   def ScreenHeight: Column[String] = column[String]("ScreenHeight")
   def OperatingSystem: Column[String] = column[String]("OperatingSystem")
-  def DatetimeInserted: Column[String] = column[String]("DatetimeInserted")
+  // Converting joda datetime
+  // http://stackoverflow.com/questions/22942202/slick-library-w-play-date-type-incompatibility
+  // https://groups.google.com/forum/#!msg/scalaquery/4Ns_J_8wbqQ/0SGiJL4O8A8J
+  // http://www.epochconverter.com/
+  implicit val dateTimeColumnType = MappedColumnType.base[DateTime, Timestamp](
+  { dt => new java.sql.Timestamp(dt.getMillis) },
+  { ts => new DateTime(ts) }
+  )
+  def DatetimeInserted: Column[DateTime] = column[DateTime]("DatetimeInserted")
 
 
 
