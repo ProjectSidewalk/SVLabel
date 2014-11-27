@@ -51,7 +51,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   def insertLabelingTaskAttributes(): Int = LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
   def insertLabelingTaskComments(): Int = LabelingTaskComments += LabelingTaskComment(1, 169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
   def insertLabelingTaskCounts(): Int = LabelingTaskCounts += LabelingTaskCount(3,2,0)
-  def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", dtf.parseDateTime(2013-06-30 22:08:14))
+  def insertLabelingTaskEnvironments(): Int = LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", dtf.parseDateTime("2013-06-30 22:08:14"))
   def insertLabelingTaskInteractions(): Int = LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
   def insertLabelPhotographerPovs(): Int = LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
   def insertLabelPoints(): Int = LabelPoints += LabelPoint(1, 2, 12562, 542, 197, 44, 0, -10, 1, 197, 44, 0, -10, 1, 6656, 13312, 480, 720, 4.6d, -4.65d, 38.935869d, -77.01921d)
@@ -67,6 +67,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       val tables = MTable.getTables.list
       assert(tables.size == 17)
       assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
+      session.rollback()
     }
   }
 
@@ -77,7 +78,6 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
 
       val insertCount = insertAssignment()
       assert(insertCount == 1)
-
       session.rollback()
     }
 
@@ -128,6 +128,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       val results = LabelingTasks.list
       assert(results.size == 3)
       assert(results.head.LabelingTaskId == 2)
+      session.rollback()
     }
   }
 
@@ -135,7 +136,6 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   test("Inner join test: assignments and LabelingTasks") {
 
     session.withTransaction {
-
       createSchema()
 
       assignments += Assignment(1,	"TestTurkerId",	"TestHit",	"TestAssignment",	"StreetViewLabeler",	"3", 1,	0, "PilotTask",	dtf.parseDateTime("2013-06-21 18:03:28"))
@@ -145,12 +145,6 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       LabelingTasks += LabelingTask(2, 1, 3, "3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, dtf.parseDateTime("2013-06-21 18:03:28"))
       LabelingTasks += LabelingTask(3, 2, 3,	"3dlyB8Z0jFmZKSsTQJjMQg",	0, "undefined", 0, dtf.parseDateTime("2013-06-21 18:03:28"))
       LabelingTasks += LabelingTask(4, 2, 4, "_AUz5cV_ofocoDbesxY3Kw", 0, "undefined",	0, dtf.parseDateTime("2013-06-21 18:03:28"))
-
-      //Slick inner join
-      //http://slick.typesafe.com/doc/2.1.0/queries.html
-      /*val joined = for {
-         (a, l) <- assignments innerJoin LabelingTasks on (_.AssignmentId === _.AssignmentId)
-       } yield (a.AssignmentId, a.AmazonTurkerId, l.LabelingTaskId)*/
 
       val innerjoin = for {
         a <- assignments
@@ -165,33 +159,30 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       session.rollback()
     }}
 
-  // Test by Akash Magoon 11/15/2014
   test("Query binnedLabels works") {
     session.withTransaction {
       createSchema()
       insertBinnedLabels()
+
       val results = BinnedLabels.list
       assert(results.size == 1)
       assert(results.head.BinnedLabelId == 1)
       session.rollback()
     }
   }
+
   test("Inserting binnedLabels works") {
-    createSchema()
-    BinnedLabels += BinnedLabel(1,1,3291)
-    BinnedLabels += BinnedLabel(2,1,3292)
-    BinnedLabels += BinnedLabel(3,1,3293)
     session.withTransaction {
       createSchema()
-      binnedLabels += (1,1,3291)
-      binnedLabels += (2,1,3292)
-      binnedLabels += (3,1,3293)
+      BinnedLabels += BinnedLabel(1,1,3291)
+      BinnedLabels += BinnedLabel(2,1,3292)
+      BinnedLabels += BinnedLabel(3,1,3293)
 
-    val results = BinnedLabels.list
-    assert(results.size == 3)
-    assert(results.head.BinnedLabelId == 1)
-    assert(results.head.LabelBinId == 1)
-    assert(results.head.LabelId == 3291)
+      val results = BinnedLabels.list
+      assert(results.size == 3)
+      assert(results.head.BinnedLabelId == 1)
+      assert(results.head.LabelBinId == 1)
+      assert(results.head.LabelId == 3291)
 
       session.rollback()
     }
@@ -242,18 +233,12 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   test("Inserting GoldenLabels works") {
     session.withTransaction {
       createSchema()
-      //    goldenLabels += (1,1,3)
-      //    goldenLabels += (2,2,3)
-      //    goldenLabels += (3,3,3)
       goldenLabels += GoldenLabel(1, 1, 3)
       goldenLabels += GoldenLabel(2, 2, 3)
       goldenLabels += GoldenLabel(3, 3, 3)
 
       val results = goldenLabels.list
       assert(results.size == 3)
-      //    assert(results.head._1 == 1)
-      //    assert(results.head._2 == 1)
-      //    assert(results.head._3 == 3)
       assert(results.head.GoldenLabelId == 1)
       assert(results.head.TaskImageId == 1)
       assert(results.head.LabelTypeId == 3)
@@ -266,8 +251,8 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     session.withTransaction {
       createSchema()
       insertImages()
-      val results = Images.list
 
+      val results = Images.list
       assert(results.size == 1)
       assert(results.head.ImageId == 1)
       assert(results.head.ImageId != 2)
@@ -332,20 +317,21 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting IpAddresses works") {
-    createSchema()
-    IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
-    IpAddresses += IPAddress(2, "LabelingTask", "3486","1")
-    IpAddresses += IPAddress(3, "LabelingTask", "3584", "1")
+    session.withTransaction {
+      createSchema()
+      IpAddresses += IPAddress(1, "NULL", "NULL", "255.255.255.255")
+      IpAddresses += IPAddress(2, "LabelingTask", "3486","1")
+      IpAddresses += IPAddress(3, "LabelingTask", "3584", "1")
 
-    val results = IpAddresses.list
-    assert(results.size == 3)
-    assert(results.head.IpAddressId == 1)
-    assert(results.head.TaskType == "NULL")
-    assert(results.head.TaskId == "NULL")
-
-
+      val results = IpAddresses.list
+      assert(results.size == 3)
+      assert(results.head.IpAddressId == 1)
+      assert(results.head.TaskType == "NULL")
+      assert(results.head.TaskId == "NULL")
+      session.rollback()
+    }
   }
-  // Test by Akash Magoon 11/20/2014
+
   test("Query LabelBins works") {
     session.withTransaction {
       createSchema()
@@ -359,15 +345,18 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting LabelBins works") {
-    createSchema()
-    LabelBins += LabelBin(1, "NULL", "NULL", "FirstDetectionResult",0)
-    LabelBins += LabelBin(2, "NULL", "NULL", "FirstDetectionResult", 0)
-    LabelBins += LabelBin(3, "NULL", "NULL", "FirstDetectionResult", 0)
+    session.withTransaction {
+      createSchema()
+      LabelBins += LabelBin(1, "NULL", "NULL", "FirstDetectionResult",0)
+      LabelBins += LabelBin(2, "NULL", "NULL", "FirstDetectionResult", 0)
+      LabelBins += LabelBin(3, "NULL", "NULL", "FirstDetectionResult", 0)
 
-    val results = LabelBins.list
-    assert(results.size == 3)
-    assert(results.head.TaskPanoramaId == "NULL")
-    assert(results.head.NoLabel == 0)
+      val results = LabelBins.list
+      assert(results.size == 3)
+      assert(results.head.TaskPanoramaId == "NULL")
+      assert(results.head.NoLabel == 0)
+      session.rollback()
+    }
   }
 
   test("Query LabelConfidenceScores works") {
@@ -383,17 +372,17 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting LabelConfidenceScores works") {
-    createSchema()
-    LabelConfidenceScores += LabelConfidenceScore(1,2851,-0.998391)
-    LabelConfidenceScores += LabelConfidenceScore(2, 2852, -0.998322)
-    LabelConfidenceScores += LabelConfidenceScore(3,2853, -0.997478 )
+    session.withTransaction {
+      createSchema()
+      LabelConfidenceScores += LabelConfidenceScore(1,2851,-0.998391)
+      LabelConfidenceScores += LabelConfidenceScore(2, 2852, -0.998322)
+      LabelConfidenceScores += LabelConfidenceScore(3,2853, -0.997478 )
 
-    val results = LabelConfidenceScores.list
-    assert(results.size == 3)
-    assert(results.head.LabelId == 2851)
-
-
-
+      val results = LabelConfidenceScores.list
+      assert(results.size == 3)
+      assert(results.head.LabelId == 2851)
+      session.rollback()
+    }
   }
   // Test by Akash Magoon 11/21/2014
   test("Query LabelCorrectnessIDs works") {
@@ -405,23 +394,24 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assert(results.size == 1)
       assert(results.head.LabelCorrectnessId == 1)
       assert(results.head.LabelCorrectnessId != 2)
+      session.rollback()
     }
   }
   test("Inserting LabelCorrectnessIDs works") {
-    createSchema()
+    session.withTransaction {
+      createSchema()
 
-    LabelCorrectnessClass += LabelCorrectness1(1,17345, 1)
-    LabelCorrectnessClass += LabelCorrectness1(2,17346, 1)
-    LabelCorrectnessClass += LabelCorrectness1(3,17347, 1)
+      LabelCorrectnessClass += LabelCorrectness1(1,17345, 1)
+      LabelCorrectnessClass += LabelCorrectness1(2,17346, 1)
+      LabelCorrectnessClass += LabelCorrectness1(3,17347, 1)
 
-    val results = LabelCorrectnessClass.list
-    assert(results.size == 3)
-    assert(results.head.LabelId == 17345)
-
-
-
+      val results = LabelCorrectnessClass.list
+      assert(results.size == 3)
+      assert(results.head.LabelId == 17345)
+      session.rollback()
+    }
   }
-  // Test by Akash Magoon 11/21/2014
+
   test("Query LabelingTaskAttributes works") {
     session.withTransaction {
       createSchema()
@@ -435,20 +425,20 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting LabelingTaskAttributes works") {
-    createSchema()
-    LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
-    LabelingTaskAttributes += LabelingTaskAttribute(2, 18566, "FalseNegative")
-    LabelingTaskAttributes += LabelingTaskAttribute(3, 18567, "FalseNegative")
+    session.withTransaction {
+      createSchema()
+      LabelingTaskAttributes += LabelingTaskAttribute(1, 18565, "FalseNegative")
+      LabelingTaskAttributes += LabelingTaskAttribute(2, 18566, "FalseNegative")
+      LabelingTaskAttributes += LabelingTaskAttribute(3, 18567, "FalseNegative")
 
-    val results = LabelingTaskAttributes.list
-    assert(results.size == 3)
-    assert(results.head.LabelingTaskAttributeId == 1)
-    assert(results.head.LabelingTaskId == 18565)
-
-
-
+      val results = LabelingTaskAttributes.list
+      assert(results.size == 3)
+      assert(results.head.LabelingTaskAttributeId == 1)
+      assert(results.head.LabelingTaskId == 18565)
+      session.rollback()
+    }
   }
-  // Test by Akash Magoon 11/21/2014
+
   test("Query LabelingTaskComments works") {
     session.withTransaction {
       createSchema()
@@ -461,16 +451,20 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       session.rollback()
     }
   }
-  test("Inserting LabelingTaskComments works") {
-    createSchema()
-    LabelingTaskComments += LabelingTaskComment(1,169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
-    LabelingTaskComments += LabelingTaskComment(2, 180, "Kotaro: This scene is too complex because of two reasons: more than two streets intersecting, and there is an island in the middle of the street and it has a pedestrians\' path but not curb ramps.")
-    LabelingTaskComments += LabelingTaskComment(3, 182, "Kotaro: Too bright to see")
 
-    val results = LabelingTaskComments.list
-    assert(results.size == 3)
-    assert(results.head.LabelingTaskCommentId == 1)
-    assert(results.head.LabelingTaskId == 169)
+  test("Inserting LabelingTaskComments works") {
+    session.withTransaction {
+      createSchema()
+      LabelingTaskComments += LabelingTaskComment(1,169, "Kotaro: This is not a typical intersection. I am not really sure where they should have curb ramps.")
+      LabelingTaskComments += LabelingTaskComment(2, 180, "Kotaro: This scene is too complex because of two reasons: more than two streets intersecting, and there is an island in the middle of the street and it has a pedestrians\' path but not curb ramps.")
+      LabelingTaskComments += LabelingTaskComment(3, 182, "Kotaro: Too bright to see")
+
+      val results = LabelingTaskComments.list
+      assert(results.size == 3)
+      assert(results.head.LabelingTaskCommentId == 1)
+      assert(results.head.LabelingTaskId == 169)
+      session.rollback()
+    }
   }
   // Test by Akash Magoon 11/21/2014
   test("Query LabelingTaskCounts works") {
@@ -486,20 +480,19 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting LabelingTaskCounts works") {
-    createSchema()
-    LabelingTaskCounts += LabelingTaskCount(3,2,0)
-    LabelingTaskCounts += LabelingTaskCount(4,220,0)
-    LabelingTaskCounts += LabelingTaskCount(5,221,0)
+    session.withTransaction {
+      createSchema()
+      LabelingTaskCounts += LabelingTaskCount(3,2,0)
+      LabelingTaskCounts += LabelingTaskCount(4,220,0)
+      LabelingTaskCounts += LabelingTaskCount(5,221,0)
 
-    val results = LabelingTaskCounts.list
-    assert(results.size == 3)
-    assert(results.head.LabelingTaskCountId == 3)
-    assert(results.head.TaskPanoramaId == 2)
-
-
-
+      val results = LabelingTaskCounts.list
+      assert(results.size == 3)
+      assert(results.head.LabelingTaskCountId == 3)
+      assert(results.head.TaskPanoramaId == 2)
+    }
   }
-  // Test by Akash Magoon 11/25/2014
+
   test("Query LabelingTaskEnvironments works") {
     session.withTransaction {
       createSchema()
@@ -513,19 +506,18 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting LabelingTaskEnvironments works") {
-    createSchema()
-    LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:08:14")
-    LabelingTaskEnvironments += LabelingTaskEnvironment(5,5,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:19:32")
-    LabelingTaskEnvironments += LabelingTaskEnvironment(6, 6, "chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", "2013-06-30 22:33:29")
+    session.withTransaction {
+      createSchema()
+      LabelingTaskEnvironments += LabelingTaskEnvironment(4,4,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", dtf.parseDateTime("2013-06-30 22:08:14"))
+      LabelingTaskEnvironments += LabelingTaskEnvironment(5,5,"chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", dtf.parseDateTime("2013-06-30 22:19:32"))
+      LabelingTaskEnvironments += LabelingTaskEnvironment(6, 6, "chrome", "27.0.1453.116", "1452", "905", "1920", "1080", "1920", "1080", "MacOS", dtf.parseDateTime("2013-06-30 22:33:29"))
 
-
-    val results = LabelingTaskEnvironments.list
-    assert(results.size == 3)
-    assert(results.head.LabelingTaskEnvironmentId == 4)
-    assert(results.head.LabelingTaskId == 4)
-
-
-
+      val results = LabelingTaskEnvironments.list
+      assert(results.size == 3)
+      assert(results.head.LabelingTaskEnvironmentId == 4)
+      assert(results.head.LabelingTaskId == 4)
+      session.rollback()
+    }
   }
 
   // Test by Akash Magoon 11/25/2014
@@ -541,22 +533,21 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       session.rollback()
     }
   }
+
   test("Inserting LabelingTaskInteractions works") {
-    createSchema()
-    LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
-    LabelingTaskInteractions += LabelingTaskInteraction(2,1,"LabelingCanvas_MouseDown", "3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "x:212,y:100", "1371852933945" )
-    LabelingTaskInteractions += LabelingTaskInteraction(3,1,"LabelingCanvas_MouseUp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "x:212,y:100", "1371852934010" )
+    session.withTransaction {
+      createSchema()
+      LabelingTaskInteractions += LabelingTaskInteraction(1,1,"Click_ModeSwitch_CurbRamp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "undefined", "1371852933632" )
+      LabelingTaskInteractions += LabelingTaskInteraction(2,1,"LabelingCanvas_MouseDown", "3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "x:212,y:100", "1371852933945" )
+      LabelingTaskInteractions += LabelingTaskInteraction(3,1,"LabelingCanvas_MouseUp","3dlyB8Z0jFmZKSsTQJjMQg", "38.935869", "-77.0192099", 0, -10, 1, "x:212,y:100", "1371852934010" )
 
-
-    val results = LabelingTaskInteractions.list
-    assert(results.size == 3)
-    assert(results.head.Action == "Click_ModeSwitch_CurbRamp")
-    assert(results.head.LabelingTaskId == 1)
-
-
-
+      val results = LabelingTaskInteractions.list
+      assert(results.size == 3)
+      assert(results.head.Action == "Click_ModeSwitch_CurbRamp")
+      assert(results.head.LabelingTaskId == 1)
+      session.rollback()
+    }
   }
-
 
   // Test by Akash Magoon 11/25/2014
   test("Query LabelPhotographerPovs works") {
@@ -572,21 +563,19 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting LabelPhotographerPovs works") {
-    createSchema()
-    LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
-    LabelPhotographerPovs += LabelPhotographerPov(2,18098,357.76f,-2.08f)
-    LabelPhotographerPovs += LabelPhotographerPov(3,18099,357.76f,-2.08f)
+    session.withTransaction {
+      createSchema()
+      LabelPhotographerPovs += LabelPhotographerPov(1,18097,357.76f, -2.08f)
+      LabelPhotographerPovs += LabelPhotographerPov(2,18098,357.76f,-2.08f)
+      LabelPhotographerPovs += LabelPhotographerPov(3,18099,357.76f,-2.08f)
 
-
-    val results = LabelPhotographerPovs.list
-    assert(results.size == 3)
-    assert(results.head.LabelId == 18097)
-    assert(results.head.LabelId != 1)
-
-
-
+      val results = LabelPhotographerPovs.list
+      assert(results.size == 3)
+      assert(results.head.LabelId == 18097)
+      assert(results.head.LabelId != 1)
+    }
   }
-  // Test by Akash Magoon 11/25/2014
+
   test("Query LabelPoints works") {
     session.withTransaction {
       createSchema()
@@ -599,22 +588,21 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       session.rollback()
     }
   }
+
   test("Inserting LabelPoints works") {
-    createSchema()
-    LabelPoints += LabelPoint(1, 2, 12562, 542, 197, 44, 0, -10, 1, 197, 44, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
-    LabelPoints+= LabelPoint(2, 2, 12631, 225, 212, 112, 0, -10, 1, 212, 112, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
-    LabelPoints+= LabelPoint(3, 2, 12939, 207, 279, 116, 0, -10, 1, 279, 116, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
+    session.withTransaction {
+      createSchema()
+      LabelPoints += LabelPoint(1, 2, 12562, 542, 197, 44, 0, -10, 1, 197, 44, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
+      LabelPoints+= LabelPoint(2, 2, 12631, 225, 212, 112, 0, -10, 1, 212, 112, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
+      LabelPoints+= LabelPoint(3, 2, 12939, 207, 279, 116, 0, -10, 1, 279, 116, 0, -10, 1, 6656, 13312, 480, 720, 4.6, -4.65, 38.935869, -77.01921)
 
-
-    val results = LabelPoints.list
-    assert(results.size == 3)
-    assert(results.head.LabelPointId == 1)
-    assert(results.head.LabelPointId != 123)
-
-
-
+      val results = LabelPoints.list
+      assert(results.size == 3)
+      assert(results.head.LabelPointId == 1)
+      assert(results.head.LabelPointId != 123)
+      session.rollback()
+    }
   }
-
 
   after {
     session.close()

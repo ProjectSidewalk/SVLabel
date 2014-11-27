@@ -11,7 +11,7 @@ import scala.slick.lifted.ProvenShape
 
 case class LabelingTaskEnvironment(LabelingTaskEnvironmentId: Int,LabelingTaskId: Int,Browser: String, BrowserVersion:String,
                                    BrowserWidth: String, BrowserHeight: String,AvailWidth: String, AvailHeight: String, ScreenWidth: String,
-                                   ScreenHeight: String, OperatingSystem: String,DatetimeInserted: String )
+                                   ScreenHeight: String, OperatingSystem: String,DatetimeInserted: DateTime )
 
 class LabelingTaskEnvironments(tag: Tag)
   extends Table[LabelingTaskEnvironment](tag, "LabelingTaskEnvironment") {
