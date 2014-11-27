@@ -21,7 +21,7 @@ class TablesSuite extends FunSuite with BeforeAndAfter {
   def insertSupplier(): Int = suppliers += (101, "Acme, Inc.", "99 Market Street", "Groundsville", "CA", "95199")
   
   before {
-    //session = Database.forURL("jdbc:h2:mem:tablesuite", driver = "org.h2.Driver").createSession()
+    // session = Database.forURL("jdbc:h2:mem:tablesuite", driver = "org.h2.Driver").createSession()
     session = Database.forURL("jdbc:mysql://localhost:3306/sidewalk-test", user="root", password="", driver = "com.mysql.jdbc.Driver").createSession()
   }
   
