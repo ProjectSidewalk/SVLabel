@@ -1,16 +1,6 @@
 import org.scalatest._
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
-import scala.slick.lifted.TableQuery
 
 // import scala.slick.driver.MySQLDriver.simple._
 import scala.slick.jdbc.meta._
@@ -71,12 +61,13 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
   }
 
   test("Creating the Schema works") {
-    createSchema()
+    session.withTransaction {
+      createSchema()
 
-    val tables = MTable.getTables.list
-
-    assert(tables.size == 17)
-    assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
+      val tables = MTable.getTables.list
+      assert(tables.size == 17)
+      assert(tables.count(_.name.name.equalsIgnoreCase("assignments")) == 1)
+    }
   }
 
 
@@ -171,7 +162,7 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assert(results.size == 3)
       assert(results.head._1 == 1)
       assert(results.head._2 == "TestTurkerId")
-
+      session.rollback()
     }}
 
   // Test by Akash Magoon 11/15/2014
@@ -186,22 +177,24 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting binnedLabels works") {
-    createSchema()
-    binnedLabels += (1,1,3291)
-    binnedLabels += (2,1,3292)
-    binnedLabels += (3,1,3293)
-
-    val results = binnedLabels.list
-    assert(results.size == 3)
-    assert(results.head._1 == 1)
-    assert(results.head._2 == 1)
-    assert(results.head._3 == 3291)
-
-  }
-  test("Inner join test: assignments, LabelingTasks, binned labels") {
-
     session.withTransaction {
+      createSchema()
+      binnedLabels += (1,1,3291)
+      binnedLabels += (2,1,3292)
+      binnedLabels += (3,1,3293)
 
+      val results = binnedLabels.list
+      assert(results.size == 3)
+      assert(results.head._1 == 1)
+      assert(results.head._2 == 1)
+      assert(results.head._3 == 3291)
+
+      session.rollback()
+    }
+  }
+
+  test("Inner join test: assignments, LabelingTasks, binned labels") {
+    session.withTransaction {
       createSchema()
 
       assignments += Assignment(1,	"TestTurkerId",	"TestHit",	"TestAssignment",	"StreetViewLabeler",	"3", 1,	0, "PilotTask",	dtf.parseDateTime("2013-06-21 18:03:28"))
@@ -224,7 +217,9 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       assert(results.head._1 == 1)
       assert(results.head._2 == "TestTurkerId")
 
-    }}
+      session.rollback()
+    }
+  }
   // Test by Akash Magoon 11/19/2014
   test("Query goldenLables works") {
     session.withTransaction {
@@ -239,24 +234,28 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
       session.rollback()
     }
   }
+
   test("Inserting GoldenLabels works") {
-    createSchema()
-    //    goldenLabels += (1,1,3)
-    //    goldenLabels += (2,2,3)
-    //    goldenLabels += (3,3,3)
-    goldenLabels += GoldenLabel(1, 1, 3)
-    goldenLabels += GoldenLabel(2, 2, 3)
-    goldenLabels += GoldenLabel(3, 3, 3)
+    session.withTransaction {
+      createSchema()
+      //    goldenLabels += (1,1,3)
+      //    goldenLabels += (2,2,3)
+      //    goldenLabels += (3,3,3)
+      goldenLabels += GoldenLabel(1, 1, 3)
+      goldenLabels += GoldenLabel(2, 2, 3)
+      goldenLabels += GoldenLabel(3, 3, 3)
 
-    val results = goldenLabels.list
-    assert(results.size == 3)
-    //    assert(results.head._1 == 1)
-    //    assert(results.head._2 == 1)
-    //    assert(results.head._3 == 3)
-    assert(results.head.GoldenLabelId == 1)
-    assert(results.head.TaskImageId == 1)
-    assert(results.head.LabelTypeId == 3)
+      val results = goldenLabels.list
+      assert(results.size == 3)
+      //    assert(results.head._1 == 1)
+      //    assert(results.head._2 == 1)
+      //    assert(results.head._3 == 3)
+      assert(results.head.GoldenLabelId == 1)
+      assert(results.head.TaskImageId == 1)
+      assert(results.head.LabelTypeId == 3)
 
+      session.rollback()
+    }
   }
   // Test by Akash Magoon 11/20/2014
   test("Query images works") {
@@ -272,20 +271,22 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting images works") {
-    createSchema()
-    Images += Image(1,67885,"-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/")
+    session.withTransaction {
+      createSchema()
+      Images += Image(1,67885,"-dlUzxwCI_-k5RbGw6IlEg", "-dlUzxwCI_-k5RbGw6IlEg_0.jpg", "public/img/QuickVerification/VerificationImages_v2/")
 
-    Images += Image(2,67886,"-dlUzxwCI_-k5RbGw6IlEg","-dlUzxwCI_-k5RbGw6IlEg_1.jpg","public/img/QuickVerification/VerificationImages_v2/")
-    Images += Image(3,67887, "-dlUzxwCI_-k5RbGw6IlEg","-dlUzxwCI_-k5RbGw6IlEg_2.jpg","public/img/QuickVerification/VerificationImages_v2/")
-    val results = Images.list
-    assert(results.size == 3)
-    assert(results.head.GSVPanoramaId == "-dlUzxwCI_-k5RbGw6IlEg")
-    assert(results.head.Url == "-dlUzxwCI_-k5RbGw6IlEg_0.jpg")
-    assert(results.head.Path == "public/img/QuickVerification/VerificationImages_v2/")
+      Images += Image(2,67886,"-dlUzxwCI_-k5RbGw6IlEg","-dlUzxwCI_-k5RbGw6IlEg_1.jpg","public/img/QuickVerification/VerificationImages_v2/")
+      Images += Image(3,67887, "-dlUzxwCI_-k5RbGw6IlEg","-dlUzxwCI_-k5RbGw6IlEg_2.jpg","public/img/QuickVerification/VerificationImages_v2/")
+      val results = Images.list
+      assert(results.size == 3)
+      assert(results.head.GSVPanoramaId == "-dlUzxwCI_-k5RbGw6IlEg")
+      assert(results.head.Url == "-dlUzxwCI_-k5RbGw6IlEg_0.jpg")
+      assert(results.head.Path == "public/img/QuickVerification/VerificationImages_v2/")
 
-
+      session.rollback()
+    }
   }
-  // Test by Akash Magoon 11/20/2014
+
   test("Query Intersections works") {
     session.withTransaction {
       createSchema()
@@ -299,18 +300,19 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     }
   }
   test("Inserting Intersections works") {
-    createSchema()
-    Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
-    Intersections += Intersection(2, "38.897327", "-77.023986", "5J5Fm8t9Azuo1nA1_WpsGw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
-    Intersections += Intersection(3, "38.899928", "-77.030276", "N5EGvkfw9AaCsUX4MOdkDA", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+    session.withTransaction {
+      createSchema()
+      Intersections += Intersection(1, "38.894799", "-77.021906", "AUz5cV_ofocoDbesxY3Kw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+      Intersections += Intersection(2, "38.897327", "-77.023986", "5J5Fm8t9Azuo1nA1_WpsGw", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
+      Intersections += Intersection(3, "38.899928", "-77.030276", "N5EGvkfw9AaCsUX4MOdkDA", 4, "NULL", "NULL", "DC_Downtown_1_EastWhiteHouse")
 
-    val results = Intersections.list
-    assert(results.size == 3)
-    assert(results.head.IntersectionId == 1)
-    assert(results.head.Lat == "38.894799")
-    assert(results.head.Note == "NULL")
-
-
+      val results = Intersections.list
+      assert(results.size == 3)
+      assert(results.head.IntersectionId == 1)
+      assert(results.head.Lat == "38.894799")
+      assert(results.head.Note == "NULL")
+      session.rollback()
+    }
   }
   // Test by Akash Magoon 11/20/2014
   test("Query IpAddresses works") {
@@ -362,11 +364,8 @@ class SidewalkTable_Spec extends FunSuite with BeforeAndAfter {
     assert(results.size == 3)
     assert(results.head.TaskPanoramaId == "NULL")
     assert(results.head.NoLabel == 0)
-
-
-
   }
-  // Test by Akash Magoon 11/21/2014
+
   test("Query LabelConfidenceScores works") {
     session.withTransaction {
       createSchema()
