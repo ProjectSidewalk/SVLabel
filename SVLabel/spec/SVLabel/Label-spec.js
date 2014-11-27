@@ -90,7 +90,7 @@ describe("The Label module's basic API", function () {
 
   // Todo. Alex. Please write tests for this.
   describe("Test getLabelId", function () {
-    it("Label ID should be 1 and then 2", function(){
+    it("Label ID should be 1", function(){
           expect(label.getLabelId()).toBe(1);
     })
   });
