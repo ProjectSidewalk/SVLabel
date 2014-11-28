@@ -35,8 +35,3 @@ class Assignments(tag: Tag)
   def * = (AssignmentId, AmazonTurkerId, AmazonHitId, AmazonAssignmentId, InterfaceType, InterfaceVersion, Completed,
     NeedQualification, TaskDescription, DatetimeInserted) <> (Assignment.tupled, Assignment.unapply _)
 }
-  // Every table needs a * projection with the same type as the table's type parameter
-//  def * : ProvenShape[(Int, String, String, String, String, String, Int, Int, String, String)] =
-//    (AssignmentId, AmazonTurkerId, AmazonHitId, AmazonAssignmentId, InterfaceType, InterfaceVersion, Completed,
-//      NeedQualification, TaskDescription, DatetimeInserted)
-//}
