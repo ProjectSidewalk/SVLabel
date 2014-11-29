@@ -47,11 +47,11 @@ function getLabelCursorImagePath() {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            cursorImagePath : 'public/img/cursors/Cursor_Pen.png'
+            cursorImagePath : 'img/cursors/pen.png'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            cursorImagePath : 'public/img/cursors/Cursor_Pen.png'
+            cursorImagePath : 'img/cursors/pen.png'
         }
     }
 }

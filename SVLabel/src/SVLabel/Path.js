@@ -56,45 +56,8 @@ function Path (points, params) {
         properties.originalStrokeStyle = properties.strokeStyle;
     }
 
-    function getBoundingBox() {
-        // This function checks if a mouse cursor is on any of a points and return
-        var j;
-        var len;
-        var canvasCoords;
-        var pov = oPublic.getPOV();
-        var xMax = -1;
-        var xMin = 1000000;
-        var yMax = -1;
-        var yMin = 1000000;
-        //
-        // Check on points
-        canvasCoords = getCanvasCoordinates(pov);
-        len = canvasCoords.length;
-        for (j = 0; j < len; j += 1) {
-            var coord = canvasCoords[j];
-            if (coord.x < xMin) {
-                xMin = coord.x;
-            }
-            if (coord.x > xMax) {
-                xMax = coord.x;
-            }
-            if (coord.y < yMin) {
-                yMin = coord.y;
-            }
-            if (coord.y > yMax) {
-                yMax = coord.y;
-            }
-        }
-        return {
-            x: xMin,
-            y: yMin,
-            width: xMax - xMin,
-            height: yMax - yMin
-        };
-    }
-
     function getPOV(){
-        return points[0].getPOV();
+      return points[0].getPOV();
     }
     function getLineWidth () {
       // return line width
@@ -106,79 +69,119 @@ function Path (points, params) {
     }
 
     function setFill(fill) {
-        properties.fillStyle = fill;
+      properties.fillStyle = fill;
     }
 
     function getBoundingBox() {
-        // this method returns a bounding box in terms of svImage coordinates.
-        var i;
-        var coord;
-        var coordinates = getImageCoordinates();
-        var len = coordinates.length;
-        var xMax = -1;
-        var xMin = 1000000;
-        var yMax = -1000000;
-        var yMin = 1000000;
-        var boundary = false;
+      // This function checks if a mouse cursor is on any of a points and return
+      var j;
+      var len;
+      var canvasCoords;
+      var pov = getPOV();
+      var xMax = -1;
+      var xMin = 1000000;
+      var yMax = -1;
+      var yMin = 1000000;
 
-        //
-        // Check if thie is an boundary case
-        for (i = 0; i < len; i++) {
-            coord = coordinates[i];
-            if (coord.x < xMin) {
-                xMin = coord.x;
-            }
-            if (coord.x > xMax) {
-                xMax = coord.x;
-            }
-            if (coord.y < yMin) {
-                yMin = coord.y;
-            }
-            if (coord.y > yMax) {
-                yMax = coord.y;
-            }
+      //
+      // Check on points
+      canvasCoords = getCanvasCoordinates(pov);
+      len = canvasCoords.length;
+
+      for (j = 0; j < len; j += 1) {
+        var coord = canvasCoords[j];
+
+        if (coord.x < xMin) {
+          xMin = coord.x;
         }
-
-        if (xMax - xMin > 5000) {
-            boundary = true;
-            xMax = -1;
-            xMin = 1000000;
-
-            for (i = 0; i < len; i++) {
-                coord = coordinates[i];
-                if (coord.x > 6000) {
-                    if (coord.x < xMin) {
-                        xMin = coord.x;
-                    }
-                } else {
-                    if (coord.x > xMax){
-                        xMax = coord.x;
-                    }
-                }
-            }
+        if (coord.x > xMax) {
+          xMax = coord.x;
         }
-
-        //
-        // If the path is on boundary, swap xMax and xMin.
-        if (boundary) {
-            return {
-                x: xMin,
-                y: yMin,
-                width: (svw.svImageWidth - xMin) + xMax,
-                height: yMax - yMin,
-                boundary: true
-            };
-        } else {
-            return {
-                x: xMin,
-                y: yMin,
-                width: xMax - xMin,
-                height: yMax - yMin,
-                boundary: false
-            };
+        if (coord.y < yMin) {
+          yMin = coord.y;
         }
+        if (coord.y > yMax) {
+          yMax = coord.y;
+        }
+      }
+
+      return {
+        x: xMin,
+        y: yMin,
+        width: xMax - xMin,
+        height: yMax - yMin
+      };
     }
 
+    function getSvImageBoundingBox() {
+      // this method returns a bounding box in terms of svImage coordinates.
+      var i;
+      var coord;
+      var coordinates = getImageCoordinates();
+      var len = coordinates.length;
+      var xMax = -1;
+      var xMin = 1000000;
+      var yMax = -1000000;
+      var yMin = 1000000;
+      var boundary = false;
+
+      //
+      // Check if thie is an boundary case
+      for (i = 0; i < len; i++) {
+        coord = coordinates[i];
+        if (coord.x < xMin) {
+          xMin = coord.x;
+        }
+        if (coord.x > xMax) {
+          xMax = coord.x;
+        }
+        if (coord.y < yMin) {
+          yMin = coord.y;
+        }
+        if (coord.y > yMax) {
+          yMax = coord.y;
+        }
+      }
+
+      if (xMax - xMin > 5000) {
+        boundary = true;
+        xMax = -1;
+        xMin = 1000000;
+
+        for (i = 0; i < len; i++) {
+          coord = coordinates[i];
+          if (coord.x > 6000) {
+            if (coord.x < xMin) {
+              xMin = coord.x;
+            }
+          } else {
+            if (coord.x > xMax){
+              xMax = coord.x;
+            }
+          }
+        }
+      }
+
+      //
+      // If the path is on boundary, swap xMax and xMin.
+      if (boundary) {
+        return {
+          x: xMin,
+          y: yMin,
+          width: (svw.svImageWidth - xMin) + xMax,
+          height: yMax - yMin,
+          boundary: true
+        }
+      } else {
+        return {
+          x: xMin,
+          y: yMin,
+          width: xMax - xMin,
+          height: yMax - yMin,
+          boundary: false
+        }
+      }
+    }
 
     function getCanvasCoordinates (pov) {
         // Get canvas coordinates of points that constitute the path.
