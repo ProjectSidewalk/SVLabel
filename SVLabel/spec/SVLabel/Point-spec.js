@@ -27,7 +27,6 @@ describe("The Point module's basic API", function () {
       expect(p2.getCanvasX()).toBe(1);
     });
 
-    // Todo for Alex
     it("should initialize canvas y-coordinate to 0", function () {
       expect(p1.getCanvasY()).toBe(0);
     });
@@ -40,10 +39,7 @@ describe("The Point module's basic API", function () {
     it("should initialize canvas y-coordinate to 0", function () {
       expect(p3.getCanvasY()).toBe(1);
     });
-
   });
-
-
 });
 
 describe("The Point module's constructor", function () {

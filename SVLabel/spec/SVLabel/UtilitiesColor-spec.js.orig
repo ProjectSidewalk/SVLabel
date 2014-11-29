@@ -6,7 +6,10 @@
 describe("The UtilitiesColor", function () {
   describe("RGBToRGBA", function () {
     var rgb = "rgb(255,255,255)";
+<<<<<<< HEAD
+=======
     var rgbnull = "";
+>>>>>>> master
     it("should convert rgb to RGBA", function () {
       expect(svw.util.color.RGBToRGBA(rgb, 0.5)).toBe('rgba(255,255,255,0.5)');
       expect(svw.util.color.RGBToRGBA(rgb, 0.5)).not.toBe('rgba(0,0,0,0.5)');
