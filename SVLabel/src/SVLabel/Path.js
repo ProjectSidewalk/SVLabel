@@ -103,13 +103,6 @@ function Path (points, params) {
     function getFill() {
       // get fill
       return properties.fillStyle;
-<<<<<<< HEAD
-    }
-
-    function setFill(fill) {
-        properties.fillStyle = fill;
-=======
->>>>>>> master
     }
 
     function setFill(fill) {
@@ -241,11 +234,7 @@ function Path (points, params) {
 
     function getPoints() {
       // return point objects in this path
-<<<<<<< HEAD
-=======
-      console.log(properties.numPoints);
->>>>>>> master
-      return properties.numPoints;
+      // Todo
     }
 
     function renderBoundingBox (ctx) {
@@ -304,10 +293,6 @@ function Path (points, params) {
         return properties.fillStyle;
     };
 
-    // oPublic.getPoints = function () {
-    //   // return points in this path
-    //   return getPoints();
-    // }
 
     oPublic.getSvImageBoundingBox = function () {
         // Get a boudning box
@@ -543,6 +528,7 @@ function Path (points, params) {
         properties.strokeStyle = properties.originalStrokeStyle;
         return this;
     };
+
     oPublic.setFill = function(fill) {
         // console.log(fill[1]);
         // console.log(fill.substring(4, fill.length-1));
@@ -551,13 +537,10 @@ function Path (points, params) {
         }
         else{
             setFill('rgba'+fill.substring(3,fill.length-1)+',0.5)');
-        } 
+        }
         return this;
-<<<<<<< HEAD
     };
-=======
-    }
->>>>>>> master
+
     oPublic.setBelongsTo = function (obj) {
         belongsTo = obj;
         return this;

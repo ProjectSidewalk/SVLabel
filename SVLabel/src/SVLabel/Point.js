@@ -361,12 +361,8 @@ svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     var y;
     var zoom = pov.zoom;
     var svImageWidth = svw.svImageWidth * svw.zoomFactor[zoom];
-<<<<<<< HEAD
     var svImageHeight = svw.svImageHeight * svw.zoomFactor[zoom];
-=======
-    var svImageHeight= svw.svImageHeight * svw.zoomFactor[zoom];
 
->>>>>>> master
     xIn = xIn * svw.zoomFactor[zoom];
     yIn = yIn * svw.zoomFactor[zoom];
 
