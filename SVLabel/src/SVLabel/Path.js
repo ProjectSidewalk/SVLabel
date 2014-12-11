@@ -231,11 +231,12 @@ function Path (points, params) {
         var coords = [];
         for (i = 0; i < len; i += 1) {
             coords.push(oPublic.points[i].getGSVImageCoordinate());
-        }
+                }
         return coords;
     }
 
     function getPoints() {
+        return points;
       // return point objects in this path
       // Todo
     }

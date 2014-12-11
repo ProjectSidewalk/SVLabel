@@ -15,9 +15,22 @@ describe("The Path module's basic API", function () {
   var p1 = new Point(0, 0, pov, param);
   var p2 = new Point(9, 0, pov, param);
   var p3 = new Point(5, 5, pov, param);
+  var points = [p1, p2, p3];
 
   var path = new Path([p1, p2, p3], {});
+  describe("Path constructor API", function(){
+    it("this Path should return pov of the first point", function() {
+      expect(path.getPOV()).toBe(pov);
+    });
+    it("this should return the point objects in this path", function() {
+      expect(path.getPoints()).toEqual(points);
+    });
+    it("should return imagecoordinates", function() {
+      imagecoordinates = [p1.getGSVImageCoordinate(), p2.getGSVImageCoordinate(), p3.getGSVImageCoordinate()];
+      expect(path.getImageCoordinates()).toEqual(imagecoordinates);
+    });
 
+  });
   describe("Fill coordinate API", function () {
     it("this Path should have three points", function () {
       expect(path.getPoints().length).toBe(3);

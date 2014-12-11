@@ -71,5 +71,9 @@ describe("The Point module's constructor", function () {
   it("should initialize fillStyle with 'rgba(0,0,0,0.5)'", function () {
     expect(p3.getFill()).toBe('rgba(0,0,0,0.5)');
   });
+  it("should get the correct pov", function() {
+    expect(p1.getPOV()).toBe(pov);
+    expect(p1.getPOV()).toBe(p2.getPOV());
+  });
 
 });
