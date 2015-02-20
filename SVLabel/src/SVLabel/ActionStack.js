@@ -171,6 +171,12 @@ function ActionStack (params) {
         }
     };
 
+    oPublic.size = function () {
+        // return the size of the stack
+
+        return actionStack.length;
+    };
+
 
     oPublic.undo = function () {
         // Undo an action
