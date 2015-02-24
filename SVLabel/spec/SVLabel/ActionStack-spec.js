@@ -65,14 +65,20 @@ describe("The ActionStack module's basic API", function () {
   });  
 
   describe("Test pop", function () {
-    it("First one popped should be label2", function() {
-      console.log(stack.pop()); 
-      expect(stack.pop().param.panoramaLng).toBe(latlng2.lng);
+    it("Calling pop should only leave one item left", function() {
+      stack.pop();
+      expect(stack.size()).toBe(1);
     })
   });
 
   describe("Test redo", function () {
-
+      it("Calling redo should undo push and pop actions", function() {
+        stack.pop();
+        expect(stack.size()).toBe(0);
+        stack.enableRedo();
+        stack.redo();
+        expect(stack.size()).toBe(1);
+      })
   });
 
   describe("Test undo", function () {
