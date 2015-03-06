@@ -73,19 +73,15 @@ describe("The ActionStack module's basic API", function () {
 
   describe("Test redo", function () {
       it("Calling redo should undo push and pop actions", function() {
-        stack.pop();
-        expect(stack.size()).toBe(0);
-        stack.enableRedo();
-        stack.redo();
-        expect(stack.size()).toBe(1);
+        
       })
   });
 
   describe("Test undo", function () {
-
-  });
-
-  describe("Test redo", function () {
-
+      it("Calling undo should undo previous action", function() {
+        stack.push('addLabel', label1);
+        stack.undo();
+        expect(stack.size()).toBe(0);
+      })
   });
 });
