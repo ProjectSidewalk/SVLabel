@@ -188,6 +188,9 @@ function ActionStack (params) {
     };
 
     oPublic.getStatus = function(key) {
+        if (!(key in status)) {
+            console.warn("You have passed an invalid key for status.")
+        }
         return status[key];
     }
 
