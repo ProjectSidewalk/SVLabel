@@ -142,7 +142,10 @@ function Keyboard ($) {
     };
 
     oPublic.getStatus = function (key) {
-      return status[key];
+        if (!(key in status)) {
+          console.warn("You have passed an invalid key for status.")
+        }
+        return status[key];
     };
 
     oPublic.isShiftDown = function () {
