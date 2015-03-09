@@ -175,7 +175,7 @@ function ActionStack (params) {
                 }
                 status.actionStackCursor += 1;
             }
-            if ('cavnas' in svw) {
+            if ('canvas' in svw) {
               svw.canvas.clear().render2();
             }
         }
@@ -187,6 +187,9 @@ function ActionStack (params) {
         return actionStack.length;
     };
 
+    oPublic.getStatus = function() {
+        return status;
+    }
 
     oPublic.undo = function () {
         // Undo an action

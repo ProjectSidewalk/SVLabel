@@ -68,20 +68,34 @@ describe("The ActionStack module's basic API", function () {
     it("Calling pop should only leave one item left", function() {
       stack.pop();
       expect(stack.size()).toBe(1);
+      stack.pop();
+      expect(stack.size()).toBe(0);
+      stack.pop();
+      expect(stack.size()).toBe(0);
+      
     })
   });
 
   describe("Test redo", function () {
-      it("Calling redo should undo push and pop actions", function() {
-        
+      it("Calling redo should redo addLabel actions", function() {
+        stack.push('addLabel', label1);
+        stack.push('addLabel', label2);
+        expect(stack.getStatus().actionStackCursor).toBe(2);
+        stack.undo();
+        expect(stack.getStatus().actionStackCursor).toBe(1);
+        stack.redo();
+        expect(stack.getStatus().actionStackCursor).toBe(2);
       })
   });
 
   describe("Test undo", function () {
-      it("Calling undo should undo previous action", function() {
+      it("Calling undo should undo addLabel actions", function() {
         stack.push('addLabel', label1);
         stack.undo();
-        expect(stack.size()).toBe(0);
+        expect(label1.getstatus().deleted).toBe(true);
+        stack.redo();
+        expect(label1.getstatus().deleted).toBe(false);
+
       })
   });
 });
