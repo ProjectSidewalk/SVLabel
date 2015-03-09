@@ -61,6 +61,11 @@ describe("The ActionStack module's basic API", function () {
       stack.push('addLabel', label1);
       stack.push('addLabel', label2);
       expect(stack.size()).toBe(2);
+    });
+    it("Stack should be able to accept invalid labels", function() {
+      stack.push('addLabel', undefined);
+      expect(stack.size()).toBe(3);
+      stack.pop();
     })
   });  
 
@@ -77,6 +82,13 @@ describe("The ActionStack module's basic API", function () {
   });
 
   describe("Test redo", function () {
+      it("Calling redo before undo should not change the actionStackCursor", function() {
+        stack.push('addLabel', label1);
+        expect(stack.getStatus('actionStackCursor')).toBe(1);
+        stack.redo();
+        expect(stack.getStatus('actionStackCursor')).toBe(1);
+        stack.pop();
+      });
       it("Calling redo should redo addLabel actions", function() {
         stack.push('addLabel', label1);
         stack.push('addLabel', label2);
