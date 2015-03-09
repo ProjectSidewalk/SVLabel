@@ -128,7 +128,7 @@ function Tracker () {
         return actions;
     };
 
-    oPublic.availableActionTypes = function () {
+    oPublic.getAvailableActionTypes = function () {
       return [];
     };
 
