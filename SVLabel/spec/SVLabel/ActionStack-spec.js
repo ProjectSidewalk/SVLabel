@@ -80,11 +80,11 @@ describe("The ActionStack module's basic API", function () {
       it("Calling redo should redo addLabel actions", function() {
         stack.push('addLabel', label1);
         stack.push('addLabel', label2);
-        expect(stack.getStatus().actionStackCursor).toBe(2);
+        expect(stack.getStatus('actionStackCursor')).toBe(2);
         stack.undo();
-        expect(stack.getStatus().actionStackCursor).toBe(1);
+        expect(stack.getStatus('actionStackCursor')).toBe(1);
         stack.redo();
-        expect(stack.getStatus().actionStackCursor).toBe(2);
+        expect(stack.getStatus('actionStackCursor')).toBe(2);
       })
   });
 
@@ -92,9 +92,9 @@ describe("The ActionStack module's basic API", function () {
       it("Calling undo should undo addLabel actions", function() {
         stack.push('addLabel', label1);
         stack.undo();
-        expect(label1.getstatus().deleted).toBe(true);
+        expect(label1.getstatus('deleted')).toBe(true);
         stack.redo();
-        expect(label1.getstatus().deleted).toBe(false);
+        expect(label1.getstatus('deleted')).toBe(false);
 
       })
   });

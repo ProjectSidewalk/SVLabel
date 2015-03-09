@@ -187,8 +187,8 @@ function ActionStack (params) {
         return actionStack.length;
     };
 
-    oPublic.getStatus = function() {
-        return status;
+    oPublic.getStatus = function(key) {
+        return status[key];
     }
 
     oPublic.undo = function () {

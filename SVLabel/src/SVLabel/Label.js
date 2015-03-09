@@ -463,8 +463,8 @@ function Label (pathIn, params) {
         return properties[propName];
     };
 
-    oPublic.getstatus = function () {
-        return status;
+    oPublic.getstatus = function (key) {
+        return status[key];
     }
     
     oPublic.getVisibility = function () {
