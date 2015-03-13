@@ -68,6 +68,11 @@ describe("The ActionStack module's basic API", function () {
       stack.push('addLabel', undefined);
       expect(stack.size()).toBe(3);
       stack.pop();
+    });
+    it("Stack should work with deleteLabel", function() {
+      stack.push('deleteLabel', undefined);
+      expect(stack.size()).toBe(3);
+      stack.pop();
     })
   });  
 
@@ -99,7 +104,7 @@ describe("The ActionStack module's basic API", function () {
         expect(stack.getStatus('actionStackCursor')).toBe(1);
         stack.redo();
         expect(stack.getStatus('actionStackCursor')).toBe(2);
-      })
+      });
   });
 
   describe("Test undo", function () {
@@ -109,8 +114,15 @@ describe("The ActionStack module's basic API", function () {
         expect(label1.getstatus('deleted')).toBe(true);
         stack.redo();
         expect(label1.getstatus('deleted')).toBe(false);
-
-      })
+        stack.pop();
+      });
+      it("Calling undo while actionStackCursor is 0 should work", function() {
+        stack.pop();
+        stack.pop();
+        expect(stack.getStatus('actionStackCursor')).toBe(0);
+        stack.undo();
+        expect(stack.getStatus('actionStackCursor')).toBe(0);
+      });
   });
 
   describe("Test lockDisableRedo", function () {
