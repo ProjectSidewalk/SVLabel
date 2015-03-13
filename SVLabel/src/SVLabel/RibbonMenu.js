@@ -11,7 +11,7 @@ var svw = svw || {};
 ////////////////////////////////////////////////////////////////////////////////
 // RibbonMenu Class Constructor
 ////////////////////////////////////////////////////////////////////////////////
-function RibbonMenu (params) {
+function RibbonMenu ($, params) {
     var oPublic = {className: 'RibbonMenu'};
     var properties = {
         borderWidth : "3px",
@@ -317,19 +317,13 @@ function RibbonMenu (params) {
     };
 
 
-    oPublic.getStatus = function(name) {
-        try {
-            if (name in status) {
-                return status[name];
+    oPublic.getStatus = function(key) {
+            if (key in status) {
+                return status[key];
             } else {
-                var errMsg = 'You cannot access a property "' + name + '".';
-                throw errMsg;
+              console.warn(oPublic.className, 'You cannot access a property "' + key + '".');
+              return undefined;
             }
-        } catch (e) {
-            console.error(oPublic.className, e);
-            return false;
-        }
-
     };
 
     oPublic.setAllowedMode = function (mode) {
