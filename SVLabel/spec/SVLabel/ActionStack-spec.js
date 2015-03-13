@@ -53,6 +53,8 @@ describe("The ActionStack module's basic API", function () {
     it("Stack size should be 0", function() {
       stack.pop();
       expect(0).toBe(stack.size());
+      stack.pop();
+      expect(0).toBe(stack.size());
     })
   })
 
@@ -70,7 +72,7 @@ describe("The ActionStack module's basic API", function () {
   });  
 
   describe("Test pop", function () {
-    it("Calling pop should only leave one item left", function() {
+    it("Calling pop on empty stack should still be 0", function() {
       stack.pop();
       expect(stack.size()).toBe(1);
       stack.pop();
