@@ -264,6 +264,7 @@ function Label (pathIn, params) {
     ////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////
+
     oPublic.blink = function (numberOfBlinks, fade) {
         // Blink (highlight and fade) the color of this label. If fade is true, turn the label into gray;
         if (!numberOfBlinks) {
@@ -462,6 +463,10 @@ function Label (pathIn, params) {
         return properties[propName];
     };
 
+    oPublic.getstatus = function (key) {
+        return status[key];
+    }
+    
     oPublic.getVisibility = function () {
         return status.visibility;
     };
