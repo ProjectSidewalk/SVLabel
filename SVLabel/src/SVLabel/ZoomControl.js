@@ -178,6 +178,10 @@ function ZoomControl (param, $) {
         return this;
     };
 
+    oPublic.getStatus = function () {
+      return false; // Todo
+    };
+
     oPublic.lockDisableZoomIn = function () {
         // Lock zoom in
         lock.disableZoomIn = true;
