@@ -2,8 +2,9 @@ describe("Tests for the Tracker module.", function () {
   var tracker = new Tracker();
   describe("The getActions method", function () {
     it("should return the correct number of actions", function () {
-      expect(1).toBe(0);
+      expect(tracker.getActions().length).toBe(0);
     });
+
 
   });
 
@@ -11,7 +12,7 @@ describe("Tests for the Tracker module.", function () {
 
     it("should return the list of availableActionTypes", function () {
       // Note: availableActionTypes.length == 107
-      expect(tracker.getAvailableActionTypes()).toBe(0);
+      expect(tracker.getAvailableActionTypes().length).toBe(0);
     });
   });
 

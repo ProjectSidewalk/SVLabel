@@ -129,7 +129,8 @@ function Tracker () {
     };
 
     oPublic.getAvailableActionTypes = function () {
-      return [];
+      var tempArray = availableActionTypes.slice(0);
+      return tempArray;
     };
 
     oPublic.push = function (action, param) {
