@@ -111,6 +111,12 @@ function ActionStack (params) {
         }
     };
 
+    oPublic.getStatus = function(key) {
+        if (!(key in status)) {
+            console.warn("You have passed an invalid key for status.")
+        }
+        return status[key];
+    };
 
     oPublic.lockDisableRedo = function () {
         lock.disableRedo = true;
@@ -187,13 +193,6 @@ function ActionStack (params) {
         return actionStack.length;
     };
 
-    oPublic.getStatus = function(key) {
-        if (!(key in status)) {
-            console.warn("You have passed an invalid key for status.")
-        }
-        return status[key];
-    }
-
     oPublic.undo = function () {
         // Undo an action
         if (!status.disableUndo) {
@@ -234,6 +233,13 @@ function ActionStack (params) {
         return this;
     };
 
+    oPublic.getLock = function(key) {
+        if (!(key in lock)) {
+          console.warn("You have passed an invalid key for status.")
+        }
+        return lock[key];
+    }        
+
     oPublic.updateOpacity = function () {
         // Change opacity
         if (status.actionStackCursor < actionStack.length) {
@@ -248,7 +254,6 @@ function ActionStack (params) {
             $buttonUndo.css('opacity', 0.5);
         }
 
-        //
         // if the status is set to disabled, then set the opacity of buttons to 0.5 anyway.
         if (status.disableUndo) {
             $buttonUndo.css('opacity', 0.5);

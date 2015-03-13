@@ -110,4 +110,97 @@ describe("The ActionStack module's basic API", function () {
 
       })
   });
+
+  describe("Test lockDisableRedo", function () {
+    it("Calling lockDisableRedo should set lock.disableRedo to true", function() {
+      stack.lockDisableRedo();
+      expect(stack.getLock('disableRedo')).toBe(true);
+    });
+  });
+
+  describe("Test lockDisableUndo", function () {
+    it("Calling lockDisableUndo should set lock.disableUndo to true", function() {
+      stack.lockDisableUndo();
+      expect(stack.getLock('disableUndo')).toBe(true);
+    });
+  });
+
+  describe("Test unlockDisableUndo", function () {
+    it("Calling unlockDisableUndo should set lock.disableUndo to false", function() {
+      stack.unlockDisableUndo();
+      expect(stack.getLock('disableUndo')).toBe(false);
+    });
+  });
+
+  describe("Test unlockDisableRedo", function () {
+    it("Calling unlockDisableRedo should set lock.disableRedo to false", function() {
+      stack.unlockDisableRedo();
+      expect(stack.getLock('disableRedo')).toBe(false);
+    });
+  });
+
+  describe("Test disableRedo", function() {
+    it("Calling disableRedo should set status.disableRedo to false", function() {
+      stack.disableRedo();
+      expect(stack.getStatus('disableRedo')).toBe(true);
+    });
+    it("Calling disableRedo while lock.disableRedo is true should not change it", function() {
+      stack.lockDisableRedo();
+      expect(stack.getStatus('disableRedo')).toBe(true);
+      expect(stack.getLock('disableRedo')).toBe(true);
+      stack.enableRedo();
+      expect(stack.getStatus('disableRedo')).not.toBe(false);
+      stack.unlockDisableRedo();
+    });
+  });
+
+  describe("Test enableRedo", function() {
+    it("Calling enableRedo should set status.enableRedo to false", function() {
+      stack.enableRedo();
+      expect(stack.getStatus('disableRedo')).toBe(false);
+    });
+    it("Calling enableRedo while lock.enableRedo is true should not change it", function() {
+      stack.lockDisableRedo();
+      expect(stack.getStatus('disableRedo')).toBe(false);
+      expect(stack.getLock('disableRedo')).toBe(true);
+      stack.disableRedo();
+      expect(stack.getStatus('disableRedo')).not.toBe(true);
+      stack.unlockDisableRedo();
+    });
+  });
+
+  describe("Test disableUndo", function() {
+    it("Calling disableUndo should set status.disableUndo to false", function() {
+      stack.disableUndo();
+      expect(stack.getStatus('disableUndo')).toBe(true);
+    });
+    it("Calling disableUndo while lock.disableUndo is true should not change it", function() {
+      stack.lockDisableUndo();
+      expect(stack.getStatus('disableUndo')).toBe(true);
+      expect(stack.getLock('disableUndo')).toBe(true);
+      stack.disableUndo();
+      expect(stack.getStatus('disableUndo')).not.toBe(false);
+      stack.unlockDisableUndo();
+    });
+  });
+  
+  describe("Test enableUndo", function() {
+    it("Calling enableUndo should set status.enableUndo to false", function() {
+      stack.enableUndo();
+      expect(stack.getStatus('disableUndo')).toBe(false);
+    });
+    it("Calling enableUndo while lock.disableRedo is true should not change it", function() {
+      stack.lockDisableUndo();
+      expect(stack.getStatus('disableUndo')).toBe(false);
+      expect(stack.getLock('disableUndo')).toBe(true);
+      stack.enableUndo();
+      expect(stack.getStatus('disableUndo')).not.toBe(true);
+      stack.unlockDisableUndo();
+    });
+  });
+
+
+
+
+
 });
