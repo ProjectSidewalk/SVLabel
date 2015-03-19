@@ -35,18 +35,25 @@ function ZoomControl (param, $) {
     function _init (param) {
         // Initialization function
 
-        $buttonZoomIn = $(param.domIds.zoomInButton);
-        $buttonZoomOut = $(param.domIds.zoomOutButton);
+        if ('domIds' in param) {
+          $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
+          $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
+        }
+
 
         // Attach listeners to buttons
-        $buttonZoomIn.bind('click', buttonZoomInClick);
-        $buttonZoomOut.bind('click', buttonZoomOutClick);
+        if (buttonZoomIn && buttonZoomOut) {
+          $buttonZoomIn.bind('click', buttonZoomInClick);
+          $buttonZoomOut.bind('click', buttonZoomOutClick);
+        }
     }
 
 
     function buttonZoomInClick () {
         // This is a callback function for zoom-in button. This function increments a sv zoom level.
-        svw.tracker.push('Click_ZoomIn');
+        if ('tracker' in svw) {
+          svw.tracker.push('Click_ZoomIn');
+        }
 
         if (!status.disableZoomIn) {
             var pov = svw.panorama.getPov();
@@ -57,7 +64,10 @@ function ZoomControl (param, $) {
 
     function buttonZoomOutClick () {
         // This is a callback function for zoom-out button. This function decrements a sv zoom level.
-        svw.tracker.push('Click_ZoomOut');
+        if ('traker' in svw) {
+          svw.tracker.push('Click_ZoomOut');
+        }
+
         if (!status.disableZoomOut) {
             var pov = svw.panorama.getPov();
             setZoom(pov.zoom - 1);
@@ -71,7 +81,9 @@ function ZoomControl (param, $) {
 
             //
             // Cancel drawing when zooming in or out.
-            svw.canvas.cancelDrawing();
+            if ('canvas' in svw) {
+              svw.canvas.cancelDrawing();
+            }
 
             if ('panorama' in svw) {
                 var currentPov = svw.panorama.getPov();
@@ -123,7 +135,9 @@ function ZoomControl (param, $) {
 
         //
         // Cancel drawing when zooming in or out.
-        svw.canvas.cancelDrawing();
+        if ('canvas' in svw) {
+          svw.canvas.cancelDrawing();
+        }
 
         //
         // Set the zoom level and change the panorama properties.
@@ -139,6 +153,7 @@ function ZoomControl (param, $) {
         svw.panorama.setZoom(zoomLevel);
         return zoomLevel;
     }
+    
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
