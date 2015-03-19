@@ -1,4 +1,4 @@
-/**
+    /**
  * Created with JetBrains PhpStorm.
  * User: kotarohara
  * Date: 2/25/13
@@ -194,7 +194,13 @@ function ZoomControl (param, $) {
     };
 
     oPublic.getStatus = function () {
-      return false; // Todo
+        if (name in status) {
+            return status[name];
+        } else {
+            var errMsg = 'You cannot access a property "' + name + '".';
+            throw errMsg;
+        }
+
     };
 
     oPublic.lockDisableZoomIn = function () {
