@@ -42,7 +42,7 @@ function ZoomControl (param, $) {
 
 
         // Attach listeners to buttons
-        if (buttonZoomIn && buttonZoomOut) {
+        if ($buttonZoomIn && $buttonZoomOut) {
           $buttonZoomIn.bind('click', buttonZoomInClick);
           $buttonZoomOut.bind('click', buttonZoomOutClick);
         }
@@ -193,8 +193,8 @@ function ZoomControl (param, $) {
         return this;
     };
 
-    oPublic.getStatus = function () {
-        if (name in status) {
+    oPublic.getStatus = function (name) {
+        if (name in status) { 
             return status[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';

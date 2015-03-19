@@ -3,7 +3,7 @@ describe("Tests for the ZoomControl.", function () {
   var zoom = new ZoomControl(jQuery);
   describe("The method getStatus", function () {
     it("should warn when an illegal key is passed.", function () {
-    	expect(false).toBe(false);
+    	expect(zoom.getStatus('status', 'disableZoomIn')).toBe(false);
     });
   });
   
