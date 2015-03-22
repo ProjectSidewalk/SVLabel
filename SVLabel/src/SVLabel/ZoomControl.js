@@ -78,14 +78,13 @@ function ZoomControl (param, $) {
     function pointZoomIn (x, y) {
         // This method takes a (x, y) canvas point and sets a zoom level.
         if (!status.disableZoomIn) {
-
-            //
             // Cancel drawing when zooming in or out.
             if ('canvas' in svw) {
               svw.canvas.cancelDrawing();
             }
-
+            console.log("hhd");
             if ('panorama' in svw) {
+                console.log("hi");
                 var currentPov = svw.panorama.getPov();
                 var currentZoomLevel = currentPov.zoom;
 
@@ -161,7 +160,9 @@ function ZoomControl (param, $) {
         // Enable zoom in.
         if (!lock.disableZoomIn) {
             status.disableZoomIn = true;
-            $buttonZoomIn.css('opacity', 0.5);
+            if ($buttonZoomIn) {
+                $buttonZoomIn.css('opacity', 0.5);
+            }  
         }
         return this;
     }
@@ -170,7 +171,9 @@ function ZoomControl (param, $) {
         // Enable zoom out.
         if (!lock.disableZoomOut) {
             status.disableZoomOut = true;
-            $buttonZoomOut.css('opacity', 0.5);
+            if ($buttonZoomOut) {
+                $buttonZoomOut.css('opacity', 0.5);
+            }
         }
         return this;
     };
@@ -179,7 +182,9 @@ function ZoomControl (param, $) {
         // Enable zoom in.
         if (!lock.disableZoomIn) {
             status.disableZoomIn = false;
-            $buttonZoomIn.css('opacity', 1);
+            if ($buttonZoomIn) {
+                $buttonZoomIn.css('opacity', 1);
+            }  
         }
         return this;
     }
@@ -188,10 +193,21 @@ function ZoomControl (param, $) {
         // Enable zoom out.
         if (!lock.disableZoomOut) {
             status.disableZoomOut = false;
-            $buttonZoomOut.css('opacity', 1);
+            if ($buttonZoomOut) {
+                $buttonZoomOut.css('opacity', 1);
+            }
         }
         return this;
     };
+
+    oPublic.getLock = function (name) {
+        if (name in lock) { 
+            return lock[name];
+        } else {
+            var errMsg = 'You cannot access a property "' + name + '".';
+            throw errMsg;
+        }
+    }
 
     oPublic.getStatus = function (name) {
         if (name in status) { 
@@ -200,8 +216,16 @@ function ZoomControl (param, $) {
             var errMsg = 'You cannot access a property "' + name + '".';
             throw errMsg;
         }
+    }
 
-    };
+    oPublic.getProperties = function (name) {
+        if (name in properties) { 
+            return properties[name];
+        } else {
+            var errMsg = 'You cannot access a property "' + name + '".';
+            throw errMsg;
+        }   
+    }
 
     oPublic.lockDisableZoomIn = function () {
         // Lock zoom in
@@ -311,4 +335,4 @@ function ZoomControl (param, $) {
     _init(param);
 
     return oPublic;
-}
+};
