@@ -100,7 +100,7 @@ function RibbonMenu ($, params) {
 
             //
             // Whenever the ribbon menu is clicked, cancel drawing.
-            if (svw.canvas.isDrawing()) {
+            if (svw.canvas && svw.canvas.isDrawing()) {
                 svw.canvas.cancelDrawing();
             }
 
