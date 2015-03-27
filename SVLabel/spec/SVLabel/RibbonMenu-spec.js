@@ -36,7 +36,7 @@ describe("Tests for the RibbonMenu module.", function () {
     });
   });
 
-  describe("The lockDisableModeSwitch", function() {
+/*describe("The lockDisableModeSwitch", function() {
     it("should not allow you to disable or enable mode switch", function() {
       
     });
@@ -46,7 +46,7 @@ describe("Tests for the RibbonMenu module.", function () {
     it("should allow you to disable or enable mode switch", function() {
 
     });
-  });
+  });*/
 
   describe("The getStatus method", function () {
     it("should warn when an illegal key is passed.", function () {
