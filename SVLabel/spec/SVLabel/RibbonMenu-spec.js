@@ -39,8 +39,14 @@ describe("Tests for the RibbonMenu module.", function () {
   describe("The lockDisableModeSwitch", function() {
     it("should not allow you to disable or enable mode switch", function() {
       
-    })
-  })
+    });
+  });
+
+  describe("The unlockDisableModeSwitch", function() {
+    it("should allow you to disable or enable mode switch", function() {
+
+    });
+  });
 
   describe("The getStatus method", function () {
     it("should warn when an illegal key is passed.", function () {
@@ -51,14 +57,18 @@ describe("Tests for the RibbonMenu module.", function () {
     });
   });
 
-  describe("The modeSwitch method", function () {
+  describe("The modeSwitch method", function() {
     it("should switch the mode", function () {
       ribbon.modeSwitch('CurbRamp');
       expect(ribbon.getStatus('mode')).toBe('CurbRamp');
     });
   });
 
-  
+  describe("The setAllowedMode method", function() {
+    it("should set allowedMode to mode", function() {
+      ribbon.setAllowedMode('valid');
+      expect(ribbon.getStatus('allowedMode')).toBe('valid');  
+    });
 
-  // Continue...
+  });
 });
