@@ -453,6 +453,7 @@ function Path (points, params) {
     oPublic.render2 = function (ctx, pov) {
         return oPublic.render(pov, ctx);
     };
+
     oPublic.render = function (pov, ctx) {
         // This method renders a path.
         //
