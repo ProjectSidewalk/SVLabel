@@ -47,7 +47,9 @@ function ActionStack (params) {
 
     function buttonRedoClick () {
         if (!status.disableRedo) {
+          if ('tracker' in svw) {
             svw.tracker.push('Click_Redo');
+          }
             oPublic.redo();
         }
     }
@@ -55,7 +57,9 @@ function ActionStack (params) {
 
     function buttonUndoClick () {
         if (!status.disableUndo) {
+          if ('tracker' in svw) {
             svw.tracker.push('Click_Undo');
+          }
             oPublic.undo();
         }
     }
@@ -107,6 +111,12 @@ function ActionStack (params) {
         }
     };
 
+    oPublic.getStatus = function(key) {
+        if (!(key in status)) {
+            console.warn("You have passed an invalid key for status.")
+        }
+        return status[key];
+    };
 
     oPublic.lockDisableRedo = function () {
         lock.disableRedo = true;
@@ -158,19 +168,30 @@ function ActionStack (params) {
             if (actionStack.length > status.actionStackCursor) {
                 var actionItem = actionStack[status.actionStackCursor];
                 if (actionItem.action === 'addLabel') {
+                  if ('tracker' in svw) {
                     svw.tracker.push('Redo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  }
                     actionItem.label.setStatus('deleted', false);
                 } else if (actionItem.action === 'deleteLabel') {
+                  if ('tracker' in svw) {
                     svw.tracker.push('Redo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  }
                     actionItem.label.setStatus('deleted', true);
                     actionItem.label.setVisibility('hidden');
                 }
                 status.actionStackCursor += 1;
             }
-            svw.canvas.clear().render2();
+            if ('canvas' in svw) {
+              svw.canvas.clear().render2();
+            }
         }
     };
 
+    oPublic.size = function () {
+        // return the size of the stack
+
+        return actionStack.length;
+    };
 
     oPublic.undo = function () {
         // Undo an action
@@ -179,17 +200,24 @@ function ActionStack (params) {
             if(status.actionStackCursor >= 0) {
                 var actionItem = actionStack[status.actionStackCursor];
                 if (actionItem.action === 'addLabel') {
+                  if ('tracker' in svw) {
                     svw.tracker.push('Undo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  }
                     actionItem.label.setStatus('deleted', true);
                 } else if (actionItem.action === 'deleteLabel') {
+                  if ('tracker' in svw) {
                     svw.tracker.push('Undo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  }
                     actionItem.label.setStatus('deleted', false);
                     actionItem.label.setVisibility('visible');
                 }
             } else {
                 status.actionStackCursor = 0;
             }
-            svw.canvas.clear().render2();
+
+            if ('canvas' in svw) {
+              svw.canvas.clear().render2();
+            }
         }
     };
 
@@ -205,6 +233,13 @@ function ActionStack (params) {
         return this;
     };
 
+    oPublic.getLock = function(key) {
+        if (!(key in lock)) {
+          console.warn("You have passed an invalid key for status.")
+        }
+        return lock[key];
+    }        
+
     oPublic.updateOpacity = function () {
         // Change opacity
         if (status.actionStackCursor < actionStack.length) {
@@ -219,7 +254,6 @@ function ActionStack (params) {
             $buttonUndo.css('opacity', 0.5);
         }
 
-        //
         // if the status is set to disabled, then set the opacity of buttons to 0.5 anyway.
         if (status.disableUndo) {
             $buttonUndo.css('opacity', 0.5);

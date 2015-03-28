@@ -48,12 +48,7 @@ function Tracker () {
         'GoldenInsertion_Submit',
         'GoldenInsertion_ReviewLabels',
         'GoldenInsertion_ReviseFalseNegative',
-        'GoldenInsertion_ReviseFalsePositive'
-    ];
-
-    //
-    // The list of actions in onboardings and quick check
-    var availableOnboardingActionTypes = [
+        'GoldenInsertion_ReviseFalsePositive',
         'Onboarding1_Start',
         'Onboarding1_FirstCorner_IntroduceCurbRamps',
         'Onboarding1_FirstCorner_LabelTheFirstCurbRamps',
@@ -127,26 +122,21 @@ function Tracker () {
     var undefinedMsg = 'undefined';
 
     ////////////////////////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////////////////////////
-    function init() {
-
-    }
-
-
-    ////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////
     oPublic.getActions = function () {
         return actions;
     };
 
+    oPublic.getAvailableActionTypes = function () {
+      var tempArray = availableActionTypes.slice(0);
+      return tempArray;
+    };
 
     oPublic.push = function (action, param) {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
-        if (availableActionTypes.indexOf(action) === -1 &&
-            availableOnboardingActionTypes.indexOf(action) === -1) {
+        if (availableActionTypes.indexOf(action) === -1) {
             console.error('Unknown action: ' + action);
             return false;
         } else {
@@ -232,6 +222,5 @@ function Tracker () {
         }
     };
 
-    init();
     return oPublic;
 }
