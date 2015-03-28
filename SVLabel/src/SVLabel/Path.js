@@ -231,11 +231,12 @@ function Path (points, params) {
         var coords = [];
         for (i = 0; i < len; i += 1) {
             coords.push(oPublic.points[i].getGSVImageCoordinate());
-        }
+                }
         return coords;
     }
 
     function getPoints() {
+        return points;
       // return point objects in this path
       // Todo
     }
@@ -452,6 +453,7 @@ function Path (points, params) {
     oPublic.render2 = function (ctx, pov) {
         return oPublic.render(pov, ctx);
     };
+
     oPublic.render = function (pov, ctx) {
         // This method renders a path.
         //
