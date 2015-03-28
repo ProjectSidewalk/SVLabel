@@ -120,8 +120,6 @@ describe("Specs for the Canvas module.", function () {
     });
 
     it("should return currentLabel", function () {
-      expect(canvas.getStatus('currentLabel')).toBeNull();
-
       var label = new FakeLabel();
       canvas.setCurrentLabel(label);
       expect(canvas.getStatus('currentLabel')).toBe(label);
@@ -143,8 +141,106 @@ describe("Specs for the Canvas module.", function () {
   });
 
 
-  // Todo. continue from here. Mar 4, 2015.
   describe("The method isDrawing", function () {
+    it("should return the isDrawing status", function () {
+      canvas.setStatus("drawing", true);
+      expect(canvas.isDrawing()).toBeTruthy;
+      canvas.setStatus("drawing", false);
+      expect(canvas.isDrawing()).toBeFalsy();
+    });
+  });
 
+  describe("The method lockCurrentLabel", function () {
+    it("should set status.lockCurrentLabel to be true.", function () {
+      canvas.lockCurrentLabel();
+      expect(canvas.getStatus("lockCurrentLabel")).toBeTruthy();
+    });
+  });
+
+  describe("The method lockDisableLabelDelete", function () {
+    it("should set status.lockDisableLabelDelete to be true", function () {
+      canvas.lockDisableLabelDelete();
+      expect(canvas.getStatus("lockDisableLabelDelete")).toBeTruthy();
+    });
+  });
+
+  describe("The method lockDisableLabelEdit", function () {
+    it("should set status.lockDisableLabelDelete to be true", function () {
+      canvas.lockDisableLabelEdit();
+      expect(canvas.getStatus("lockDisableLabelEdit")).toBeTruthy();
+    });
+  });
+
+  describe("The method lockDisableLabeling", function () {
+    it("should set status.lockDisableLabeling to be true", function () {
+      canvas.lockDisableLabeling();
+      expect(canvas.getStatus("lockDisableLabeling")).toBeTruthy();
+    });
+  });
+
+  describe("The method lockDisableLabeling", function () {
+    it("should set status.lockDisableLabeling to be true", function () {
+      canvas.lockShowLabelTag();
+      expect(canvas.getLock("showLabelTag")).toBeTruthy();
+    });
+  });
+
+  describe("The method lockShowLabelTag", function () {
+    it("should set lock.lockShowLabelTag to be true", function () {
+      canvas.lockDisableLabeling();
+      expect(canvas.getStatus("lockDisableLabeling")).toBeTruthy();
+    });
+  });
+
+  describe("The method pushLabel", function () {
+    // Todo
+  });
+
+  describe("The method removeLabels", function () {
+    // Todo
+  });
+
+  describe("setCurrentLabel", function () {
+    // Todo
+  });
+
+  describe("The method unlockCurrentLabel", function () {
+    it("should set status.lockCurrentLable to be false", function () {
+      canvas.lockCurrentLabel();
+      canvas.unlockCurrentLabel();
+      expect(canvas.getStatus("lockCurrentLabel")).toBeFalsy();
+    });
+  });
+
+  describe("The method unlockDisableLabelDelete", function () {
+    it("should set status.unlockDisableLabelDelete to be false", function () {
+      canvas.lockDisableLabelDelete();
+      canvas.unlockDisableLabelDelete();
+      expect(canvas.getStatus("lockDisableLabelDelete")).toBeFalsy();
+    });
+  });
+
+  describe("The method unlockDisableLabelEdit", function () {
+    it("should set status.unlockDisableLabelEdit to be false", function () {
+      canvas.lockDisableLabelEdit();
+      canvas.unlockDisableLabelEdit();
+      expect(canvas.getStatus("lockDisableLabelEdit")).toBeFalsy();
+    });
+  });
+
+  describe("The method unlockDisableLabeling", function () {
+    it("should set status.unlockDisableLabelEdit to be false", function () {
+      canvas.lockDisableLabeling();
+      canvas.unlockDisableLabeling();
+      expect(canvas.getStatus("lockDisableLabeling")).toBeFalsy();
+    });
+  });
+
+  describe("The method unlockShowLabelTag", function () {
+    it("should set status.unlockDisableLabelEdit to be false", function () {
+      canvas.lockShowLabelTag();
+      canvas.unlockShowLabelTag();
+      expect(canvas.getLock("showLabelTag")).toBeFalsy();
+    });
   });
 });

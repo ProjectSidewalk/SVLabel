@@ -610,6 +610,10 @@ function Canvas (param, $) {
         }
     };
 
+    oPublic.getLock = function (key) {
+      return lock[key];
+    };
+
     oPublic.getNumLabels = function () {
         var len = labels.length;
         var i;
@@ -813,9 +817,9 @@ function Canvas (param, $) {
         return status.drawing;
     };
 
-    oPublic.isEvaluationMode = function () {
-        return properties.evaluationMode;
-    };
+    // oPublic.isEvaluationMode = function () {
+    //     return properties.evaluationMode;
+    // };
 
     oPublic.isOn = function (x, y) {
         // Get an object right below (x,y)
@@ -842,10 +846,10 @@ function Canvas (param, $) {
         return this;
     };
 
-    oPublic.lockDisableMenuSelect = function () {
-        rightClickMenu.lockDisableMenuSelect();
-        return this;
-    };
+    // oPublic.lockDisableMenuSelect = function () {
+    //     rightClickMenu.lockDisableMenuSelect();
+    //     return this;
+    // };
 
     oPublic.lockShowLabelTag = function () {
         // This method locks showLabelTag
@@ -1226,10 +1230,10 @@ function Canvas (param, $) {
         return this;
     };
 
-    oPublic.unlockDisableMenuSelect = function () {
-        rightClickMenu.unlockDisableMenuSelect();
-        return this;
-    };
+    // oPublic.unlockDisableMenuSelect = function () {
+    //     rightClickMenu.unlockDisableMenuSelect();
+    //     return this;
+    // };
 
     oPublic.unlockShowLabelTag = function () {
         // This method locks showLabelTag
