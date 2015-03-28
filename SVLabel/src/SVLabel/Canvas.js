@@ -63,7 +63,7 @@ function Canvas (param, $) {
     };
 
     var status = {
-        'currentLabel' : undefined,
+        'currentLabel' : null,
         'disableLabelDelete' : false,
         'disableLabelEdit' : false,
         'disableLabeling' : false,
@@ -101,11 +101,11 @@ function Canvas (param, $) {
     var labels = [];
 
     // jQuery doms
-    var $canvas = $("#labelCanvas");
-    var $divLabelDrawingLayer = $("div#labelDrawingLayer");
-    var $divHolderLabelDeleteIcon = $("#Holder_LabelDeleteIcon");
-    var $divHolderLabelEditIcon = $("#Holder_LabelEditIcon");
-    var $labelDeleteIcon = $("#LabelDeleteIcon");
+    var $canvas = $("#labelCanvas").length === 0 ? null : $("#labelCanvas");
+    var $divLabelDrawingLayer = $("div#labelDrawingLayer").length === 0 ? null : $("div#labelDrawingLayer");
+    var $divHolderLabelDeleteIcon = $("#Holder_LabelDeleteIcon").length === 0 ? null : $("#Holder_LabelDeleteIcon");
+    var $divHolderLabelEditIcon = $("#Holder_LabelEditIcon").length === 0 ? null : $("#Holder_LabelEditIcon");
+    var $labelDeleteIcon = $("#LabelDeleteIcon").length === 0 ? null : $("#LabelDeleteIcon");
 
     ////////////////////////////////////////
     // Private Functions
@@ -113,28 +113,41 @@ function Canvas (param, $) {
     // Initialization
     function _init (param) {
         // Initialize doms
-        var domIds = param.domIds;
-        for (i in validDoms) {
-            var domName = validDoms[i];
-            doms[domName] = domIds[domName];
+        // var domIds = param.domIds;
+        // for (i in validDoms) {
+        //     var domName = validDoms[i];
+        //     doms[domName] = domIds[domName];
+        // }
+        var el;
+        if ('domIds' in param && 'canvas' in param.domIds) {
+          doms['canvas'] = param.domIds['canvas'];
+          var el = document.getElementById(doms.canvas);
+          ctx = el.getContext('2d');
+          canvasProperties.width = el.width;
+          canvasProperties.height = el.height;
+        } else {
+          var el = null;
         }
 
         // Set the canvas context.
-        var el = document.getElementById(doms.canvas);
-        ctx = el.getContext('2d');
-        canvasProperties.width = el.width;
-        canvasProperties.height = el.height;
+        // var el = document.getElementById(doms.canvas);
+        // ctx = el.getContext('2d');
+        // canvasProperties.width = el.width;
+        // canvasProperties.height = el.height;
 
         if ('evaluationMode' in param) {
             properties.evaluationMode = param.evaluationMode;
         }
 
         // Attach listeners to dom elements
-        $divLabelDrawingLayer.bind('mousedown', drawingLayerMouseDown);
-        $divLabelDrawingLayer.bind('mouseup', drawingLayerMouseUp);
-        $divLabelDrawingLayer.bind('mousemove', drawingLayerMouseMove);
-
-        $labelDeleteIcon.bind("click", labelDeleteIconClick);
+        if ($divLabelDrawingLayer) {
+          $divLabelDrawingLayer.bind('mousedown', drawingLayerMouseDown);
+          $divLabelDrawingLayer.bind('mouseup', drawingLayerMouseUp);
+          $divLabelDrawingLayer.bind('mousemove', drawingLayerMouseMove);
+        }
+        if ($labelDeleteIcon) {
+          $labelDeleteIcon.bind("click", labelDeleteIconClick);
+        }
     }
 
     function closeLabelPath() {
@@ -495,7 +508,11 @@ function Canvas (param, $) {
 
     oPublic.clear = function () {
         // Clears the canvas
-        ctx.clearRect(0, 0, canvasProperties.width, canvasProperties.height);
+        if (ctx) {
+          ctx.clearRect(0, 0, canvasProperties.width, canvasProperties.height);
+        } else {
+          console.warn('The ctx is not set.')
+        }
         return this;
     };
 
@@ -533,19 +550,19 @@ function Canvas (param, $) {
         return false;
     };
 
-    oPublic.disableMenuClose = function () {
-        if (rightClickMenu) {
-            rightClickMenu.disableMenuClose();
-        }
-        return this;
-    };
-
-    oPublic.disableMenuSelect = function ()  {
-        if (rightClickMenu) {
-            rightClickMenu.disableMenuSelect();
-        }
-        return this;
-    };
+    // oPublic.disableMenuClose = function () {
+    //     if (rightClickMenu) {
+    //         rightClickMenu.disableMenuClose();
+    //     }
+    //     return this;
+    // };
+    //
+    // oPublic.disableMenuSelect = function ()  {
+    //     if (rightClickMenu) {
+    //         rightClickMenu.disableMenuSelect();
+    //     }
+    //     return this;
+    // };
 
     oPublic.enableLabelDelete = function () {
         if (!status.lockDisableLabelDelete) {
@@ -574,16 +591,6 @@ function Canvas (param, $) {
         return false;
     };
 
-    oPublic.enableMenuClose = function () {
-        rightClickMenu.enableMenuClose();
-        return this;
-    };
-
-    oPublic.enableMenuSelect  = function () {
-        rightClickMenu.enableMenuSelect();
-        return this;
-    };
-
     oPublic.getCurrentLabel = function () {
         return status.currentLabel;
     };
@@ -603,6 +610,10 @@ function Canvas (param, $) {
         }
     };
 
+    oPublic.getLock = function (key) {
+      return lock[key];
+    };
+
     oPublic.getNumLabels = function () {
         var len = labels.length;
         var i;
@@ -615,8 +626,15 @@ function Canvas (param, $) {
         return total;
     };
 
-    oPublic.getRightClickMenu = function () {
-        return rightClickMenu;
+    // oPublic.getRightClickMenu = function () {
+    //     return rightClickMenu;
+    // };
+
+    oPublic.getStatus = function (key) {
+      if (!(key in status)) {
+        console.warn("You have passed an invalid key for status.")
+      }
+        return status[key];
     };
 
     oPublic.getSystemLabels = function (reference) {
@@ -660,11 +678,11 @@ function Canvas (param, $) {
         return this;
     };
 
-    oPublic.hideRightClickMenu = function () {
-        rightClickMenu.hideBusStopType();
-        rightClickMenu.hideBusStopPosition();
-        return this;
-    };
+    // oPublic.hideRightClickMenu = function () {
+    //     rightClickMenu.hideBusStopType();
+    //     rightClickMenu.hideBusStopPosition();
+    //     return this;
+    // };
 
     oPublic.insertLabel = function (labelPoints, target) {
         // This method takes a label data (i.e., a set of point coordinates, label types, etc) and
@@ -758,50 +776,50 @@ function Canvas (param, $) {
         }
     };
 
-    oPublic.isBusStopLabeled = function () {
-        var i;
-        var isBusStopSignLabeled = false;
-        var label;
-        var lenLabels;
-        lenLabels = labels.length;
-
-        for (i = 0; i < lenLabels; i += 1) {
-            // Check if the label comes from current SV panorama
-            label = labels[i];
-            // if (!label.isDeleted() && label.getLabelType() ==="StopSign") {
-            if (label.isVisible() && label.getLabelType() ==="StopSign") {
-                isBusStopSignLabeled = true;
-            }
-        }
-        return isBusStopSignLabeled;
-    };
-
-    oPublic.isBusStopShelterLabeled = function () {
-        var i;
-        var isBusStopShelterLabeled = false;
-        var label;
-        var lenLabels;
-        lenLabels = labels.length;
-
-        for (i = 0; i < lenLabels; i += 1) {
-            // Check if the label comes from current SV panorama
-            label = labels[i];
-            // if (!label.isDeleted() && label.getLabelType() ==="StopSign") {
-            if (label.isVisible() && label.getLabelType() ==="Landmark_Shelter") {
-                isBusStopShelterLabeled = true;
-            }
-        }
-        return isBusStopShelterLabeled;
-    };
+    // oPublic.isBusStopLabeled = function () {
+    //     var i;
+    //     var isBusStopSignLabeled = false;
+    //     var label;
+    //     var lenLabels;
+    //     lenLabels = labels.length;
+    //
+    //     for (i = 0; i < lenLabels; i += 1) {
+    //         // Check if the label comes from current SV panorama
+    //         label = labels[i];
+    //         // if (!label.isDeleted() && label.getLabelType() ==="StopSign") {
+    //         if (label.isVisible() && label.getLabelType() ==="StopSign") {
+    //             isBusStopSignLabeled = true;
+    //         }
+    //     }
+    //     return isBusStopSignLabeled;
+    // };
+    //
+    // oPublic.isBusStopShelterLabeled = function () {
+    //     var i;
+    //     var isBusStopShelterLabeled = false;
+    //     var label;
+    //     var lenLabels;
+    //     lenLabels = labels.length;
+    //
+    //     for (i = 0; i < lenLabels; i += 1) {
+    //         // Check if the label comes from current SV panorama
+    //         label = labels[i];
+    //         // if (!label.isDeleted() && label.getLabelType() ==="StopSign") {
+    //         if (label.isVisible() && label.getLabelType() ==="Landmark_Shelter") {
+    //             isBusStopShelterLabeled = true;
+    //         }
+    //     }
+    //     return isBusStopShelterLabeled;
+    // };
 
     oPublic.isDrawing = function () {
         // This method returns the current status drawing.
         return status.drawing;
     };
 
-    oPublic.isEvaluationMode = function () {
-        return properties.evaluationMode;
-    };
+    // oPublic.isEvaluationMode = function () {
+    //     return properties.evaluationMode;
+    // };
 
     oPublic.isOn = function (x, y) {
         // Get an object right below (x,y)
@@ -828,10 +846,10 @@ function Canvas (param, $) {
         return this;
     };
 
-    oPublic.lockDisableMenuSelect = function () {
-        rightClickMenu.lockDisableMenuSelect();
-        return this;
-    };
+    // oPublic.lockDisableMenuSelect = function () {
+    //     rightClickMenu.lockDisableMenuSelect();
+    //     return this;
+    // };
 
     oPublic.lockShowLabelTag = function () {
         // This method locks showLabelTag
@@ -845,6 +863,13 @@ function Canvas (param, $) {
         if (svw.actionStack) {
             svw.actionStack.push('addLabel', label);
         }
+        return this;
+    };
+
+    oPublic.removeAllLabels = function () {
+        // This method removes all the labels.
+        // This method is mainly for testing.
+        labels = [];
         return this;
     };
 
@@ -886,6 +911,12 @@ function Canvas (param, $) {
     };
 
     oPublic.render2 = function () {
+      if (!ctx) {
+        // JavaScript warning
+        // http://stackoverflow.com/questions/5188224/throw-new-warning-in-javascript
+        console.warn('The ctx is not set.')
+        return this;
+      }
         var i;
         var label;
         var lenLabels;
@@ -1199,221 +1230,15 @@ function Canvas (param, $) {
         return this;
     };
 
-    oPublic.unlockDisableMenuSelect = function () {
-        rightClickMenu.unlockDisableMenuSelect();
-        return this;
-    };
+    // oPublic.unlockDisableMenuSelect = function () {
+    //     rightClickMenu.unlockDisableMenuSelect();
+    //     return this;
+    // };
 
     oPublic.unlockShowLabelTag = function () {
         // This method locks showLabelTag
         lock.showLabelTag = false;
         return this;
-    };
-    ////////////////////////////////////////
-    // Tests
-    ////////////////////////////////////////
-    oPublic.runTestCases = function () {
-        module('Canvas tests');
-
-        test('Return false.', function () {
-            ok(true, "Test");
-        });
-
-        test('Ajax test', function () {
-            expect(1);
-            stop();
-
-            $.ajax({
-                url: 'http://localhost/sidewalk/SidewalkLabeler_v1/api_get_intersection',
-                success: function (result) {
-                    ok(true, 'Ajax tet works :)');
-                    start();
-                },
-                error: function (e) {
-                    console.error('Something wrong with Ajax', e);
-                    start();
-                }
-            });
-        });
-
-        test('Pano location test', function () {
-            expect(3);
-            stop();
-
-            $.ajax({
-                url: 'http://localhost/sidewalk/SidewalkLabeler_v1/?/api_get_intersection&pano_id=3dlyB8Z0jFmZKSsTQJjMQg',
-                dataType: "json",
-                success: function (result) {
-                    var intersections = result.intersections;
-                    var lat = intersections[0].Lat;
-                    var lng = intersections[0].Lng;
-                    equal(1, '1', 'String and number?');
-                    equal(lat, 38.935869, 'Lat matches :)');
-                    equal(lng, -77.019210, 'Lng matches :)');
-                    start();
-                },
-                error: function (e) {
-                    console.error('Something wrong with Ajax', e);
-                    start();
-                }
-            });
-        });
-
-        test('Wrong pano id', function () {
-            expect(1);
-            stop();
-
-            $.ajax({
-                url: 'http://localhost/sidewalk/SidewalkLabeler_v1/?/api_get_intersection&pano_id=3dlyB8Z0jFmZKSsTQJjMQ',
-                dataType: "json",
-                success: function (result) {
-                    if (result.error) {
-                        var message = result.error.message;
-                        equal(message, 'No panorama matched the pano id: 3dlyB8Z0jFmZKSsTQJjMQ .');
-                    }
-                    start();
-                },
-                error: function (e) {
-                    console.error('Something wrong with Ajax', e);
-                    start();
-                }
-            });
-        });
-
-        test('Get intersection by worker_id and task_description', function () {
-            expect(3);
-            stop();
-
-            $.ajax({
-                url: 'http://localhost/sidewalk/SidewalkLabeler_v1/?/api_get_intersection&task_description=PilotTask&worker_id=NameINeverUse',
-                dataType: "json",
-                success: function (result) {
-                    var intersections = result.intersections;
-                    var lat = intersections[0].Lat;
-                    var lng = intersections[0].Lng;
-                    var panoId = intersections[0].NearestGSVPanoramaId;
-                    equal(lat, 38.894799, 'Lat matches :)');
-                    equal(lng, -77.021906, 'Lng matches :)');
-                    equal(panoId, '_AUz5cV_ofocoDbesxY3Kw', 'PanoId matches');
-                    start();
-                },
-                error: function (e) {
-                    console.error('Something wrong with Ajax', e);
-                    start();
-                }
-            });
-        });
-
-        // Label tests
-        test('Instantiate label', function () {
-            var pov = getPOV();
-            var pointParam = {
-                fillStyleInnerCircle: "rgba(0, 244, 38, 0.9)",
-                iconImagePath: "public/img/icons/Sidewalk/Icon_CurbRamp-13.svg",
-                lineWidthOuterCircle: 2,
-                radiusInnerCircle: 5,
-                radiusOuterCircle: 6,
-                storedInDatabase: false,
-                strokeStyleOuterCircle: "rgba(255,255,255,1)"
-            };
-            var userPoints = [
-                {x: 200, y: 200},
-                {x: 300, y: 200},
-                {x: 300, y: 300},
-                {x: 200, y: 300}
-            ];
-            var points = [];
-            for (i = 0; i < userPoints.length; i++) {
-                points.push(new Point(userPoints[i].x, userPoints[i].y, pov, pointParam));
-            }
-            var path = new Path(points, {});
-            var param = {
-                canvasWidth: 720,
-                canvasHeight: 480,
-                canvasDistortionAlphaX: 4.6,
-                canvasDistortionAlphaY: -4.65,
-                labelFillStyle: "rgba(0, 244, 38, 0.9)",
-                labelId: svw.getLabelCounter(),
-                labelType: "CurbRamp",
-                labelDescription: 'CurbRamp',
-                panoId: "3dlyB8Z0jFmZKSsTQJjMQg",
-                panoramaHeading: 0,
-                panoramaLat: 38.935869,
-                panoramaLng: -77.01920999999999,
-                panoramaPitch: -10,
-                panoramaZoom: 1,
-                svImageHeight: 6656,
-                svImageWidth: 13312,
-                svMode: "html4"
-            };
-
-            var label = new Label(path, param);
-            equal(label.getProperty('canvasWidth'), param.canvasWidth, 'Correct canvasWidth');
-            equal(label.getProperty('canvasHeight'), param.canvasHeight, 'Correct canvasHeight');
-            equal(label.getProperty('canvasDistortionAlphaX'), param.canvasDistortionAlphaX, 'Correct canvasDistortionAlphaX');
-            equal(label.getProperty('canvasDistortionAlphaY'), param.canvasDistortionAlphaY, 'Correct canvasDistortionAlphaY');
-            equal(label.getProperty('labelFillStyle'), param.labelFillStyle, 'Correct labelFillStyle');
-            equal(label.getProperty('labelId'), param.labelId, 'Correct labelId');
-            equal(label.getProperty('labelType'), param.labelType, 'Correct labelType');
-            equal(label.getProperty('labelDescription'), param.labelDescription, 'Correct labelDescription');
-            equal(label.getProperty('panoId'), param.panoId, 'Correct panoId');
-            equal(label.getProperty('panoramaHeading'), param.panoramaHeading, 'Correct panoramaHeading');
-            equal(label.getProperty('panoramaLat'), param.panoramaLat, 'Correct panoramaLat');
-            equal(label.getProperty('panoramaLng'), param.panoramaLng, 'Correct panoramaLng');
-            equal(label.getProperty('panoramaPitch'), param.panoramaPitch, 'Correct panoramaPitch');
-            equal(label.getProperty('panoramaZoom'), param.panoramaZoom, 'Correct panoramaZoom');
-            equal(label.getProperty('svImageHeight'), param.svImageHeight, 'Correct svImageHeight');
-            equal(label.getProperty('svImageWidth'), param.svImageWidth, 'Correct svImageWidth');
-            equal(label.getProperty('svMode'), param.svMode, 'Correct svMode');
-        });
-
-        test('Render label', function () {
-            expect(0);
-            var pov = getPOV();
-            var pointParam = {
-                fillStyleInnerCircle: "rgba(0, 244, 38, 0.9)",
-                iconImagePath: "public/img/icons/Sidewalk/Icon_CurbRamp-13.svg",
-                lineWidthOuterCircle: 2,
-                radiusInnerCircle: 5,
-                radiusOuterCircle: 6,
-                storedInDatabase: false,
-                strokeStyleOuterCircle: "rgba(255,255,255,1)"
-            };
-            var userPoints = [
-                {x: 200, y: 200},
-                {x: 300, y: 200},
-                {x: 300, y: 300},
-                {x: 200, y: 300}
-            ];
-            var points = [];
-            for (i = 0; i < userPoints.length; i++) {
-                points.push(new Point(userPoints[i].x, userPoints[i].y, pov, pointParam));
-            }
-            var path = new Path(points, {});
-            var param = {
-                canvasWidth: 720,
-                canvasHeight: 480,
-                canvasDistortionAlphaX: 4.6,
-                canvasDistortionAlphaY: -4.65,
-                labelFillStyle: "rgba(0, 244, 38, 0.9)",
-                labelId: "None",
-                labelType: "CurbRamp",
-                labelDescription: 'Curb Ramp',
-                panoId: "3dlyB8Z0jFmZKSsTQJjMQg",
-                panoramaHeading: 0,
-                panoramaLat: 38.935869,
-                panoramaLng: -77.01920999999999,
-                panoramaPitch: -10,
-                panoramaZoom: 1,
-                svImageHeight: 6656,
-                svImageWidth: 13312,
-                svMode: "html4"
-            };
-
-            var label = new Label(path, param);
-            label.render(ctx, pov);
-        });
-
     };
 
     ////////////////////////////////////////

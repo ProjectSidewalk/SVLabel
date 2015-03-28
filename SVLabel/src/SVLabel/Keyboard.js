@@ -7,7 +7,7 @@
  */
 var svw = svw || {};
 
-function Keyboard () {
+function Keyboard ($) {
     var oPublic = {
             className : 'Keyboard'
         };
@@ -21,31 +21,36 @@ function Keyboard () {
     var $inputSkipOther;
 
     function init () {
-        $textareaComment = $("#CommentField");
-        $taskDifficultyComment = $("#task-difficulty-comment");
-        $inputSkipOther = $("#Text_BusStopAbsenceOtherReason");
+        $textareaComment = ($("#CommentField").length) > 0 ? $("#CommentField") : null;
+        $taskDifficultyComment = ($("#task-difficulty-comment").length > 0) ? $("#task-difficulty-comment") : null;
+        $inputSkipOther = ($("#Text_BusStopAbsenceOtherReason").length > 0) ? $("#Text_BusStopAbsenceOtherReason") : null;
 
+        if ($textareaComment) {
+          $textareaComment.bind('focus', textFieldFocus);
+          $textareaComment.bind('blur', textFieldBlur);
+        }
 
-        $textareaComment.bind('focus', textFieldFocus);
-        $textareaComment.bind('blur', textFieldBlur);
-        $inputSkipOther.bind('focus', textFieldFocus);
-        $inputSkipOther.bind('blur', textFieldBlur);
-
-        if ($taskDifficultyComment.length > 0) {
+        if ($taskDifficultyComment) {
             $taskDifficultyComment.bind('focus', textFieldFocus);
             $taskDifficultyComment.bind('blur', textFieldBlur);
         }
 
+        if ($inputSkipOther) {
+          $inputSkipOther.bind('focus', textFieldFocus);
+          $inputSkipOther.bind('blur', textFieldBlur);
+        }
+
         $(document).bind('keyup', documentKeyUp);
         $(document).bind('keydown', documentKeyDown);
-
         $(document).bind('mouseup', mouseUp);
     }
 
     function documentKeyDown(e) {
-        // This is a callback method that is triggered when a keyUp event occurs.
+        // The callback method that is triggered with a keyUp event.
         if (!status.focusOnTextField) {
+          if ('tracker' in svw) {
             svw.tracker.push('KeyDown', {'keyCode': e.keyCode});
+          }
             switch (e.keyCode) {
                 case 16:
                     // "Shift"
@@ -60,7 +65,9 @@ function Keyboard () {
 
         // This is a callback method that is triggered when a keyDown event occurs.
         if (!status.focusOnTextField) {
+          if ('tracker' in svw) {
             svw.tracker.push('KeyUp', {'keyCode': e.keyCode});
+          }
             switch (e.keyCode) {
                 case 16:
                     // "Shift"
@@ -134,9 +141,23 @@ function Keyboard () {
         return this;
     };
 
+    oPublic.getStatus = function (key) {
+        if (!(key in status)) {
+          console.warn("You have passed an invalid key for status.")
+        }
+        return status[key];
+    };
+
     oPublic.isShiftDown = function () {
         // This method returns whether a shift key is currently pressed or not.
         return status.shiftDown;
+    };
+
+    oPublic.setStatus = function (key, value) {
+      if (key in status) {
+        status[key] = value;
+      }
+      return this;
     };
 
     init();
