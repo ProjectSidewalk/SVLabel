@@ -1,9 +1,7 @@
-  // Introduction to Jasmine
+// Introduction to Jasmine
 // http://jasmine.github.io/2.0/introduction.html
 
-// Comment out the Todo for Alex and pass all the tests
-
-describe("The Path module's basic API", function () {
+describe("Tests for the Path module.", function () {
   var pov = {
     heading: 0,
     pitch: 0,
@@ -22,9 +20,11 @@ describe("The Path module's basic API", function () {
     it("should return pov of the first point", function() {
       expect(path.getPOV()).toBe(pov);
     });
+
     it("should return the point objects in this path", function() {
       expect(path.getPoints()).toEqual(points);
     });
+
     it("should return imagecoordinates", function() {
       imagecoordinates = [p1.getGSVImageCoordinate(), p2.getGSVImageCoordinate(), p3.getGSVImageCoordinate()];
       expect(path.getImageCoordinates()).toEqual(imagecoordinates);

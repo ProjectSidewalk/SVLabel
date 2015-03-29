@@ -218,7 +218,7 @@ $(document).ready(function(){
     // Instantiate objects.
     //
     svw.tracker = new Tracker();
-    svw.keyboard = new Keyboard();
+    svw.keyboard = new Keyboard($);
     svw.canvas = new Canvas(canvasParam, $);
     svw.form = new Form(formParam);
     svw.examples = new ExampleWindow(exampleWindowParam);

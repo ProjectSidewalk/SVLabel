@@ -1,7 +1,5 @@
 var svw = svw || {}; // Street View Walker namespace.
-////////////////////////////////////////////////////////////////////////////////
-// Path class
-////////////////////////////////////////////////////////////////////////////////
+
 function Path (points, params) {
     // Path object constructor
     // This class object holds an array of Point objects.
@@ -56,9 +54,6 @@ function Path (points, params) {
         properties.originalStrokeStyle = properties.strokeStyle;
     }
 
-    function getPOV(){
-      return points[0].getPOV();
-    }
     function getLineWidth () {
       // return line width
       return properties.lineWidth;
@@ -72,12 +67,12 @@ function Path (points, params) {
       properties.fillStyle = fill;
     }
 
-    function getBoundingBox() {
+    function getBoundingBox(povIn) {
       // This function checks if a mouse cursor is on any of a points and return
       var j;
       var len;
       var canvasCoords;
-      var pov = getPOV();
+      var pov = povIn ? povIn : getPOV(); // Todo. Get rid of the getPOV() global function.
       var xMax = -1;
       var xMin = 1000000;
       var yMax = -1;
@@ -275,12 +270,12 @@ function Path (points, params) {
     };
 
     oPublic.getPOV = function() {
-        return getPOV();
+        return points[0].getPOV();
     }
 
-    oPublic.getBoundingBox = function () {
+    oPublic.getBoundingBox = function (pov) {
         // Get a bounding box of this path
-        return getBoundingBox();
+        return getBoundingBox(pov);
     };
 
     oPublic.getLineWidth = function () {

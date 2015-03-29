@@ -4,7 +4,7 @@ describe("Tests for the RibbonMenu module.", function () {
   describe("The getStatus method", function () {
     // Check if it returns a warning message when name
     it("should return a warning message when name is not in status", function() {
-      
+
     })
   });
 
@@ -22,5 +22,4 @@ describe("Tests for the RibbonMenu module.", function () {
     });
   });
 
-  // Continue...
 });

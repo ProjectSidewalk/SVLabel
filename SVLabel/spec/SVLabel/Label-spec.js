@@ -1,4 +1,4 @@
-describe("The Label module's basic API", function () {
+describe("Tests for the Label module.", function () {
   var pov = {
     heading: 0,
     pitch: 0,
@@ -35,9 +35,9 @@ describe("The Label module's basic API", function () {
   };
   var label = new Label(path, param);
 
-  describe("Test, getBoundingBox", function () {
+  describe("The method getBoundingBox", function () {
     // Todo. Kotaro should fix image coordinates.
-    var boundingBoxA = label.getBoundingBox(); // This function returns bounding box in image coordinates.
+    var boundingBoxA = label.getBoundingBox(pov); // This function returns bounding box in image coordinates.
     var boundingBoxB = {
         x: 0,
         y: 0,

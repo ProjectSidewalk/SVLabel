@@ -55,13 +55,13 @@ describe("Tests for the Keyboard module.", function () {
       keyboard.setStatus('shiftDown', true);
       expect(keyboard.getStatus('shiftDown')).toBe(true);
       keyboard.setStatus('focusOnTextField', true);
-      expect(keyboard.getStatus('focusOnTextField')).toBe.(true);
+      expect(keyboard.getStatus('focusOnTextField')).toBe(true);
     });
     it("should change the values of shiftDown and focusOnTextField to true", function() {
       keyboard.setStatus('shiftDown', false);
       expect(keyboard.getStatus('shiftDown')).toBe(false);
       keyboard.setStatus('focusOnTextField', false);
-      expect(keyboard.getStatus('focusOnTextField')).toBe.(false);
+      expect(keyboard.getStatus('focusOnTextField')).toBe(false);
     });
   });
 
