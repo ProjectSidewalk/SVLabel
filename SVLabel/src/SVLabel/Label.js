@@ -4,20 +4,6 @@ var svw = svw || {}; // Street View Walker namespace.
 // Label class
 ////////////////////////////////////////////////////////////////////////////////
 function Label (pathIn, params) {
-    // Label object constructor
-    // This class object holds a Path object and label properties.
-    //
-    // Ugh, do not go any deeper than depth 1...
-    // Label properties:
-    // - panoId
-    // - panoramaProperties
-    //   - location of where this label was labeled
-    //     - latitude
-    //     - longitude
-    //   - Street View pov at the time of labeling
-    //     - heading
-    //     - pitch
-    //     - zoom
     var oPublic = {
         className: 'Label'
     };
@@ -264,6 +250,7 @@ function Label (pathIn, params) {
     ////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////
+
     oPublic.blink = function (numberOfBlinks, fade) {
         // Blink (highlight and fade) the color of this label. If fade is true, turn the label into gray;
         if (!numberOfBlinks) {
@@ -345,10 +332,10 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.getBoundingBox = function () {
+    oPublic.getBoundingBox = function (pov) {
         // This method returns the boudning box of the label's outline.
         var path = oPublic.getPath();
-        return path.getBoundingBox();
+        return path.getBoundingBox(pov);
     };
 
     oPublic.getCoordinate = function () {
@@ -461,6 +448,10 @@ function Label (pathIn, params) {
         }
         return properties[propName];
     };
+
+    oPublic.getstatus = function (key) {
+        return status[key];
+    }
 
     oPublic.getVisibility = function () {
         return status.visibility;

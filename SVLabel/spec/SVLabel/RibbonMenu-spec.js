@@ -1,12 +1,12 @@
 describe("Tests for the RibbonMenu module.", function () {
   var ribbon = new RibbonMenu(jQuery);
-  
+
   describe("The backToWalk method", function () {
     it("should switch the mode to Walk", function () {
       ribbon.backToWalk();
       expect(ribbon.getStatus('mode')).toBe('val');
     });
-  }); 
+  });
 
   describe("The disableModeSwitch method", function() {
     it("should disable mode switch", function() {
@@ -36,9 +36,10 @@ describe("Tests for the RibbonMenu module.", function () {
     });
   });
 
-/*describe("The lockDisableModeSwitch", function() {
+  /*
+  describe("The lockDisableModeSwitch", function() {
     it("should not allow you to disable or enable mode switch", function() {
-      
+
     });
   });
 
@@ -46,7 +47,8 @@ describe("Tests for the RibbonMenu module.", function () {
     it("should allow you to disable or enable mode switch", function() {
 
     });
-  });*/
+  });
+  */
 
   describe("The getStatus method", function () {
     it("should warn when an illegal key is passed.", function () {
@@ -67,8 +69,9 @@ describe("Tests for the RibbonMenu module.", function () {
   describe("The setAllowedMode method", function() {
     it("should set allowedMode to mode", function() {
       ribbon.setAllowedMode('valid');
-      expect(ribbon.getStatus('allowedMode')).toBe('valid');  
+      expect(ribbon.getStatus('allowedMode')).toBe('valid');
     });
 
   });
+
 });
