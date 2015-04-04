@@ -1,5 +1,5 @@
 
-function ProgressPov (param, $) {
+function ProgressPov ($, param) {
     var oPublic = {className: 'ProgressPov'};
     var status = {
         currentCompletionRate: 0,
@@ -16,9 +16,9 @@ function ProgressPov (param, $) {
     // Private functions
     ////////////////////////////////////////
     function _init(param) {
-        $divCurrentCompletionRate = $("#Holder_CurrentCompletionRate");
-        $divCurrentCompletionBar = $("#Holder_CurrentCompletionBar");
-        $divCurrentCompletionBarFiller = $("#Holder_CurrentCompletionBarFiller");
+        $divCurrentCompletionRate = svw.ui.progressPov.rate;
+        $divCurrentCompletionBar = svw.ui.progressPov.bar;
+        $divCurrentCompletionBarFiller = svw.ui.progressPov.filler;
 
         //
         // Fill in the surveyed angles
@@ -27,11 +27,11 @@ function ProgressPov (param, $) {
             status.surveyedAngles[i] = 0;
         }
 
-        if ('pov' in param) {
+        if (param && param.pov) {
             status.previousHeading = param.pov.heading;
         } else {
             try {
-                var pov = getPov();
+                var pov = svw.getPov();
                 status.previousHeading = pov.heading;
             } catch (e) {
                 status.previousHeading = 0;
@@ -141,7 +141,7 @@ function ProgressPov (param, $) {
         try {
             if (status.currentCompletionRate < 1) {
                 var headingRange = 25;
-                var pov = getPOV();
+                var pov = svw.getPOV();
                 var heading = pov.heading;
                 var headingMin = (heading - headingRange + 360) % 360;
                 var headingMax = (heading + headingRange) % 360;

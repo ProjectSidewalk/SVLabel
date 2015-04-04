@@ -1,17 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 2/25/13
- * Time: 2:10 AM
- * To change this template use File | Settings | File Templates.
- */
-
-////////////////////////////////////////////////////////////////////////////////
-// Bus Stop Labels
-////////////////////////////////////////////////////////////////////////////////
-//
-// Returns bus stop position names
-//
 function getBusStopPositionLabel() {
     return {
         'NextToCurb' : {

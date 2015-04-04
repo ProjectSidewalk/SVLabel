@@ -1,12 +1,4 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 2/25/13
- * Time: 1:44 AM
- * To change this template use File | Settings | File Templates.
- */
-
-function OverlayMessageBox (params) {
+function OverlayMessageBox ($, params) {
     var oPublic = {
             'className' : 'OverlayMessageBox'
         };
@@ -23,10 +15,15 @@ function OverlayMessageBox (params) {
     ////////////////////////////////////////
     function init() {
         // Initialization function.
-        $divOverlayMessage = $(params.domIds.OverlayMessage);
-        $divOverlayMessageBox = $(params.domIds.Holder_OverlayMessage);
+        // $divOverlayMessage = $(params.domIds.OverlayMessage);
+        // $divOverlayMessageBox = $(params.domIds.Holder_OverlayMessage);
+        if (svw.ui && svw.ui.overlayMessage) {
+          $divOverlayMessage = svw.ui.overlayMessage.message;
+          $divOverlayMessageBox = svw.ui.overlayMessage.box;
 
-        oPublic.setMessage('Walk');
+          oPublic.setMessage('Walk');
+        }
+
     }
 
     ////////////////////////////////////////

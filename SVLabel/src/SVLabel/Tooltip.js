@@ -8,8 +8,8 @@
 
 var svw = svw || {};
 
-function Tooltip (param, $) {
-    var oPublic = {className: 'Tooltip'};
+function Tooltip ($, param) {
+    var self = {className: 'Tooltip'};
     var properties = {};
     var status = {};
 
@@ -25,15 +25,15 @@ function Tooltip (param, $) {
     ////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////
-    oPublic.show = function (message) {
+    self.show = function (message) {
         $divToolTip.html(message);
         $divToolTip.css('visibility', 'visible');
     };
 
-    oPublic.hide = function () {
+    self.hide = function () {
         $divToolTip.css('visibility', 'hidden');
     };
 
     _init(param);
-    return oPublic;
+    return self;
 }

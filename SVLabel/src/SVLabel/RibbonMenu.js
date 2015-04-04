@@ -1,18 +1,7 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 2/15/13
- * Time: 5:26 PM
- * To change this template use File | Settings | File Templates.
- */
-
 var svw = svw || {};
 
-////////////////////////////////////////////////////////////////////////////////
-// RibbonMenu Class Constructor
-////////////////////////////////////////////////////////////////////////////////
 function RibbonMenu ($, params) {
-    var oPublic = {className: 'RibbonMenu'};
+    var self = {className: 'RibbonMenu'};
     var properties = {
         borderWidth : "3px",
         modeSwitchDefaultBorderColor : "rgba(200,200,200,0.75)",
@@ -52,32 +41,39 @@ function RibbonMenu ($, params) {
 
         //
         // Initialize the jQuery DOM elements
-        $divStreetViewHolder = $("#Holder_StreetView");
-        $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
-        $ribbonConnector = $("#StreetViewLabelRibbonConnection");
-        $spansModeSwitches = $('span.modeSwitch');
+        if (svw.ui && svw.ui.ribbonMenu) {
+          // $divStreetViewHolder = $("#Holder_StreetView");
 
-        //
-        // Initialize the color of the lines at the bottom of ribbon menu icons
-        $.each($ribbonButtonBottomLines, function (i, v) {
-            var labelType = $(v).attr("value");
-            var color = labelColors[labelType].fillStyle;
-            if (labelType === 'Walk') {
-                $(v).css('width', '56px');
-            }
+          $divStreetViewHolder = svw.ui.ribbonMenu.streetViewHolder;
+          // $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
+          $ribbonButtonBottomLines = svw.ui.ribbonMenu.bottonBottomBorders;
+          // $ribbonConnector = $("#StreetViewLabelRibbonConnection");
+          $ribbonConnector = svw.ui.ribbonMenu.connector;
+          // $spansModeSwitches = $('span.modeSwitch');
+          $spansModeSwitches = svw.ui.ribbonMenu.buttons;
 
-            $(v).css('border-top-color', color);
-            $(v).css('background', color);
-        });
+          //
+          // Initialize the color of the lines at the bottom of ribbon menu icons
+          $.each($ribbonButtonBottomLines, function (i, v) {
+              var labelType = $(v).attr("value");
+              var color = labelColors[labelType].fillStyle;
+              if (labelType === 'Walk') {
+                  $(v).css('width', '56px');
+              }
 
-        setModeSwitchBorderColors(status.mode);
-        setModeSwitchBackgroundColors(status.mode);
+              $(v).css('border-top-color', color);
+              $(v).css('background', color);
+          });
 
-        $spansModeSwitches.bind('click', modeSwitchClickCallback);
-        $spansModeSwitches.bind({
-            'mouseenter': modeSwitchMouseEnter,
-            'mouseleave': modeSwitchMouseLeave
-        });
+          setModeSwitchBorderColors(status.mode);
+          setModeSwitchBackgroundColors(status.mode);
+
+          $spansModeSwitches.bind('click', modeSwitchClickCallback);
+          $spansModeSwitches.bind({
+              'mouseenter': modeSwitchMouseEnter,
+              'mouseleave': modeSwitchMouseLeave
+          });
+        }
     }
 
     function modeSwitch (mode) {
@@ -109,35 +105,37 @@ function RibbonMenu ($, params) {
             ribbonConnectorPositions = getRibbonConnectionPositions();
             borderColor = labelColors[labelType].fillStyle;
 
-            if (svw.map) {
+            if ('map' in svw && svw.map) {
                 if (labelType === 'Walk') {
                     // Switch to walking mode.
-                    oPublic.setStatus('mode', 'Walk');
-                    oPublic.setStatus('selectedLabelType', undefined);
-                    svw.map.modeSwitchWalkClick();
+                    self.setStatus('mode', 'Walk');
+                    self.setStatus('selectedLabelType', undefined);
+                    if (svw.map) {
+                      svw.map.modeSwitchWalkClick();
+                    }
                 } else {
                     // Switch to labeling mode.
-                    oPublic.setStatus('mode', labelType);
-                    oPublic.setStatus('selectedLabelType', labelType);
-                    svw.map.modeSwitchLabelClick();
+                    self.setStatus('mode', labelType);
+                    self.setStatus('selectedLabelType', labelType);
+                    if (svw.map) {
+                      svw.map.modeSwitchLabelClick();
+                    }
                 }
-            } else {
-                throw oPublic.className + ' modeSwitch(): map not defined.';
             }
-
             // Set border color
-            setModeSwitchBorderColors(labelType);
-            setModeSwitchBackgroundColors(labelType);
 
+            if (svw.ui && svw.ui.ribbonMenu) {
+              setModeSwitchBorderColors(labelType);
+              setModeSwitchBackgroundColors(labelType);
+              $ribbonConnector.css("left", ribbonConnectorPositions[labelType].labelRibbonConnection);
+              $ribbonConnector.css("border-left-color", borderColor);
+              $divStreetViewHolder.css("border-color", borderColor);
+            }
 
             // Set the instructional message
             if (svw.overlayMessageBox) {
                 svw.overlayMessageBox.setMessage(labelType);
             }
-
-            $ribbonConnector.css("left", ribbonConnectorPositions[labelType].labelRibbonConnection);
-            $ribbonConnector.css("border-left-color", borderColor);
-            $divStreetViewHolder.css("border-color", borderColor);
         }
     }
 
@@ -187,160 +185,174 @@ function RibbonMenu ($, params) {
     function setModeSwitchBackgroundColors (mode) {
         // background: -moz-linear-gradient(center top , #fff, #eee);
         // background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee));
-        var labelType;
-        var labelColors;
-        var borderColor;
-        var browser;
-        var backgroundColor;
+        if (svw.ui && svw.ui.ribbonMenu) {
+          var labelType;
+          var labelColors;
+          var borderColor;
+          var browser;
+          var backgroundColor;
 
-        labelColors = getLabelColors();
-        borderColor = labelColors[mode].fillStyle;
+          labelColors = getLabelColors();
+          borderColor = labelColors[mode].fillStyle;
 
-        $.each($spansModeSwitches, function (i, v) {
-            labelType = $(v).attr('val');
-            if (labelType === mode) {
-                if (labelType === 'Walk') {
-                    backgroundColor = "#ccc";
-                } else {
-                    backgroundColor = borderColor;
-                }
-                $(this).css({
-                    "background" : backgroundColor
-                });
-            } else {
-                backgroundColor = properties.originalBackgroundColor;
-                if (labelType !== status.mode) {
-                    // Change background color if the labelType is not the currently selected mode.
-                    $(this).css({
-                        "background" : backgroundColor
-                    });
-                }
-            }
-        });
+          $.each($spansModeSwitches, function (i, v) {
+              labelType = $(v).attr('val');
+              if (labelType === mode) {
+                  if (labelType === 'Walk') {
+                      backgroundColor = "#ccc";
+                  } else {
+                      backgroundColor = borderColor;
+                  }
+                  $(this).css({
+                      "background" : backgroundColor
+                  });
+              } else {
+                  backgroundColor = properties.originalBackgroundColor;
+                  if (labelType !== status.mode) {
+                      // Change background color if the labelType is not the currently selected mode.
+                      $(this).css({
+                          "background" : backgroundColor
+                      });
+                  }
+              }
+          });
+      }
+      return this;
     }
 
     function setModeSwitchBorderColors (mode) {
         // This method sets the border color of the ribbon menu buttons
-        var labelType, labelColors, borderColor;
-        labelColors = getLabelColors();
-        borderColor = labelColors[mode].fillStyle;
+        if (svw.ui && svw.ui.ribbonMenu) {
+          var labelType, labelColors, borderColor;
+          labelColors = getLabelColors();
+          borderColor = labelColors[mode].fillStyle;
 
-        $.each($spansModeSwitches, function (i, v) {
-            labelType = $(v).attr('val');
-            if (labelType=== mode) {
-                $(this).css({
-                    "border-color" : borderColor,
-                    "border-style" : "solid",
-                    "border-width": properties.borderWidth
-                });
-            } else {
-                if (labelType !== status.mode) {
-                    // Change background color if the labelType is not the currently selected mode.
-                    $(this).css({
-                        "border-color" : properties.modeSwitchDefaultBorderColor,
-                        "border-style" : "solid",
-                        "border-width": properties.borderWidth
-                    });
+          $.each($spansModeSwitches, function (i, v) {
+              labelType = $(v).attr('val');
+              if (labelType=== mode) {
+                  $(this).css({
+                      "border-color" : borderColor,
+                      "border-style" : "solid",
+                      "border-width": properties.borderWidth
+                  });
+              } else {
+                  if (labelType !== status.mode) {
+                      // Change background color if the labelType is not the currently selected mode.
+                      $(this).css({
+                          "border-color" : properties.modeSwitchDefaultBorderColor,
+                          "border-style" : "solid",
+                          "border-width": properties.borderWidth
+                      });
 
-                }
-            }
-        });
+                  }
+              }
+          });
+        }
+        return this;
     }
 
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
-    oPublic.backToWalk = function () {
+    self.backToWalk = function () {
         // This function simulates the click on Walk icon
         modeSwitch('Walk');
         return this;
     };
 
 
-    oPublic.disableModeSwitch = function () {
+    self.disableModeSwitch = function () {
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = true;
-            $spansModeSwitches.css('opacity', 0.5);
+            if (svw.ui && svw.ui.ribbonMenu) {
+              $spansModeSwitches.css('opacity', 0.5);
+            }
         }
         return this;
     };
 
-    oPublic.disableLandmarkLabels = function () {
+    self.disableLandmarkLabels = function () {
         // This function dims landmark labels and
         // also set status.disableLandmarkLabels to true
-        $.each($spansModeSwitches, function (i, v) {
-            var labelType = $(v).attr('val');
-            if (!(labelType === 'Walk' ||
-                labelType === 'StopSign' ||
-                labelType === 'Landmark_Shelter')
-                ) {
-                $(v).css('opacity', 0.5);
-            }
-        });
+        if (svw.ui && svw.ui.ribbonMenu) {
+          $.each($spansModeSwitches, function (i, v) {
+              var labelType = $(v).attr('val');
+              if (!(labelType === 'Walk' ||
+                  labelType === 'StopSign' ||
+                  labelType === 'Landmark_Shelter')
+                  ) {
+                  $(v).css('opacity', 0.5);
+              }
+          });
+        }
         status.disableLandmarkLabels = true;
         return this;
     };
 
-    oPublic.enableModeSwitch = function () {
+    self.enableModeSwitch = function () {
         // This method enables mode switch.
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = false;
-            $spansModeSwitches.css('opacity', 1);
+            if (svw.ui && svw.ui.ribbonMenu) {
+              $spansModeSwitches.css('opacity', 1);
+            }
         }
         return this;
     };
 
-    oPublic.enableLandmarkLabels = function () {
+    self.enableLandmarkLabels = function () {
+      if (svw.ui && svw.ui.ribbonMenu) {
         $.each($spansModeSwitches, function (i, v) {
             var labelType = $(v).attr('val');
             $(v).css('opacity', 1);
         });
-        status.disableLandmarkLabels = false;
-        return this;
+      }
+      status.disableLandmarkLabels = false;
+      return this;
     };
 
 
-    oPublic.lockDisableModeSwitch = function () {
+    self.lockDisableModeSwitch = function () {
         status.lockDisableModeSwitch = true;
         return this;
     };
 
-    oPublic.modeSwitch = function (labelType) {
+    self.modeSwitch = function (labelType) {
         // This function simulates the click on a mode switch icon
         modeSwitch(labelType);
     };
 
-    oPublic.modeSwitchClick = function (labelType) {
+    self.modeSwitchClick = function (labelType) {
         // This function simulates the click on a mode switch icon
         // Todo. Deprecated. Delete when you will refactor this code.
         modeSwitch(labelType);
     };
 
 
-    oPublic.getStatus = function(key) {
+    self.getStatus = function(key) {
             if (key in status) {
                 return status[key];
             } else {
-              console.warn(oPublic.className, 'You cannot access a property "' + key + '".');
+              console.warn(self.className, 'You cannot access a property "' + key + '".');
               return undefined;
             }
     };
 
-    oPublic.setAllowedMode = function (mode) {
+    self.setAllowedMode = function (mode) {
         // This method sets the allowed mode.
         status.allowedMode = mode;
         return this;
     };
 
-    oPublic.setStatus = function(name, value) {
+    self.setStatus = function(name, value) {
         try {
             if (name in status) {
                 if (name === 'disableModeSwitch') {
                     if (typeof value === 'boolean') {
                         if (value) {
-                            oPublic.disableModeSwitch();
+                            self.disableModeSwitch();
                         } else {
-                            oPublic.enableModeSwitch();
+                            self.enableModeSwitch();
                         }
                         return this;
                     } else {
@@ -355,13 +367,13 @@ function RibbonMenu ($, params) {
                 throw errMsg;
             }
         } catch (e) {
-            console.error(oPublic.className, e);
+            console.error(self.className, e);
             return false;
         }
 
     };
 
-    oPublic.unlockDisableModeSwitch = function () {
+    self.unlockDisableModeSwitch = function () {
         status.lockDisableModeSwitch = false;
         return this;
     };
@@ -369,5 +381,5 @@ function RibbonMenu ($, params) {
 
     _init(params);
 
-    return oPublic;
+    return self;
 }

@@ -1,12 +1,5 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 3/18/13
- * Time: 7:35 PM
- * To change this template use File | Settings | File Templates.
- */
-function ProgressFeedback (params) {
-    var oPublic = {
+function ProgressFeedback ($, params) {
+    var self = {
         className : 'ProgressFeedback'
     };
     var properties = {
@@ -31,26 +24,26 @@ function ProgressFeedback (params) {
 
         properties.progressBarWidth = $progressBarContainer.width();
 
-        if ('message' in params && params.message) {
-            oPublic.setMessage(params.message);
+        if (params && params.message) {
+            self.setMessage(params.message);
         } else {
-            oPublic.setMessage('');
+            self.setMessage('');
         }
 
-        oPublic.setProgress(0);
+        self.setProgress(0);
     }
 
 
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    oPublic.setMessage = function (message) {
+    self.setMessage = function (message) {
         // This function sets a message box in the feedback area.
         $progressMessage.html(message);
     };
 
 
-    oPublic.setProgress = function (progress) {
+    self.setProgress = function (progress) {
         // Check if the passed argument is a number. If not, try parsing it as a
         // float value. If it fails (if parseFloat returns NaN), then throw an error.
         if (typeof progress !== "number") {
@@ -58,12 +51,12 @@ function ProgressFeedback (params) {
         }
 
         if (progress === NaN) {
-            throw new TypeError(oPublic.className + ': The passed value cannot be parsed.');
+            throw new TypeError(self.className + ': The passed value cannot be parsed.');
         }
 
         if (progress > 1) {
             progress = 1.0;
-            console.error(oPublic.className + ': You can not pass a value larger than 1 to setProgress.');
+            console.error(self.className + ': You can not pass a value larger than 1 to setProgress.');
         }
 
         status.progress = progress;
@@ -92,5 +85,5 @@ function ProgressFeedback (params) {
     };
 
     init(params);
-    return oPublic;
+    return self;
 }

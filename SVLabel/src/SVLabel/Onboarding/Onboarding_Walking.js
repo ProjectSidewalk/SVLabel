@@ -199,7 +199,7 @@ function Onboarding_Walking (params) {
                     onb.renderMessage(360, 10, "Keep walking until you find a bus stop. " +
                         "<span class='bold'>Hint: there is one coming up on your left!</span>", 350, 110);
                 } else if (targetPanoId === "t0Kk2wgFDaZK1MiASyj-Qg") {
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     WalkTowardsBusStopDone = true;
                     myProgressFeedback.setProgress(3 / properties.totalTaskCount);
 
@@ -263,7 +263,7 @@ function Onboarding_Walking (params) {
             'mousemove' : function () {
                 if (!AdjustHeadingAngleDone) {
                     if (mouseDown) {
-                        var pov = getPOV();
+                        var pov = svw.getPOV();
 
                         if (handAnimation) {
                             handAnimation.remove();
@@ -299,7 +299,7 @@ function Onboarding_Walking (params) {
             if (panoId === "t0Kk2wgFDaZK1MiASyj-Qg" ||
                 panoId === "ksTjlYwXrHcXMSNJWfA9RA") {
                 if (!SwitchModeToLabelingBusStopDone) {
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
 
                     onb.clear();
 
@@ -358,7 +358,7 @@ function Onboarding_Walking (params) {
 
         // Ask a user to label a bus stop
         var step4done = false;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var panoId = getPanoId();
         var busStopCanvasCoord;
         if (panoId === "t0Kk2wgFDaZK1MiASyj-Qg") {
@@ -661,7 +661,7 @@ function Onboarding_Walking (params) {
         myTracker.push('OnboardingWalking_LabelBench');
         // Label a bench.
         var LabelBenchDone = false;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var panoId = getPanoId();
         var benchCanvasCoord;
         if (panoId === "t0Kk2wgFDaZK1MiASyj-Qg") {
@@ -770,7 +770,7 @@ function Onboarding_Walking (params) {
 
         // Label a trash can.
         var LabelTrashCanDone = false;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var panoId = getPanoId();
         var trashCanCanvasCoord;
         if (panoId === "t0Kk2wgFDaZK1MiASyj-Qg") {
@@ -891,7 +891,7 @@ function Onboarding_Walking (params) {
 
         // Label a trash can.
         var LabelPoleDone = false;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var panoId = getPanoId();
         var poleCanCanvasCoord;
         if (panoId === "t0Kk2wgFDaZK1MiASyj-Qg") {

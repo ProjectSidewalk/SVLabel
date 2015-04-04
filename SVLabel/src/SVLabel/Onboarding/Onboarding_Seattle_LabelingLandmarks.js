@@ -144,7 +144,7 @@ function Onboarding_Seattle_LabelingLandmarks (params) {
         // A user is asked to click the bottom of bus stop.
         var LabelBusStopSignDone = false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var busStopCanvasCoord;
         busStopCanvasCoord = gsvImageCoordinate2CanvasCoordinate(4371, -620, pov);
 
@@ -250,7 +250,7 @@ function Onboarding_Seattle_LabelingLandmarks (params) {
         // A user is asked to click the bottom of bus stop.
         var LabelShelterDone= false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var shelterCanvasCoord;
         shelterCanvasCoord = gsvImageCoordinate2CanvasCoordinate(5236, -700, pov);
 
@@ -357,7 +357,7 @@ function Onboarding_Seattle_LabelingLandmarks (params) {
         // A user is asked to click the bottom of bus stop.
         var LabelShelterDone= false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var benchCanvasCoord;
         benchCanvasCoord = gsvImageCoordinate2CanvasCoordinate(5586, -737, pov);
 
@@ -465,7 +465,7 @@ function Onboarding_Seattle_LabelingLandmarks (params) {
         // A user is asked to click the bottom of bus stop.
         var LabelShelterDone= false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var trashCanCanvasCoord;
         trashCanCanvasCoord = gsvImageCoordinate2CanvasCoordinate(4868, -565, pov);
 
@@ -573,7 +573,7 @@ function Onboarding_Seattle_LabelingLandmarks (params) {
         // A user is asked to click the bottom of bus stop.
         var LabelShelterDone= false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var newspapaperBoxCanvasCoord;
         newspapaperBoxCanvasCoord = gsvImageCoordinate2CanvasCoordinate(4670, -500, pov);
 

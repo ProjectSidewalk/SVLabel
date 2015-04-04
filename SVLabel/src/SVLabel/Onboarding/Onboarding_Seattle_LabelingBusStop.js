@@ -133,7 +133,7 @@ function Onboarding_Seattle_LabelingBusStop (params) {
             'mousemove' : function () {
                 if (!AdjustHeadingAngleDone) {
                     if (mouseDown) {
-                        var pov = getPOV();
+                        var pov = svw.getPOV();
 
                         if (handAnimation) {
                             handAnimation.remove();
@@ -169,7 +169,7 @@ function Onboarding_Seattle_LabelingBusStop (params) {
         $("#viewControlLayer").bind('mousemove', function () {
             var panoId = getPanoId();
             if (!SwitchModeToLabelingBusStopDone) {
-                var pov = getPOV();
+                var pov = svw.getPOV();
                 onb.clear();
                 if (210 < pov.heading &&
                     pov.heading < 250 &&
@@ -217,7 +217,7 @@ function Onboarding_Seattle_LabelingBusStop (params) {
         // A user is asked to click the bottom of bus stop.
         var step3done = false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var busStopCanvasCoord;
         busStopCanvasCoord = gsvImageCoordinate2CanvasCoordinate(8722, -1265, pov);
 
@@ -319,7 +319,7 @@ function Onboarding_Seattle_LabelingBusStop (params) {
 
         // Label a trash can.
         var LabelTrashCanDone = false;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var panoId = getPanoId();
         var trashCanCanvasCoord;
         trashCanCanvasCoord = gsvImageCoordinate2CanvasCoordinate(7926, -888, pov);

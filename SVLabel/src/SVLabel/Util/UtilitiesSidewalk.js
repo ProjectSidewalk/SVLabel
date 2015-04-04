@@ -52,7 +52,15 @@ function getLabelCursorImagePath() {
         NoCurbRamp: {
             id: 'NoCurbRamp',
             cursorImagePath : 'img/cursors/pen.png'
-        }
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          cursorImagePath : 'img/cursors/pen.png'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          cursorImagePath : 'img/cursors/pen.png'
+        },
     }
 }
 svw.misc.getLabelCursorImagePath = getLabelCursorImagePath;
@@ -69,11 +77,19 @@ function getLabelIconImagePath(labelType) {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            iconImagePath : 'public/img/icons/Sidewalk/Icon_CurbRamp-13.svg'
+            iconImagePath : '../../img/Icon_CurbRamp.svg'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
             iconImagePath : 'public/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          iconImagePath: null
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          iconImagePath: null
         },
         Void: {
             id: 'Void',
@@ -148,6 +164,16 @@ function getLabelInstructions () {
             instructionalText: 'Label mode: Locate and draw an outline around where a <span class="underline">curb ramp is missing</span>',
             textColor: 'rgba(255,255,255,1)'
         },
+        Obstacle: {
+          id: 'Obstacle',
+          instructionalText: 'Label mode: Locate and draw an outline around a <span class="underline">obstacle in path</span>',
+          textColor: 'rgba(255,255,255,1)'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          instructionalText: 'Label mode: Locate and draw an outline around a <span class="underline">sidewalk surface problem</span>',
+          textColor: 'rgba(255,255,255,1)'
+        },
         'StopSign' : {
             'id' : 'StopSign',
             'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">stop sign</span>',
@@ -212,6 +238,14 @@ function getRibbonConnectionPositions () {
             id: 'NoCurbRamp',
             labelRibbonConnection: '188px'
         },
+        Obstacle: {
+          id: 'Obstacle',
+          labelRibbonConnection: '264px'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          labelRibbonConnection: '340px'
+        },
         'StopSign' : {
             'id' : 'StopSign',
             'text' : 'Stop Sign',
@@ -272,6 +306,14 @@ function getLabelDescriptions () {
         NoCurbRamp: {
             id: 'NoCurbRamp',
             text: 'Missing Curb Ramp'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          text: 'Obstacle in a Path'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          text: 'Surface Problem'
         },
         Void: {
             id: 'Void',
@@ -345,6 +387,14 @@ function SidewalkColorScheme () {
         NoCurbRamp: {
             id: 'NoCurbRamp',
             fillStyle: 'rgba(255, 39, 113, 0.9)'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          fillStyle: 'rgba(0, 161, 203, 0.9)'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          fillStyle: 'rgba(215, 0, 96, 0.9)'
         },
         Void: {
             id: 'Void',

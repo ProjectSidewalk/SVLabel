@@ -1,14 +1,7 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 2/25/13
- * Time: 5:07 PM
- * To change this template use File | Settings | File Templates.
- */
 var svw = svw || {};
 
-function ActionStack (params) {
-    var oPublic = {
+function ActionStack ($, params) {
+    var self = {
         'className' : 'ActionStack'
         };
     var properties = {};
@@ -33,15 +26,18 @@ function ActionStack (params) {
     ////////////////////////////////////////
     function init (params) {
         // Initialization function
+        if (svw.ui && svw.ui.actionStack) {
+          // $buttonRedo = $(params.domIds.redoButton);
+          // $buttonUndo = $(params.domIds.undoButton);
+          $buttonRedo = svw.ui.actionStack.redo;
+          $buttonUndo = svw.ui.actionStack.undo;
+          $buttonRedo.css('opacity', 0.5);
+          $buttonUndo.css('opacity', 0.5);
 
-        $buttonRedo = $(params.domIds.redoButton);
-        $buttonUndo = $(params.domIds.undoButton);
-        $buttonRedo.css('opacity', 0.5);
-        $buttonUndo.css('opacity', 0.5);
-
-        // Attach listeners to buttons
-        $buttonRedo.bind('click', buttonRedoClick);
-        $buttonUndo.bind('click', buttonUndoClick);
+          // Attach listeners to buttons
+          $buttonRedo.bind('click', buttonRedoClick);
+          $buttonUndo.bind('click', buttonUndoClick);
+        }
     }
 
 
@@ -50,7 +46,7 @@ function ActionStack (params) {
           if ('tracker' in svw) {
             svw.tracker.push('Click_Redo');
           }
-            oPublic.redo();
+            self.redo();
         }
     }
 
@@ -60,18 +56,19 @@ function ActionStack (params) {
           if ('tracker' in svw) {
             svw.tracker.push('Click_Undo');
           }
-            oPublic.undo();
+            self.undo();
         }
     }
 
-
     ////////////////////////////////////////
-    // oPublic Functions
+    // Public methods
     ////////////////////////////////////////
-    oPublic.disableRedo = function () {
+    self.disableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = true;
-            $buttonRedo.css('opacity', 0.5);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonRedo.css('opacity', 0.5);
+            }
             return this;
         } else {
             return false;
@@ -79,10 +76,12 @@ function ActionStack (params) {
     };
 
 
-    oPublic.disableUndo = function () {
+    self.disableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = true;
-            $buttonUndo.css('opacity', 0.5);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonUndo.css('opacity', 0.5);
+            }
             return this;
         } else {
             return false;
@@ -90,10 +89,12 @@ function ActionStack (params) {
     };
 
 
-    oPublic.enableRedo = function () {
+    self.enableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = false;
-            $buttonRedo.css('opacity', 1);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonRedo.css('opacity', 1);
+            }
             return this;
         } else {
             return false;
@@ -101,36 +102,38 @@ function ActionStack (params) {
     };
 
 
-    oPublic.enableUndo = function () {
+    self.enableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = false;
-            $buttonUndo.css('opacity', 1);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonUndo.css('opacity', 1);
+            }
             return this;
         } else {
             return false;
         }
     };
 
-    oPublic.getStatus = function(key) {
+    self.getStatus = function(key) {
         if (!(key in status)) {
             console.warn("You have passed an invalid key for status.")
         }
         return status[key];
     };
 
-    oPublic.lockDisableRedo = function () {
+    self.lockDisableRedo = function () {
         lock.disableRedo = true;
         return this;
     };
 
 
-    oPublic.lockDisableUndo = function () {
+    self.lockDisableUndo = function () {
         lock.disableUndo = true;
         return this;
     };
 
 
-    oPublic.pop = function () {
+    self.pop = function () {
         // Delete the last action
         if (actionStack.length > 0) {
             status.actionStackCursor -= 1;
@@ -140,10 +143,10 @@ function ActionStack (params) {
     };
 
 
-    oPublic.push = function (action, label) {
+    self.push = function (action, label) {
         var availableActionList = ['addLabel', 'deleteLabel'];
         if (availableActionList.indexOf(action) === -1) {
-            throw oPublic.className + ": Illegal action.";
+            throw self.className + ": Illegal action.";
         }
 
         var actionItem = {
@@ -162,7 +165,7 @@ function ActionStack (params) {
     };
 
 
-    oPublic.redo = function () {
+    self.redo = function () {
         // Redo an action
         if (!status.disableRedo) {
             if (actionStack.length > status.actionStackCursor) {
@@ -187,13 +190,13 @@ function ActionStack (params) {
         }
     };
 
-    oPublic.size = function () {
+    self.size = function () {
         // return the size of the stack
 
         return actionStack.length;
     };
 
-    oPublic.undo = function () {
+    self.undo = function () {
         // Undo an action
         if (!status.disableUndo) {
             status.actionStackCursor -= 1;
@@ -222,44 +225,46 @@ function ActionStack (params) {
     };
 
 
-    oPublic.unlockDisableRedo = function () {
+    self.unlockDisableRedo = function () {
         lock.disableRedo = false;
         return this;
     };
 
 
-    oPublic.unlockDisableUndo = function () {
+    self.unlockDisableUndo = function () {
         lock.disableUndo = false;
         return this;
     };
 
-    oPublic.getLock = function(key) {
+    self.getLock = function(key) {
         if (!(key in lock)) {
           console.warn("You have passed an invalid key for status.")
         }
         return lock[key];
-    }        
+    }
 
-    oPublic.updateOpacity = function () {
+    self.updateOpacity = function () {
         // Change opacity
-        if (status.actionStackCursor < actionStack.length) {
-            $buttonRedo.css('opacity', 1);
-        } else {
-            $buttonRedo.css('opacity', 0.5);
-        }
+        if (svw.ui && svw.ui.actionStack) {
+          if (status.actionStackCursor < actionStack.length) {
+              $buttonRedo.css('opacity', 1);
+          } else {
+              $buttonRedo.css('opacity', 0.5);
+          }
 
-        if (status.actionStackCursor > 0) {
-            $buttonUndo.css('opacity', 1);
-        } else {
-            $buttonUndo.css('opacity', 0.5);
-        }
+          if (status.actionStackCursor > 0) {
+              $buttonUndo.css('opacity', 1);
+          } else {
+              $buttonUndo.css('opacity', 0.5);
+          }
 
-        // if the status is set to disabled, then set the opacity of buttons to 0.5 anyway.
-        if (status.disableUndo) {
-            $buttonUndo.css('opacity', 0.5);
-        }
-        if (status.disableRedo) {
-            $buttonRedo.css('opacity', 0.5);
+          // if the status is set to disabled, then set the opacity of buttons to 0.5 anyway.
+          if (status.disableUndo) {
+              $buttonUndo.css('opacity', 0.5);
+          }
+          if (status.disableRedo) {
+              $buttonRedo.css('opacity', 0.5);
+          }
         }
     };
     ////////////////////////////////////////
@@ -267,5 +272,5 @@ function ActionStack (params) {
     ////////////////////////////////////////
     init(params);
 
-    return oPublic;
+    return self;
 }

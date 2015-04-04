@@ -32,6 +32,7 @@ describe("Tests for the Path module.", function () {
 
   });
 
+  /*
   describe("The method getPOV", function () {
     it("should return pov", function () {
 
@@ -82,6 +83,7 @@ describe("Tests for the Path module.", function () {
   describe("The method resetStrokeStyle", function () {
     // Todo
   });
+  */
 
   describe("The method setFill", function () {
     it("this Path should have three points", function () {

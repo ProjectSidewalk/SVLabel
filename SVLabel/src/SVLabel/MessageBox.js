@@ -1,12 +1,5 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 4/4/13
- * Time: 3:16 PM
- * To change this template use File | Settings | File Templates.
- */
-function MessageBox (param) {
-    var oPublic = {className: 'MessageBox'};
+function MessageBox ($, param) {
+    var self = {className: 'MessageBox'};
     var OKButton = '<button id="MessageBoxOkButton" class="button" style="position: absolute; bottom: 10px; left: 10px;">OK</button>';
 
     // jQuery elements
@@ -19,12 +12,12 @@ function MessageBox (param) {
         $divMessageBox = $("#MessageBox");
     }
 
-    oPublic.setMessage = function (message) {
+    self.setMessage = function (message) {
         $divMessageBox.html(message);
         return this;
     };
 
-    oPublic.setPosition = function (x, y, width, height, background) {
+    self.setPosition = function (x, y, width, height, background) {
         if (x && typeof x == 'number') {
             x = x + 'px';
         }
@@ -84,7 +77,7 @@ function MessageBox (param) {
         return this;
     };
 
-    oPublic.appendOKButton = function (message) {
+    self.appendOKButton = function (message) {
         $divMessageBox.css('padding-bottom', '50px');
         $divMessageBox.append(OKButton);
 
@@ -107,14 +100,14 @@ function MessageBox (param) {
         });
     };
 
-    oPublic.hide = function () {
+    self.hide = function () {
         // This method hides the message box.
         $divMessageBox.css('visibility', 'hidden');
         $divMessageBoxHolder.css('visibility', 'hidden');
         return this;
     };
 
-    oPublic.show = function (disableOtherInteraction) {
+    self.show = function (disableOtherInteraction) {
         // This method shows a messaage box on the page.
         if (!disableOtherInteraction) {
             disableOtherInteraction = false;
@@ -128,5 +121,5 @@ function MessageBox (param) {
     };
 
     init();
-    return oPublic;
+    return self;
 }

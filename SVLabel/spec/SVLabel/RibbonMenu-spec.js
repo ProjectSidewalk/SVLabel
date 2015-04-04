@@ -1,10 +1,18 @@
 describe("Tests for the RibbonMenu module.", function () {
   var ribbon = new RibbonMenu(jQuery);
+  svw.map = {};
+  svw.map.modeSwitchLabelClick = function () { return this; } // mock function
+  svw.map.modeSwitchWalkClick = function () { return this; }
+
+  beforeEach(function () {
+    ribbon.unlockDisableModeSwitch();
+    ribbon.enableModeSwitch();
+  });
 
   describe("The backToWalk method", function () {
     it("should switch the mode to Walk", function () {
       ribbon.backToWalk();
-      expect(ribbon.getStatus('mode')).toBe('val');
+      expect(ribbon.getStatus('mode')).toBe('Walk');
     });
   });
 
@@ -36,19 +44,46 @@ describe("Tests for the RibbonMenu module.", function () {
     });
   });
 
-  /*
   describe("The lockDisableModeSwitch", function() {
-    it("should not allow you to disable or enable mode switch", function() {
+    it("should not allow you to disable mode switch", function() {
+      ribbon.enableModeSwitch();
+      ribbon.lockDisableModeSwitch();
+      ribbon.disableModeSwitch();
+      ribbon.unlockDisableModeSwitch();
+      expect(ribbon.getStatus("disableModeSwitch")).toBeFalsy();
+    });
 
+    it("should not allow ribbon to enable mode switch", function() {
+      ribbon.disableModeSwitch()
+      ribbon.lockDisableModeSwitch();
+      ribbon.enableModeSwitch();
+      expect(ribbon.getStatus("disableModeSwitch")).toBe(true);
     });
   });
 
   describe("The unlockDisableModeSwitch", function() {
-    it("should allow you to disable or enable mode switch", function() {
 
+    it("should allow ribbon to disable mode switch", function() {
+      ribbon.lockDisableModeSwitch();
+      ribbon.disableModeSwitch();
+      expect(ribbon.getStatus("disableModeSwitch")).toBeFalsy();
+
+      ribbon.unlockDisableModeSwitch();
+      ribbon.disableModeSwitch();
+      expect(ribbon.getStatus("disableModeSwitch")).toBeTruthy();
+    });
+
+    it("should allow ribbon to enable mode switch", function() {
+      ribbon.disableModeSwitch();
+      ribbon.lockDisableModeSwitch();
+      ribbon.enableModeSwitch();
+      expect(ribbon.getStatus("disableModeSwitch")).toBeTruthy();
+
+      ribbon.unlockDisableModeSwitch();
+      ribbon.enableModeSwitch();
+      expect(ribbon.getStatus("disableModeSwitch")).toBeFalsy();
     });
   });
-  */
 
   describe("The getStatus method", function () {
     it("should warn when an illegal key is passed.", function () {

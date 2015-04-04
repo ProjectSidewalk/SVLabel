@@ -1,14 +1,7 @@
-    /**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 2/25/13
- * Time: 5:07 PM
- * To change this template use File | Settings | File Templates.
- */
 var svw = svw || {};
 
-function ZoomControl (param, $) {
-    var oPublic = {
+function ZoomControl ($, param) {
+    var self = {
         'className' : 'ZoomControl'
     };
     var properties = {
@@ -35,14 +28,17 @@ function ZoomControl (param, $) {
     function _init (param) {
         // Initialization function
 
-        if ('domIds' in param) {
-          $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
-          $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
-        }
-
-
-        // Attach listeners to buttons
-        if ($buttonZoomIn && $buttonZoomOut) {
+        //if ('domIds' in param) {
+        if (svw.ui && svw.ui.zoomControl) {
+          $buttonZoomIn = svw.ui.zoomControl.zoomIn;
+          $buttonZoomOut = svw.ui.zoomControl.zoomOut;
+          // $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
+          // $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
+        // }
+        //
+        //
+        // // Attach listeners to buttons
+        // if ($buttonZoomIn && $buttonZoomOut) {
           $buttonZoomIn.bind('click', buttonZoomInClick);
           $buttonZoomOut.bind('click', buttonZoomOutClick);
         }
@@ -82,7 +78,6 @@ function ZoomControl (param, $) {
             if ('canvas' in svw) {
               svw.canvas.cancelDrawing();
             }
-            console.log("hhd");
             if ('panorama' in svw) {
                 console.log("hi");
                 var currentPov = svw.panorama.getPov();
@@ -132,13 +127,11 @@ function ZoomControl (param, $) {
             return false;
         }
 
-        //
         // Cancel drawing when zooming in or out.
         if ('canvas' in svw) {
           svw.canvas.cancelDrawing();
         }
 
-        //
         // Set the zoom level and change the panorama properties.
         var zoomLevel = undefined;
         zoomLevelIn = parseInt(zoomLevelIn);
@@ -152,22 +145,22 @@ function ZoomControl (param, $) {
         svw.panorama.setZoom(zoomLevel);
         return zoomLevel;
     }
-    
+
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
-    oPublic.disableZoomIn = function () {
+    self.disableZoomIn = function () {
         // Enable zoom in.
         if (!lock.disableZoomIn) {
             status.disableZoomIn = true;
             if ($buttonZoomIn) {
                 $buttonZoomIn.css('opacity', 0.5);
-            }  
+            }
         }
         return this;
     }
 
-    oPublic.disableZoomOut = function () {
+    self.disableZoomOut = function () {
         // Enable zoom out.
         if (!lock.disableZoomOut) {
             status.disableZoomOut = true;
@@ -178,18 +171,18 @@ function ZoomControl (param, $) {
         return this;
     };
 
-    oPublic.enableZoomIn = function () {
+    self.enableZoomIn = function () {
         // Enable zoom in.
         if (!lock.disableZoomIn) {
             status.disableZoomIn = false;
             if ($buttonZoomIn) {
                 $buttonZoomIn.css('opacity', 1);
-            }  
+            }
         }
         return this;
     }
 
-    oPublic.enableZoomOut = function () {
+    self.enableZoomOut = function () {
         // Enable zoom out.
         if (!lock.disableZoomOut) {
             status.disableZoomOut = false;
@@ -200,8 +193,8 @@ function ZoomControl (param, $) {
         return this;
     };
 
-    oPublic.getLock = function (name) {
-        if (name in lock) { 
+    self.getLock = function (name) {
+        if (name in lock) {
             return lock[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';
@@ -209,8 +202,8 @@ function ZoomControl (param, $) {
         }
     }
 
-    oPublic.getStatus = function (name) {
-        if (name in status) { 
+    self.getStatus = function (name) {
+        if (name in status) {
             return status[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';
@@ -218,29 +211,29 @@ function ZoomControl (param, $) {
         }
     }
 
-    oPublic.getProperties = function (name) {
-        if (name in properties) { 
+    self.getProperties = function (name) {
+        if (name in properties) {
             return properties[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';
             throw errMsg;
-        }   
+        }
     }
 
-    oPublic.lockDisableZoomIn = function () {
+    self.lockDisableZoomIn = function () {
         // Lock zoom in
         lock.disableZoomIn = true;
         return this;
     };
 
-    oPublic.lockDisableZoomOut = function () {
+    self.lockDisableZoomOut = function () {
         // Lock zoom out.
         lock.disableZoomOut = true;
         return this;
     };
 
-    oPublic.updateOpacity = function () {
-        var pov = getPOV();
+    self.updateOpacity = function () {
+        var pov = svw.getPOV();
 
         if (pov) {
             var zoom = pov.zoom;
@@ -271,7 +264,7 @@ function ZoomControl (param, $) {
         return this;
     };
 
-    oPublic.pointZoomIn = function (x, y) {
+    self.pointZoomIn = function (x, y) {
         // This function takes a canvas coordinate (x, y) and pass it to a private method pointZoomIn()
         if (!status.disableZoomIn) {
             return pointZoomIn(x, y);
@@ -280,31 +273,31 @@ function ZoomControl (param, $) {
         }
     };
 
-    oPublic.setMaxZoomLevel = function (zoomLevel) {
+    self.setMaxZoomLevel = function (zoomLevel) {
         // This method sets the maximum zoom level that SV can show.
         properties.maxZoomLevel = zoomLevel;
         return this;
     };
 
-    oPublic.setMinZoomLevel = function (zoomLevel) {
+    self.setMinZoomLevel = function (zoomLevel) {
         // This method sets the minimum zoom level that SV can show.
         properties.minZoomLevel = zoomLevel;
         return this;
     };
 
-    oPublic.unlockDisableZoomIn = function () {
+    self.unlockDisableZoomIn = function () {
         // Lock zoom in
         lock.disableZoomIn = false;
         return this;
     };
 
-    oPublic.unlockDisableZoomOut = function () {
+    self.unlockDisableZoomOut = function () {
         // Lock zoom out.
         lock.disableZoomOut = false;
         return this;
     };
 
-    oPublic.zoomIn = function () {
+    self.zoomIn = function () {
         // This method is called from outside this object to zoom in to a GSV image.
         if (!status.disableZoomIn) {
             var pov = svw.panorama.getPov();
@@ -316,7 +309,7 @@ function ZoomControl (param, $) {
         }
     };
 
-    oPublic.zoomOut = function () {
+    self.zoomOut = function () {
         // This method is called from outside this class to zoom out from a GSV image.
         if (!status.disableZoomOut) {
             // ViewControl_ZoomOut
@@ -334,5 +327,5 @@ function ZoomControl (param, $) {
     ////////////////////////////////////////
     _init(param);
 
-    return oPublic;
+    return self;
 };

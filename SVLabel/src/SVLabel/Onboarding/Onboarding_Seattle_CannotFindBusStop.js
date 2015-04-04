@@ -162,7 +162,7 @@ function Onboarding_Seattle_CannotFindBusStop (params) {
             'mousemove' : function () {
                 if (!AdjustHeadingAngleDone) {
                     if (mouseDown) {
-                        var pov = getPOV();
+                        var pov = svw.getPOV();
 
                         AdjustHeadingAngleDone = true;
                         onb.clear();
@@ -197,7 +197,7 @@ function Onboarding_Seattle_CannotFindBusStop (params) {
             var panoId = getPanoId();
 
             if (!SuggestTheBusStopIsMissingDone) {
-                var pov = getPOV();
+                var pov = svw.getPOV();
 
                 onb.clear();
                 if ((0 <= pov.heading &&
@@ -260,7 +260,7 @@ function Onboarding_Seattle_CannotFindBusStop (params) {
         myProgressFeedback.setProgress(4 / properties.totalTaskCount);
 
         if (!InstructToReportAbsenceOfBusStopDone) {
-            var pov = getPOV();
+            var pov = svw.getPOV();
 
             onb.clear();
             if ((0 <= pov.heading && pov.heading < 40) ||
