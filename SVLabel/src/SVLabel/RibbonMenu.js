@@ -12,7 +12,7 @@ var svw = svw || {};
 // RibbonMenu Class Constructor
 ////////////////////////////////////////////////////////////////////////////////
 function RibbonMenu ($, params) {
-    var oPublic = {className: 'RibbonMenu'};
+    var self = {className: 'RibbonMenu'};
     var properties = {
         borderWidth : "3px",
         modeSwitchDefaultBorderColor : "rgba(200,200,200,0.75)",
@@ -109,22 +109,19 @@ function RibbonMenu ($, params) {
             ribbonConnectorPositions = getRibbonConnectionPositions();
             borderColor = labelColors[labelType].fillStyle;
 
-            if (svw.map) {
+            if ('map' in svw && svw.map) {
                 if (labelType === 'Walk') {
                     // Switch to walking mode.
-                    oPublic.setStatus('mode', 'Walk');
-                    oPublic.setStatus('selectedLabelType', undefined);
+                    self.setStatus('mode', 'Walk');
+                    self.setStatus('selectedLabelType', undefined);
                     svw.map.modeSwitchWalkClick();
                 } else {
                     // Switch to labeling mode.
-                    oPublic.setStatus('mode', labelType);
-                    oPublic.setStatus('selectedLabelType', labelType);
+                    self.setStatus('mode', labelType);
+                    self.setStatus('selectedLabelType', labelType);
                     svw.map.modeSwitchLabelClick();
                 }
-            } else {
-                throw oPublic.className + ' modeSwitch(): map not defined.';
             }
-
             // Set border color
             setModeSwitchBorderColors(labelType);
             setModeSwitchBackgroundColors(labelType);
@@ -250,14 +247,14 @@ function RibbonMenu ($, params) {
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
-    oPublic.backToWalk = function () {
+    self.backToWalk = function () {
         // This function simulates the click on Walk icon
         modeSwitch('Walk');
         return this;
     };
 
 
-    oPublic.disableModeSwitch = function () {
+    self.disableModeSwitch = function () {
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = true;
             $spansModeSwitches.css('opacity', 0.5);
@@ -265,7 +262,7 @@ function RibbonMenu ($, params) {
         return this;
     };
 
-    oPublic.disableLandmarkLabels = function () {
+    self.disableLandmarkLabels = function () {
         // This function dims landmark labels and
         // also set status.disableLandmarkLabels to true
         $.each($spansModeSwitches, function (i, v) {
@@ -281,7 +278,7 @@ function RibbonMenu ($, params) {
         return this;
     };
 
-    oPublic.enableModeSwitch = function () {
+    self.enableModeSwitch = function () {
         // This method enables mode switch.
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = false;
@@ -290,7 +287,7 @@ function RibbonMenu ($, params) {
         return this;
     };
 
-    oPublic.enableLandmarkLabels = function () {
+    self.enableLandmarkLabels = function () {
         $.each($spansModeSwitches, function (i, v) {
             var labelType = $(v).attr('val');
             $(v).css('opacity', 1);
@@ -300,47 +297,47 @@ function RibbonMenu ($, params) {
     };
 
 
-    oPublic.lockDisableModeSwitch = function () {
+    self.lockDisableModeSwitch = function () {
         status.lockDisableModeSwitch = true;
         return this;
     };
 
-    oPublic.modeSwitch = function (labelType) {
+    self.modeSwitch = function (labelType) {
         // This function simulates the click on a mode switch icon
         modeSwitch(labelType);
     };
 
-    oPublic.modeSwitchClick = function (labelType) {
+    self.modeSwitchClick = function (labelType) {
         // This function simulates the click on a mode switch icon
         // Todo. Deprecated. Delete when you will refactor this code.
         modeSwitch(labelType);
     };
 
 
-    oPublic.getStatus = function(key) {
+    self.getStatus = function(key) {
             if (key in status) {
                 return status[key];
             } else {
-              console.warn(oPublic.className, 'You cannot access a property "' + key + '".');
+              console.warn(self.className, 'You cannot access a property "' + key + '".');
               return undefined;
             }
     };
 
-    oPublic.setAllowedMode = function (mode) {
+    self.setAllowedMode = function (mode) {
         // This method sets the allowed mode.
         status.allowedMode = mode;
         return this;
     };
 
-    oPublic.setStatus = function(name, value) {
+    self.setStatus = function(name, value) {
         try {
             if (name in status) {
                 if (name === 'disableModeSwitch') {
                     if (typeof value === 'boolean') {
                         if (value) {
-                            oPublic.disableModeSwitch();
+                            self.disableModeSwitch();
                         } else {
-                            oPublic.enableModeSwitch();
+                            self.enableModeSwitch();
                         }
                         return this;
                     } else {
@@ -355,13 +352,13 @@ function RibbonMenu ($, params) {
                 throw errMsg;
             }
         } catch (e) {
-            console.error(oPublic.className, e);
+            console.error(self.className, e);
             return false;
         }
 
     };
 
-    oPublic.unlockDisableModeSwitch = function () {
+    self.unlockDisableModeSwitch = function () {
         status.lockDisableModeSwitch = false;
         return this;
     };
@@ -369,5 +366,5 @@ function RibbonMenu ($, params) {
 
     _init(params);
 
-    return oPublic;
+    return self;
 }

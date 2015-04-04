@@ -137,7 +137,7 @@ function Tracker () {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
         if (availableActionTypes.indexOf(action) === -1) {
-            console.error('Unknown action: ' + action);
+            console.warn('Unknown action: ' + action);
             return false;
         } else {
             var pov;
