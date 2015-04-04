@@ -82,10 +82,6 @@ function Canvas ($, param) {
         showLabelTag: false
     };
 
-    // doms holds id of doms that Canvas will access.
-    // validDoms are items names of dom's that should be specified in domIds parameter
-    var doms = {};
-    var validDoms = ['canvas'];
 
     // Canvas context
     var canvasProperties = {'height':0, 'width':0};
@@ -112,30 +108,12 @@ function Canvas ($, param) {
     ////////////////////////////////////////
     // Initialization
     function _init (param) {
-        // Initialize doms
-        // var domIds = param.domIds;
-        // for (i in validDoms) {
-        //     var domName = validDoms[i];
-        //     doms[domName] = domIds[domName];
-        // }
-        var el;
-        if ('domIds' in param && 'canvas' in param.domIds) {
-          doms['canvas'] = param.domIds['canvas'];
-          var el = document.getElementById(doms.canvas);
-          ctx = el.getContext('2d');
-          canvasProperties.width = el.width;
-          canvasProperties.height = el.height;
-        } else {
-          var el = null;
-        }
+        var el = document.getElementById("label-canvas");
+        ctx = el.getContext('2d');
+        canvasProperties.width = el.width;
+        canvasProperties.height = el.height;
 
-        // Set the canvas context.
-        // var el = document.getElementById(doms.canvas);
-        // ctx = el.getContext('2d');
-        // canvasProperties.width = el.width;
-        // canvasProperties.height = el.height;
-
-        if ('evaluationMode' in param) {
+        if (param && 'evaluationMode' in param) {
             properties.evaluationMode = param.evaluationMode;
         }
 
@@ -1223,7 +1201,6 @@ function Canvas ($, param) {
         status.lockDisableLabelEdit = false;
         return this;
     };
-
 
     oPublic.unlockDisableLabeling = function () {
         status.lockDisableLabeling = false;

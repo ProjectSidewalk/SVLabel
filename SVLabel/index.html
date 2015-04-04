@@ -31,17 +31,11 @@
 <script src="src/SVLabel/Form.js"></script>
 <script src="src/SVLabel/OverlayMessageBox.js"></script>
 <script src="src/SVLabel/ActionStack.js"></script>
-<!-- <script src="src/SVLabel/Onboarding/Onboarding.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding_LabelingCurbRamps.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding_LabelingCurbRampsDifficultScene2.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding_SkipAlleyWithoutCurbRamps.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding_QuickCheckCurbRamps.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding_GrabAndDragAnimation.js"></script> -->
 <script src="src/SVLabel/ExampleWindow.js"></script>
 <script src="src/SVLabel/Keyboard.js"></script>
 <script src="src/SVLabel/MissionDescription.js"></script>
 <script src="src/SVLabel/LabeledLandmarkFeedback.js"></script>
-<!-- <script src="src/SVLabel/QualificationBadges.js"></script> -->
+<script src="src/SVLabel/QualificationBadges.js"></script>
 <script src="src/SVLabel/ProgressFeedback.js"></script>
 <script src="src/SVLabel/Tracker.js"></script>
 <script src="src/SVLabel/MessageBox.js"></script>
@@ -57,162 +51,31 @@ $(document).ready(function(){
     // http://forum.jquery.com/topic/chrome-text-select-cursor-on-drag
     document.onselectstart = function () { return false; };
 
-    // Collect information necessary for initializing interface components
-    var qualification_url = ''; // '<?php echo url_for('/api_get_qualification'); ?>';
-    var task_url = ''; // '<?php echo url_for('/api_get_intersection'); ?>';
-
-    var hasPerformedPreviousStudy = undefined;
-    var qualifications = undefined;
-    var onboardingStatus = undefined;
-
+    var mainParam = {};
     var hitId = getURLParameter("hitId");
     var assignmentId =  getURLParameter("assignmentId");
     var turkerId =  getURLParameter("workerId");
-    var previewMode = false;
-
-    turkerId = turkerId ? turkerId : 'Test_Kotaro';
+    turkerId = turkerId ? turkerId : 'Test_User';
     assignmentId = assignmentId ? assignmentId : 'Test_Assignment';
     hitId = hitId ? hitId : 'Test_Hit';
-
-    if (!getURLParameter('workerId') || getURLParameter('groupId')) {
-        previewMode = true;
-    }
-
-    hasPerformedPreviousStudy = false;
-
-
-    onboardingStatus = 'Done';
-
-    // Check if this person has participated in any of previous study, then do not allow him/her
-    // to perform this task.
-    if (hasPerformedPreviousStudy && turkerId !== 'Test_Kotaro') {
-        var message = 'You have worked on this HIT before. For the research purpose, we cannot hire a person ' +
-            'who has already performed another HIT of the same type. Please return the HIT. ' +
-            'Thank you for your interest in our task.';
-        svw.messageBox = new MessageBox();
-        svw.messageBox.setPosition(0, 300, width=920, height=90, background=true);
-        svw.messageBox.setMessage(message);
-        svw.messageBox.show();
-        return false;
-    }
-
-    var canvasParam = {};
-    canvasParam.domIds = {'canvas': 'labelCanvas'};
 
     var formParam = {};
     formParam.dataStoreUrl = ''; // '<?php echo url_for("/api_post_labels");?>';
     formParam.hitId = hitId;
     formParam.assignmentId = assignmentId;
     formParam.turkerId = turkerId;
-    formParam.onboarding = (onboardingStatus !== 'Done') ? true : false;
+    formParam.onboarding = false;
     formParam.taskPanoramaId = "";
     formParam.taskDescription = "";
     formParam.domIds = {};
     formParam.domIds.canvas = 'onboardingCanvas';
-
+    mainParam.form = formParam;
 
     var missionDescriptionParam = {};
     missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
+    mainParam.missionDescription = missionDescriptionParam
 
-    var labeledLandmarkFeedbackParam = {};
-    labeledLandmarkFeedbackParam.domIds = {};
-
-    // Instantiate objects.
-    svw.ui = new UI($);
-    svw.tracker = new Tracker();
-    svw.keyboard = new Keyboard($);
-    svw.canvas = new Canvas($, canvasParam);
-    svw.form = new Form($, formParam);
-    svw.examples = undefined
-    svw.overlayMessageBox = new OverlayMessageBox($);
-    svw.missionDescription = new MissionDescription($, missionDescriptionParam);
-    svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($, labeledLandmarkFeedbackParam);
-    svw.qualificationBadges = undefined;
-    svw.progressFeedback = new ProgressFeedback($);
-    svw.actionStack = new ActionStack($);
-    svw.ribbon = new RibbonMenu($);
-    svw.messageBox = new MessageBox($);
-    svw.zoomControl = new ZoomControl($);
-    svw.tooltip = undefined;
-    svw.onboarding = undefined;
-    svw.progressPov = new ProgressPov($);
-    svw.main = new Main($);
-
-    onboardingStatus = 'Done';
-    svw.onboarding = false;
-    svw.form.disableSubmit();
-    svw.tracker.push('TaskStart');
-    //
-    // Set map parameters and instantiate it.
-    var mapParam = {};
-    mapParam.canvas = svw.canvas;
-    mapParam.overlayMessageBox = svw.overlayMessageBox;
-
-
-        var taskDescription;
-        var taskSpecification;
-        var SVLat;
-        var SVLng;
-        var headingEstimate;
-        var currentProgress;
-        var panoId = '_AUz5cV_ofocoDbesxY3Kw';
-        taskDescription = 'PilotTask_v2_MountPleasant';
-
-            var task = null;
-            var nearbyPanoIds = [];
-            var totalTaskCount = -1;
-            var taskPanoramaId = '';
-            var taskRemaining = -1;
-            var taskCompleted = -1;
-
-            var isFirstTask = false;
-
-            totalTaskCount = 1; // taskSpecification.numAllTasks;
-            taskRemaining = 1; // taskSpecification.numTasksRemaining;
-            taskCompleted = totalTaskCount - taskRemaining;
-            currentProgress = taskCompleted / totalTaskCount;
-
-            svw.form.setTaskRemaining(taskRemaining);
-            svw.form.setTaskDescription(''); // Todo. task.TaskDescription);
-            svw.form.setTaskPanoramaId(panoId); // Todo. task.TaskPanoramaId);
-            SVLat = parseFloat(38.894799); // Todo
-            SVLng = parseFloat(-77.021906); // Todo
-            currentProgress = parseFloat(currentProgress);
-
-            mapParam.Lat = SVLat;
-            mapParam.Lng = SVLng;
-            mapParam.panoramaPov = {
-                heading: 0,
-                pitch: -10,
-                zoom: 1
-            };
-
-            mapParam.taskPanoId = panoId;
-
-            // Build a list of pano ids that a user can access.
-            nearbyPanoIds = [mapParam.taskPanoId];
-            mapParam.availablePanoIds = nearbyPanoIds;
-
-            svw.missionDescription.setCurrentStatusDescription('Your mission is to ' +
-                '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
-            svw.progressFeedback.setProgress(currentProgress);
-            svw.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
-                " out of " + totalTaskCount + ".");
-
-            if (isFirstTask) {
-                svw.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
-                svw.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
-                    "Now the actual task begins. Click OK to start the task.");
-                svw.messageBox.appendOKButton();
-                svw.messageBox.show();
-            } else {
-                svw.messageBox.hide();
-            }
-
-    // Instantiation
-    svw.map = new Map(mapParam);
-    svw.map.setStatus('hideNonavailablePanoLinks', true);
-
+    svw.main = new Main($, mainParam);
 });
 </script>
 </head>
@@ -336,7 +199,7 @@ $(document).ready(function(){
                 <![endif]-->
             </div>
             <div id="labelDrawingLayer"  class="Window_StreetView" style="z-index: 0;">
-                <canvas id="labelCanvas"  class="Window_StreetView"
+                <canvas id="label-canvas"  class="Window_StreetView"
                         width="720px" height="480px"
                         style="cursor: default, move; /*cursor: url(img/cursors/Target.cur) 16 16, move;*/">
                 </canvas>
@@ -484,25 +347,25 @@ $(document).ready(function(){
         </div>
     </form>
 </div>
-<div id="Holder_QuickCheck">
-    <h2 class="bold">Quick Check</h2><br />
-    <p id="QuickCheckInstructionHolder"></p>
-    <div id="QuickCheckImageHolder">
-    </div>
-    <div id="QuickCheckMessageHolder">
-    </div>
-    <div id="QuickCheckButtonsHolder">
-        <input type="button" id="QuickCheckSubmit" class="button" value="Submit"/>
-        <input type="button" id="QuickCheckNext" class="button" value="Next"/>
-    </div>
-</div>
-<div id="Holder_PageOverlay">
-    <img src="img/misc/AjaxLoader.gif"
-         id="PageOverlayImage_AjaxLoader">
-</div>
-    <!-- <span id="debug" style="position:absolute;top:700px;left:0;">Debug</span> -->
-</div>
-<div id="Researcher_Message"></div>
-<div id="HolderTooltip">HelloWorld</div>
+  <div id="Holder_QuickCheck">
+      <h2 class="bold">Quick Check</h2><br />
+      <p id="QuickCheckInstructionHolder"></p>
+      <div id="QuickCheckImageHolder">
+      </div>
+      <div id="QuickCheckMessageHolder">
+      </div>
+      <div id="QuickCheckButtonsHolder">
+          <input type="button" id="QuickCheckSubmit" class="button" value="Submit"/>
+          <input type="button" id="QuickCheckNext" class="button" value="Next"/>
+      </div>
+  </div>
+  <div id="Holder_PageOverlay">
+      <img src="img/misc/AjaxLoader.gif"
+           id="PageOverlayImage_AjaxLoader">
+  </div>
+      <!-- <span id="debug" style="position:absolute;top:700px;left:0;">Debug</span> -->
+  </div>
+  <div id="Researcher_Message"></div>
+  <div id="HolderTooltip">HelloWorld</div>
 </body>
 </html>
