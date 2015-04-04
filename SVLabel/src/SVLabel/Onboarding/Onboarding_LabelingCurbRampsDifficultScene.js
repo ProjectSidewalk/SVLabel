@@ -709,7 +709,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
                     //
                     // Check the current pov. Check if the user is facing the second corner.
                     // If so, prompt to click a Curb Ramp button. Otherwise show a message to adjust the angle.
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     var heading = pov.heading;
 
                     if (290 < heading && heading <= 295) {
@@ -863,7 +863,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
         var labels = svw.canvas.getLabels();
         var originalLabelsLen = labels.length;
         var len = undefined;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(10955, -255, pov); // This helper function is in a Point file
 
         var message = "Now let's trace the shape of the curb ramp.";
@@ -1197,7 +1197,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
                     //
                     // Check the current pov. Check if the user is facing the second corner.
                     // If so, prompt to click a Curb Ramp button. Otherwise show a message to adjust the angle.
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     var heading = pov.heading;
 
                     if (245 < heading && heading <= 250) {
@@ -1257,7 +1257,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
         var labels = svw.canvas.getLabels();
         var originalLabelsLen = labels.length;
         var len = undefined;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(9300, -255, pov); // This helper function is in a Point file
 
         var message = "Trace the end of the sidewalk to label the missing curb ramp.";
@@ -1489,7 +1489,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
                     //
                     // Check the current pov. Check if the user is facing the second corner.
                     // If so, prompt to click a Curb Ramp button. Otherwise show a message to adjust the angle.
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     var heading = pov.heading;
 
                     if (150 < heading && heading <= 155) {
@@ -1594,7 +1594,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
         var labels = svw.canvas.getLabels();
         var originalLabelsLen = labels.length;
         var len = undefined;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(6264, -640, pov); // This helper function is in a Point file
         // {x: 6264.222222222222, y: -644.1277777777777},
 
@@ -1792,7 +1792,7 @@ function Onboarding_LabelingCurbRampsDifficultScene (params, $) {
         var labels = svw.canvas.getLabels();
         var originalLabelsLen = labels.length;
         var len = undefined;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(4704, -690, pov); // This helper function is in a Point file
         var message = "Draw an outline the curb ramp and label it!";
 

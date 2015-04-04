@@ -58,6 +58,7 @@ function getPOV() {
         throw 'getPOV() (in Map.js): panoarama not defined.';
     }
 }
+svw.getPOV = getPOV;
 
 
 function getLinks () {
@@ -68,6 +69,7 @@ function getLinks () {
         throw 'getLinks() (in Map.js): panorama not defined.';
     }
 }
+svw.getLinks = getLinks;
 
 //
 // Fog related variables.
@@ -379,7 +381,7 @@ function Map (params) {
     }
 
     function fogUpdate () {
-        var pov = getPOV();
+        var pov = svw.getPOV();
 
         if (pov) {
             var heading = pov.heading;
@@ -456,7 +458,7 @@ function Map (params) {
         // This is a callback function that is fired when pov is changed
         if (svw.canvas) {
             var latlng = getPosition();
-            var heading = getPOV().heading;
+            var heading = svw.getPOV().heading;
 
             svw.canvas.clear();
 
@@ -763,7 +765,7 @@ function Map (params) {
             // If a mouse is being dragged on the control layer, move the sv image.
             var dx = mouseStatus.currX - mouseStatus.prevX;
             var dy = mouseStatus.currY - mouseStatus.prevY;
-            var pov = getPOV();
+            var pov = svw.getPOV();
             var zoom = pov.zoom;
             var zoomLevel = svw.zoomFactor[zoom];
 

@@ -9,7 +9,7 @@ function Point (x, y, pov, params) {
     if(params.fillStyle==undefined){
         params.fillStyle = 'rgba(255,255,255,0.5)';
     }
-    var oPublic = {
+    var self = {
             className : 'Point',
             svImageCoordinate : undefined,
             canvasCoordinate : undefined,
@@ -47,29 +47,29 @@ function Point (x, y, pov, params) {
         var zoomFactor = svw.zoomFactor[zoom];
         var svImageHeight = svw.svImageHeight;
         var svImageWidth = svw.svImageWidth;
-        oPublic.svImageCoordinate = {};
-        oPublic.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svw.alpha_x * (x - (svw.canvasWidth / 2)) / zoomFactor);
-        oPublic.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svw.alpha_y * (y - (svw.canvasHeight / 2)) / zoomFactor);
+        self.svImageCoordinate = {};
+        self.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svw.alpha_x * (x - (svw.canvasWidth / 2)) / zoomFactor);
+        self.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svw.alpha_y * (y - (svw.canvasHeight / 2)) / zoomFactor);
         // svImageCoordinate.x could be negative, so adjust it.
-        if (oPublic.svImageCoordinate.x < 0) {
-            oPublic.svImageCoordinate.x = oPublic.svImageCoordinate.x + svImageWidth;
+        if (self.svImageCoordinate.x < 0) {
+            self.svImageCoordinate.x = self.svImageCoordinate.x + svImageWidth;
         }
         // Keep the original canvas coordinate and
         // canvas pov just in case.
-        oPublic.canvasCoordinate = {
+        self.canvasCoordinate = {
             x : x,
             y : y
         };
-        oPublic.originalCanvasCoordinate = {
+        self.originalCanvasCoordinate = {
             x : x,
             y : y
         };
-        oPublic.pov = {
+        self.pov = {
             heading : pov.heading,
             pitch : pov.pitch,
             zoom : pov.zoom
         };
-        oPublic.originalPov = {
+        self.originalPov = {
             heading : pov.heading,
             pitch : pov.pitch,
             zoom : pov.zoom
@@ -91,7 +91,7 @@ function Point (x, y, pov, params) {
             } else {
                 // See if this property must be set.
                 if (unnessesaryProperties.indexOf(propName) === -1) {
-                    // throw oPublic.className + ': "' + propName + '" is not defined.';
+                    // throw self.className + ': "' + propName + '" is not defined.';
                 }
             }
         }
@@ -107,11 +107,11 @@ function Point (x, y, pov, params) {
     }
 
     function getCanvasX () {
-      return oPublic.canvasCoordinate.x;
+      return self.canvasCoordinate.x;
     }
 
     function getCanvasY () {
-      return oPublic.canvasCoordinate.y;
+      return self.canvasCoordinate.y;
     }
 
     function getFill () {
@@ -125,7 +125,7 @@ function Point (x, y, pov, params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    oPublic.belongsTo = function () {
+    self.belongsTo = function () {
         // This function returns an object directly above this object.
         // I.e., it returns which path it belongs to.
         if (belongsTo) {
@@ -135,43 +135,43 @@ function Point (x, y, pov, params) {
         }
     };
 
-    oPublic.getPOV = function() {
+    self.getPOV = function() {
         return getPOV();
     };
 
-    oPublic.getCanvasCoordinate = function (pov) {
+    self.getCanvasCoordinate = function (pov) {
         // This function takes current pov of the Street View as a parameter
         // and returns a canvas coordinate of a point.
 
         //
         // POV adjustment
-        oPublic.canvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(oPublic.svImageCoordinate.x, oPublic.svImageCoordinate.y, pov);
-        return svw.gsvImageCoordinate2CanvasCoordinate(oPublic.svImageCoordinate.x, oPublic.svImageCoordinate.y, pov);
+        self.canvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
+        return svw.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
     };
 
-    oPublic.getCanvasX = getCanvasX;
-    oPublic.getCanvasY = getCanvasY;
-    oPublic.getFill = getFill;
+    self.getCanvasX = getCanvasX;
+    self.getCanvasY = getCanvasY;
+    self.getFill = getFill;
 
-    oPublic.getFillStyle = function () {
+    self.getFillStyle = function () {
         // Get the fill style.
         // return properties.fillStyle;
         return  getFill();
     };
 
-    oPublic.getGSVImageCoordinate = function () {
-        return $.extend(true, {}, oPublic.svImageCoordinate);
+    self.getGSVImageCoordinate = function () {
+        return $.extend(true, {}, self.svImageCoordinate);
     };
 
-    oPublic.getProperty = function (name) {
+    self.getProperty = function (name) {
         if (!(name in properties)) {
-            throw oPublic.className + ' : A property name "' + name + '" does not exist in properties.';
+            throw self.className + ' : A property name "' + name + '" does not exist in properties.';
         }
         return properties[name];
     };
 
 
-    oPublic.getProperties = function () {
+    self.getProperties = function () {
         // Return the deep copy of the properties object,
         // so the caller can only modify properties from
         // setProperties() (which I have not implemented.)
@@ -182,12 +182,12 @@ function Point (x, y, pov, params) {
     };
 
 
-    oPublic.isOn = function (x, y) {
+    self.isOn = function (x, y) {
         var margin = properties.radiusOuterCircle / 2 + 3;
-        if (x < oPublic.canvasCoordinate.x + margin &&
-            x > oPublic.canvasCoordinate.x - margin &&
-            y < oPublic.canvasCoordinate.y + margin &&
-            y > oPublic.canvasCoordinate.y - margin) {
+        if (x < self.canvasCoordinate.x + margin &&
+            x > self.canvasCoordinate.x - margin &&
+            y < self.canvasCoordinate.y + margin &&
+            y > self.canvasCoordinate.y - margin) {
             return this;
         } else {
             return false;
@@ -195,14 +195,14 @@ function Point (x, y, pov, params) {
     }
 
 
-    oPublic.render = function (pov, ctx) {
+    self.render = function (pov, ctx) {
         // Render points
         if (status.visibility === 'visible') {
             var coord;
             var x;
             var y;
             var r = properties.radiusInnerCircle;
-            coord = oPublic.getCanvasCoordinate(pov);
+            coord = self.getCanvasCoordinate(pov);
             x = coord.x;
             y = coord.y;
 
@@ -223,51 +223,51 @@ function Point (x, y, pov, params) {
 
     };
 
-    oPublic.resetFillStyle = function () {
+    self.resetFillStyle = function () {
         // This method reverts the fillStyle property to its original value
         properties.fillStyleInnerCircle = properties.originalFillStyleInnerCircle;
         return this;
     };
 
-    oPublic.resetSVImageCoordinate = function (coord) {
+    self.resetSVImageCoordinate = function (coord) {
         // Set the svImageCoordinate
-        oPublic.svImageCoordinate = coord;
-        oPublic.canvasCoordinate = {x : 0, y: 0};
+        self.svImageCoordinate = coord;
+        self.canvasCoordinate = {x : 0, y: 0};
         return this;
     };
 
-    oPublic.resetStrokeStyle = function () {
+    self.resetStrokeStyle = function () {
         // This method resets the strokeStyle to its original value
         properties.strokeStyleOuterCircle = properties.originalStrokeStyleOuterCircle;
         return this;
     };
 
-    oPublic.setBelongsTo = function (obj) {
+    self.setBelongsTo = function (obj) {
         // This function sets which object (Path)
         // The point belongs to.
         belongsTo = obj;
         return this;
     };
 
-    oPublic.setFillStyle = function (value) {
+    self.setFillStyle = function (value) {
         // This method sets the fill style of inner circle to the specified value
         properties.fillStyleInnerCircle = value;
         return this;
     };
 
-    oPublic.setIconPath = function (iconPath) {
+    self.setIconPath = function (iconPath) {
         properties.iconImagePath = iconPath;
         return this;
     };
 
-    oPublic.setPhotographerPov = function (heading, pitch) {
+    self.setPhotographerPov = function (heading, pitch) {
         // this method sets the photographerHeading and photographerPitch
         properties.photographerHeading = heading;
         properties.photographerPitch = pitch;
         return this;
     };
 
-    oPublic.setProperties = function (params) {
+    self.setProperties = function (params) {
         // This function resets all the properties specified in params.
         for (key in params) {
             if (key in properties) {
@@ -276,41 +276,41 @@ function Point (x, y, pov, params) {
         }
 
         if ('originalCanvasCoordinate' in params) {
-            oPublic.originalCanvasCoordinate = params.originalCanvasCoordinate;
+            self.originalCanvasCoordinate = params.originalCanvasCoordinate;
         }
 
         //
         // Set pov parameters
-        oPublic.pov = oPublic.pov || {};
+        self.pov = self.pov || {};
         if ('pov' in params) {
-            oPublic.pov = params.pov;
+            self.pov = params.pov;
         }
 
         if ('heading' in params) {
-            oPublic.pov.heading = params.heading;
+            self.pov.heading = params.heading;
         }
 
         if ('pitch' in params) {
-            oPublic.pov.pitch = params.pitch;
+            self.pov.pitch = params.pitch;
         }
 
         if ('zoom' in params) {
-            oPublic.pov.zoom = params.zoom;
+            self.pov.zoom = params.zoom;
         }
 
         //
         // Set original pov parameters
-        oPublic.originalPov = oPublic.originalPov || {};
+        self.originalPov = self.originalPov || {};
         if ('originalHeading' in params) {
-            oPublic.originalPov.heading = params.originalHeading;
+            self.originalPov.heading = params.originalHeading;
         }
 
         if ('originalPitch' in params) {
-            oPublic.originalPov.pitch = params.originalPitch;
+            self.originalPov.pitch = params.originalPitch;
         }
 
         if ('originalZoom' in params) {
-            oPublic.originalPov.zoom = params.originalZoom;
+            self.originalPov.zoom = params.originalZoom;
         }
 
 
@@ -323,13 +323,13 @@ function Point (x, y, pov, params) {
         return this;
     };
 
-    oPublic.setStrokeStyle = function (val) {
+    self.setStrokeStyle = function (val) {
         // This method sets the strokeStyle of an outer circle to val
         properties.strokeStyleOuterCircle = val;
         return this;
     };
 
-    oPublic.setVisibility = function (visibility) {
+    self.setVisibility = function (visibility) {
         // This method sets the visibility of a path (and points that cons
         if (visibility === 'visible' || visibility === 'hidden') {
             status.visibility = visibility;
@@ -338,7 +338,7 @@ function Point (x, y, pov, params) {
     };
 
     // Todo. Deprecated method. Get rid of this later.
-    oPublic.resetProperties = oPublic.setProperties;
+    self.resetProperties = self.setProperties;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Initialization
@@ -350,7 +350,7 @@ function Point (x, y, pov, params) {
         _init2();
     }
 
-    return oPublic;
+    return self;
 }
 
 

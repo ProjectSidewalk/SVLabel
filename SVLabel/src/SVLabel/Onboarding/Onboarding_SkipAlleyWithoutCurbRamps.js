@@ -217,7 +217,7 @@ function Onboarding_SkipAlleyWithoutCurbRamps (params, $) {
                     //
                     // Check the current pov. Check if the user is facing the second corner.
                     // If so, prompt to click a Curb Ramp button. Otherwise show a message to adjust the angle.
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     var heading = pov.heading;
 
                     if (179 < heading && heading < 183) {
@@ -311,7 +311,7 @@ function Onboarding_SkipAlleyWithoutCurbRamps (params, $) {
                     //
                     // Check the current pov. Check if the user is facing the second corner.
                     // If so, prompt to click a Curb Ramp button. Otherwise show a message to adjust the angle.
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     var heading = pov.heading;
 
                     if (8 <= heading && heading < 10) {

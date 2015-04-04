@@ -31,7 +31,7 @@ function ProgressPov (param, $) {
             status.previousHeading = param.pov.heading;
         } else {
             try {
-                var pov = getPov();
+                var pov = svw.getPov();
                 status.previousHeading = pov.heading;
             } catch (e) {
                 status.previousHeading = 0;
@@ -141,7 +141,7 @@ function ProgressPov (param, $) {
         try {
             if (status.currentCompletionRate < 1) {
                 var headingRange = 25;
-                var pov = getPOV();
+                var pov = svw.getPOV();
                 var heading = pov.heading;
                 var headingMin = (heading - headingRange + 360) % 360;
                 var headingMax = (heading + headingRange) % 360;

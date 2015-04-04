@@ -160,7 +160,7 @@ function Validator (param, $) {
         //
         var i;
         var len = label.points.length;
-        var pov = getPOV();
+        var pov = svw.getPOV();
 //        {
 //            heading: parseFloat(label.points[0].heading),
 //            pitch: parseFloat(label.points[0].pitch),
@@ -780,4 +780,3 @@ function Validator (param, $) {
 
     return oPublic;
 }
-

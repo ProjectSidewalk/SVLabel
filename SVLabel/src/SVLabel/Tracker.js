@@ -176,7 +176,7 @@ function Tracker () {
             // Initialize variables. Note you cannot get pov, panoid, or position
             // before the map and SV load.
             try {
-                pov = getPOV();
+                pov = svw.getPOV();
             } catch (err) {
                 pov = {
                     heading: undefinedMsg,

@@ -126,7 +126,7 @@ function Onboarding_LabelingBusStop (params) {
             'mousemove' : function () {
                 if (!AdjustHeadingAngleDone) {
                     if (mouseDown) {
-                        var pov = getPOV();
+                        var pov = svw.getPOV();
 
                         if (handAnimation) {
                             handAnimation.remove();
@@ -162,7 +162,7 @@ function Onboarding_LabelingBusStop (params) {
         $("#viewControlLayer").bind('mousemove', function () {
             var panoId = getPanoId();
                 if (!SwitchModeToLabelingBusStopDone) {
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
 
                     onb.clear();
 
@@ -211,7 +211,7 @@ function Onboarding_LabelingBusStop (params) {
         // A user is asked to click the bottom of bus stop.
         var step3done = false;
 
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var busStopCanvasCoord;
         busStopCanvasCoord = gsvImageCoordinate2CanvasCoordinate(6995, -681, pov);
 

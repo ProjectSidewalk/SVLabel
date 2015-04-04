@@ -638,7 +638,7 @@ function Onboarding_LabelingCurbRamps (params, $) {
                     //
                     // Check the current pov. Check if the user is facing the second corner.
                     // If so, prompt to click a Curb Ramp button. Otherwise show a message to adjust the angle.
-                    var pov = getPOV();
+                    var pov = svw.getPOV();
                     var heading = pov.heading;
 
                     if (130 <= heading && heading < 160) {
@@ -667,7 +667,7 @@ function Onboarding_LabelingCurbRamps (params, $) {
             "Let's label them! " +
             "First, let's label the curb ramp. Click the curb ramp button."; //First, click the Curb Ramp button on the menu to label the curb ramp.";
         var stepDone = false;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(5622, -611, pov);
         var missingCurbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(5166, -685, pov);
 
@@ -712,7 +712,7 @@ function Onboarding_LabelingCurbRamps (params, $) {
         var userLabels = svw.canvas.getLabels('user');
         var originalLabelsLen = userLabels.length;
         var len = undefined;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(5600, -580, pov); // This helper function is in a Point file
 
         var message = "Let's draw an outline around the curb ramp.";
@@ -887,7 +887,7 @@ function Onboarding_LabelingCurbRamps (params, $) {
         var userLabels = svw.canvas.getLabels('user');
         var originalLabelsLen = userLabels.length;
         var len = undefined;
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var curbRampCanvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(5000, -610, pov); // This helper function is in a Point file
 
         var message = "Let's draw an outline around the missing curb ramp.<br /><div style=\"height:10px;\"></div>" +

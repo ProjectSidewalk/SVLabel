@@ -152,7 +152,7 @@ function ZoomControl (param, $) {
         svw.panorama.setZoom(zoomLevel);
         return zoomLevel;
     }
-    
+
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
@@ -162,7 +162,7 @@ function ZoomControl (param, $) {
             status.disableZoomIn = true;
             if ($buttonZoomIn) {
                 $buttonZoomIn.css('opacity', 0.5);
-            }  
+            }
         }
         return this;
     }
@@ -184,7 +184,7 @@ function ZoomControl (param, $) {
             status.disableZoomIn = false;
             if ($buttonZoomIn) {
                 $buttonZoomIn.css('opacity', 1);
-            }  
+            }
         }
         return this;
     }
@@ -201,7 +201,7 @@ function ZoomControl (param, $) {
     };
 
     oPublic.getLock = function (name) {
-        if (name in lock) { 
+        if (name in lock) {
             return lock[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';
@@ -210,7 +210,7 @@ function ZoomControl (param, $) {
     }
 
     oPublic.getStatus = function (name) {
-        if (name in status) { 
+        if (name in status) {
             return status[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';
@@ -219,12 +219,12 @@ function ZoomControl (param, $) {
     }
 
     oPublic.getProperties = function (name) {
-        if (name in properties) { 
+        if (name in properties) {
             return properties[name];
         } else {
             var errMsg = 'You cannot access a property "' + name + '".';
             throw errMsg;
-        }   
+        }
     }
 
     oPublic.lockDisableZoomIn = function () {
@@ -240,7 +240,7 @@ function ZoomControl (param, $) {
     };
 
     oPublic.updateOpacity = function () {
-        var pov = getPOV();
+        var pov = svw.getPOV();
 
         if (pov) {
             var zoom = pov.zoom;

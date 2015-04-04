@@ -162,7 +162,7 @@ function Canvas (param, $) {
 
         var pathLen = tempPath.length;
         var points = [];
-        var pov = getPOV();
+        var pov = svw.getPOV();
         var i;
 
         for (i = 0; i < pathLen; i++) {
@@ -905,7 +905,7 @@ function Canvas (param, $) {
     oPublic.render = function () {
         // KH. Deprecated.
         // Renders labels and pathes (as well as points in each path.)
-        var pov = getPOV();
+        var pov = svw.getPOV();
         // renderLabels(pov, ctx);
         return this;
     };
@@ -931,7 +931,7 @@ function Canvas (param, $) {
             NoCurbRamp: 0
         };
         status.totalLabelCount = 0;
-        var pov = getPOV();
+        var pov = svw.getPOV();
 
 
         //
