@@ -12,7 +12,13 @@ function UI ($, params) {
     ////////////////////////////////////////
     function _init (params) {
 
+      // ActionStack DOMs
+      $buttonRedo = $("#ActionStackRedoButton");
+      $buttonUndo = $("#ActionStackUndoButton");
 
+      self.actionStack = {};
+      self.actionStack.redo = $buttonRedo;
+      self.actionStack.undo = $buttonUndo;
 
       // Ribbon menu DOMs
       $divStreetViewHolder = $("#Holder_StreetView");

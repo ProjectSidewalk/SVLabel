@@ -140,11 +140,9 @@ function Form ($, params) {
             self.lockDisableSubmit();
         }
 
-        if (!('onboarding' in svw && svw.onboarding)) {
-            messageCanvas = new Onboarding(params, $)
-        }
-
-
+        // if (!('onboarding' in svw && svw.onboarding)) {
+        //     messageCanvas = new Onboarding(params, $)
+        // }
 
         //
         // Insert texts in a textfield

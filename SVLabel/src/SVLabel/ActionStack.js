@@ -26,15 +26,18 @@ function ActionStack ($, params) {
     ////////////////////////////////////////
     function init (params) {
         // Initialization function
+        if (svw.ui && svw.ui.actionStack) {
+          // $buttonRedo = $(params.domIds.redoButton);
+          // $buttonUndo = $(params.domIds.undoButton);
+          $buttonRedo = svw.ui.actionStack.redo;
+          $buttonUndo = svw.ui.actionStack.undo;
+          $buttonRedo.css('opacity', 0.5);
+          $buttonUndo.css('opacity', 0.5);
 
-        $buttonRedo = $(params.domIds.redoButton);
-        $buttonUndo = $(params.domIds.undoButton);
-        $buttonRedo.css('opacity', 0.5);
-        $buttonUndo.css('opacity', 0.5);
-
-        // Attach listeners to buttons
-        $buttonRedo.bind('click', buttonRedoClick);
-        $buttonUndo.bind('click', buttonUndoClick);
+          // Attach listeners to buttons
+          $buttonRedo.bind('click', buttonRedoClick);
+          $buttonUndo.bind('click', buttonUndoClick);
+        }
     }
 
 
@@ -57,14 +60,15 @@ function ActionStack ($, params) {
         }
     }
 
-
     ////////////////////////////////////////
-    // Publie methods
+    // Public methods
     ////////////////////////////////////////
     self.disableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = true;
-            $buttonRedo.css('opacity', 0.5);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonRedo.css('opacity', 0.5);
+            }
             return this;
         } else {
             return false;
@@ -75,7 +79,9 @@ function ActionStack ($, params) {
     self.disableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = true;
-            $buttonUndo.css('opacity', 0.5);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonUndo.css('opacity', 0.5);
+            }
             return this;
         } else {
             return false;
@@ -86,7 +92,9 @@ function ActionStack ($, params) {
     self.enableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = false;
-            $buttonRedo.css('opacity', 1);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonRedo.css('opacity', 1);
+            }
             return this;
         } else {
             return false;
@@ -97,7 +105,9 @@ function ActionStack ($, params) {
     self.enableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = false;
-            $buttonUndo.css('opacity', 1);
+            if (svw.ui && svw.ui.actionStack) {
+              $buttonUndo.css('opacity', 1);
+            }
             return this;
         } else {
             return false;
@@ -235,24 +245,26 @@ function ActionStack ($, params) {
 
     self.updateOpacity = function () {
         // Change opacity
-        if (status.actionStackCursor < actionStack.length) {
-            $buttonRedo.css('opacity', 1);
-        } else {
-            $buttonRedo.css('opacity', 0.5);
-        }
+        if (svw.ui && svw.ui.actionStack) {
+          if (status.actionStackCursor < actionStack.length) {
+              $buttonRedo.css('opacity', 1);
+          } else {
+              $buttonRedo.css('opacity', 0.5);
+          }
 
-        if (status.actionStackCursor > 0) {
-            $buttonUndo.css('opacity', 1);
-        } else {
-            $buttonUndo.css('opacity', 0.5);
-        }
+          if (status.actionStackCursor > 0) {
+              $buttonUndo.css('opacity', 1);
+          } else {
+              $buttonUndo.css('opacity', 0.5);
+          }
 
-        // if the status is set to disabled, then set the opacity of buttons to 0.5 anyway.
-        if (status.disableUndo) {
-            $buttonUndo.css('opacity', 0.5);
-        }
-        if (status.disableRedo) {
-            $buttonRedo.css('opacity', 0.5);
+          // if the status is set to disabled, then set the opacity of buttons to 0.5 anyway.
+          if (status.disableUndo) {
+              $buttonUndo.css('opacity', 0.5);
+          }
+          if (status.disableRedo) {
+              $buttonRedo.css('opacity', 0.5);
+          }
         }
     };
     ////////////////////////////////////////

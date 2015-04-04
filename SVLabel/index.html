@@ -31,12 +31,12 @@
 <script src="src/SVLabel/Form.js"></script>
 <script src="src/SVLabel/OverlayMessageBox.js"></script>
 <script src="src/SVLabel/ActionStack.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding.js"></script>
+<!-- <script src="src/SVLabel/Onboarding/Onboarding.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_LabelingCurbRamps.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_LabelingCurbRampsDifficultScene2.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_SkipAlleyWithoutCurbRamps.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_QuickCheckCurbRamps.js"></script>
-<script src="src/SVLabel/Onboarding/Onboarding_GrabAndDragAnimation.js"></script>
+<script src="src/SVLabel/Onboarding/Onboarding_GrabAndDragAnimation.js"></script> -->
 <script src="src/SVLabel/ExampleWindow.js"></script>
 <script src="src/SVLabel/Keyboard.js"></script>
 <script src="src/SVLabel/MissionDescription.js"></script>
@@ -176,11 +176,11 @@ $(document).ready(function(){
     formParam.domIds = {};
     formParam.domIds.canvas = 'onboardingCanvas';
 
-    // var overlayMessageBoxParam = {};
-    // overlayMessageBoxParam.domIds = {
-    //     Holder_OverlayMessage : "#OverlayMessageBox",
-    //     OverlayMessage : "#OverlayMessage"
-    // };
+    var overlayMessageBoxParam = {};
+    overlayMessageBoxParam.domIds = {
+        Holder_OverlayMessage : "#OverlayMessageBox",
+        OverlayMessage : "#OverlayMessage"
+    };
 
     var missionDescriptionParam = {};
     missionDescriptionParam.domIds = {
@@ -198,11 +198,11 @@ $(document).ready(function(){
     progressFeedbackParam.domIds = {};
     progressFeedbackParam.message = "";
 
-    var actionStackParam = {};
-    actionStackParam.domIds = {
-        'redoButton' : "#ActionStackRedoButton",
-        'undoButton' : "#ActionStackUndoButton"
-    };
+    // var actionStackParam = {};
+    // actionStackParam.domIds = {
+    //     'redoButton' : "#ActionStackRedoButton",
+    //     'undoButton' : "#ActionStackUndoButton"
+    // };
 
     var zoomControlParam = {};
     zoomControlParam.domIds = {
@@ -210,10 +210,10 @@ $(document).ready(function(){
         zoomOutButton: '#ZoomControlZoomOutButton'
     };
 
-    var tooltipParam = {};
-    tooltipParam.domIds = {
-        tooltipHolder: '#HolderTooltip'
-    };
+    // var tooltipParam = {};
+    // tooltipParam.domIds = {
+    //     tooltipHolder: '#HolderTooltip'
+    // };
 
     var mapParam = {};
 
@@ -227,51 +227,51 @@ $(document).ready(function(){
     svw.canvas = new Canvas($, canvasParam);
     svw.form = new Form($, formParam);
     // svw.examples = new ExampleWindow(exampleWindowParam);
-    // svw.overlayMessageBox = new OverlayMessageBox(overlayMessageBoxParam);
+    svw.overlayMessageBox = new OverlayMessageBox(overlayMessageBoxParam);
     svw.missionDescription = new MissionDescription($, missionDescriptionParam);
     svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($, labeledLandmarkFeedbackParam);
     // svw.qualificationBadges = new QualificationBadges($, qualificationBadgesParam);
     svw.progressFeedback = new ProgressFeedback($, progressFeedbackParam);
-    svw.actionStack = new ActionStack($, actionStackParam);
+    svw.actionStack = new ActionStack($);
     svw.ribbon = new RibbonMenu($);
     svw.messageBox = new MessageBox($);
     svw.zoomControl = new ZoomControl($, zoomControlParam);
-    svw.tooltip = new Tooltip($, tooltipParam);
+    // svw.tooltip = new Tooltip($, tooltipParam);
     svw.onboarding = undefined;
     svw.main = new Main($);
 
-    onboardingStatus = getURLParameter('onboardingStatus');
-    if (!onboardingStatus) {
-        onboardingStatus = $.cookies.get('onboardingStatus');
-        onboardingStatus = onboardingStatus ? onboardingStatus : "LabelingCurbRamp";
-    }
+    // onboardingStatus = getURLParameter('onboardingStatus');
+    // if (!onboardingStatus) {
+    //     onboardingStatus = $.cookies.get('onboardingStatus');
+    //     onboardingStatus = onboardingStatus ? onboardingStatus : "LabelingCurbRamp";
+    // }
     onboardingStatus = 'Done';
 
-    if (onboardingStatus !== "Done") {
-        var onboardingParam = {};
-        onboardingParam.domIds = {};
-        onboardingParam.domIds.canvas = 'onboardingCanvas';
-        onboardingParam.turker_id = turkerId;
-        if (onboardingStatus === "LabelingCurbRamp" ||
-            onboardingStatus === "onboarding1") {
-            onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_LabelingCurbRamps'); ?>';
-            svw.onboarding = new Onboarding_LabelingCurbRamps(onboardingParam, $);
-            $.cookies.set('onboardingStatus', 'CompletingATask');
-        } else if (onboardingStatus === "CompletingATask" ||
-            onboardingStatus === "onboarding2") {
-            onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_CompletingATask'); ?>';
-            svw.onboarding = new Onboarding_LabelingCurbRampsDifficultScene2(onboardingParam, $);
-            $.cookies.set('onboardingStatus', 'SkipAlley');
-        } else if (onboardingStatus === "SkipAlley" ||
-            onboardingStatus === "onboarding3") {
-            onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_SkipAlley'); ?>';
-            svw.onboarding = new Onboarding_SkipAlleyWithoutCurbRamps(onboardingParam, $);
-            $.cookies.set('onboardingStatus', 'LabelingCurbRamp');
-        }  else {
-            svw.onboarding = undefined;
-            $.cookies.set('onboardingStatus', 'LabelingCurbRamp');
-        }
-    }
+    // if (onboardingStatus !== "Done") {
+    //     var onboardingParam = {};
+    //     onboardingParam.domIds = {};
+    //     onboardingParam.domIds.canvas = 'onboardingCanvas';
+    //     onboardingParam.turker_id = turkerId;
+    //     if (onboardingStatus === "LabelingCurbRamp" ||
+    //         onboardingStatus === "onboarding1") {
+    //         onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_LabelingCurbRamps'); ?>';
+    //         svw.onboarding = new Onboarding_LabelingCurbRamps(onboardingParam, $);
+    //         $.cookies.set('onboardingStatus', 'CompletingATask');
+    //     } else if (onboardingStatus === "CompletingATask" ||
+    //         onboardingStatus === "onboarding2") {
+    //         onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_CompletingATask'); ?>';
+    //         svw.onboarding = new Onboarding_LabelingCurbRampsDifficultScene2(onboardingParam, $);
+    //         $.cookies.set('onboardingStatus', 'SkipAlley');
+    //     } else if (onboardingStatus === "SkipAlley" ||
+    //         onboardingStatus === "onboarding3") {
+    //         onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_SkipAlley'); ?>';
+    //         svw.onboarding = new Onboarding_SkipAlleyWithoutCurbRamps(onboardingParam, $);
+    //         $.cookies.set('onboardingStatus', 'LabelingCurbRamp');
+    //     }  else {
+    //         svw.onboarding = undefined;
+    //         $.cookies.set('onboardingStatus', 'LabelingCurbRamp');
+    //     }
+    // }
     svw.onboarding = false;
 
 
@@ -281,16 +281,15 @@ $(document).ready(function(){
     //
     // Set a progress bar.
     var progressPovParam = {};
-    if ('onboarding' in svw && svw.onboarding) {
-        progressPovParam.pov = svw.onboarding.panoramaPov;
-    }
+    // if ('onboarding' in svw && svw.onboarding) {
+    //     progressPovParam.pov = svw.onboarding.panoramaPov;
+    // }
     svw.progressPov = new ProgressPov(progressPovParam, $);
 
 
     svw.tracker.push('TaskStart');
     //
     // Set map parameters and instantiate it.
-    //
     mapParam.canvas = svw.canvas;
     mapParam.overlayMessageBox = svw.overlayMessageBox;
     mapParam.domIds = {
@@ -306,13 +305,13 @@ $(document).ready(function(){
 
     // Get latlng and pov data from svw.onboarding or use data from PHP
     if (svw.onboarding) {
-        mapParam.latlng = svw.onboarding.latlng;
+        // mapParam.latlng = svw.onboarding.latlng;
+        // // mapParam.panoramaPov = svw.onboarding.panoramaPov;
+        // // Set the bus stop icon on map
+        // mapParam.Lat = SVLat;
+        // mapParam.Lng = SVLng;
         // mapParam.panoramaPov = svw.onboarding.panoramaPov;
-        // Set the bus stop icon on map
-        mapParam.Lat = SVLat;
-        mapParam.Lng = SVLng;
-        mapParam.panoramaPov = svw.onboarding.panoramaPov;
-        mapParam.taskPanoId = svw.onboarding.panoId;
+        // mapParam.taskPanoId = svw.onboarding.panoId;
     } else {
         var taskDescription;
         var taskSpecification;
@@ -348,10 +347,10 @@ $(document).ready(function(){
 
         // if (taskSpecification.error) {
         if (false) { // todo
-            svw.messageBox.setPosition(0, 300, width=920, height=90, background=true);
-            svw.messageBox.setMessage(taskSpecification.message);
-            svw.messageBox.show();
-            return false;
+            // svw.messageBox.setPosition(0, 300, width=920, height=90, background=true);
+            // svw.messageBox.setMessage(taskSpecification.message);
+            // svw.messageBox.show();
+            // return false;
         } else {
             var task = null; // Todo. taskSpecification.intersections[0];
             var nearbyPanoIds = [];
