@@ -228,7 +228,7 @@ $(document).ready(function(){
     svw.qualificationBadges = new QualificationBadges(qualificationBadgesParam);
     svw.progressFeedback = new ProgressFeedback(progressFeedbackParam);
     svw.actionStack = new ActionStack(actionStackParam);
-    svw.ribbon = new RibbonMenu();
+    svw.ribbon = new RibbonMenu($);
     svw.messageBox = new MessageBox();
     svw.zoomControl = new ZoomControl(zoomControlParam, $);
     svw.tooltip = new Tooltip(tooltipParam, $);
