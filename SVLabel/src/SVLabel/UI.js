@@ -50,6 +50,12 @@ function UI ($, params) {
       self.overlayMessage.box = $("#OverlayMessageBox");
       self.overlayMessage.message = $("#OverlayMessage");
 
+      // ProgressPov
+      self.progressPov = {};
+      self.progressPov.rate = $("#Holder_CurrentCompletionRate");
+      self.progressPov.bar = $("#Holder_CurrentCompletionBar");
+      self.progressPov.filler = $("#Holder_CurrentCompletionBarFiller");
+
       // Ribbon menu DOMs
       $divStreetViewHolder = $("#Holder_StreetView");
       $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");

@@ -24,7 +24,7 @@ function ProgressFeedback ($, params) {
 
         properties.progressBarWidth = $progressBarContainer.width();
 
-        if ('message' in params && params.message) {
+        if (params && params.message) {
             self.setMessage(params.message);
         } else {
             self.setMessage('');

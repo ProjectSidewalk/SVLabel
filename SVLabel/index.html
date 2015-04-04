@@ -57,10 +57,7 @@ $(document).ready(function(){
     // http://forum.jquery.com/topic/chrome-text-select-cursor-on-drag
     document.onselectstart = function () { return false; };
 
-
-    //
     // Collect information necessary for initializing interface components
-    //
     var qualification_url = ''; // '<?php echo url_for('/api_get_qualification'); ?>';
     var task_url = ''; // '<?php echo url_for('/api_get_intersection'); ?>';
 
@@ -81,56 +78,8 @@ $(document).ready(function(){
         previewMode = true;
     }
 
-    //
-    // Get user's qualificaiton status (i.e., have they performed onboarding, previous study, etc..
-    /*
-    $.ajax({
-        async: false,
-        dataType: "json",
-        url: qualification_url,
-        type: 'get',
-        data: {turker_id : turkerId},
-        success: function (result) {
-            if (result && result.error) {
-                throw result.error.message;
-            }
-                            qualifications = {};
-                qualifications.onboardingQualifications = result.qualifications ? result.qualifications.map(function (value) {return value.QualificationType;}) : [];
-                qualifications.hasPerformedPreviousStudy = result.hasPerformedPreviousStudy;
-//            qualifications = {};
-//            qualifications.onboardingQualifications = result ? result.map(function (value) {return value.QualificationType;}) : [];
-//            qualifications.hasPerformedPreviousStudy = false;
-        },
-        error: function (error) {
-            console.error(error);
-        }
-    });
-    */
-    /*
-    if ('hasPerformedPreviousStudy' in qualifications &&
-        qualifications.hasPerformedPreviousStudy) {
-        hasPerformedPreviousStudy = true;
-    } else {
-        hasPerformedPreviousStudy = false;
-    }
-    */
     hasPerformedPreviousStudy = false;
 
-    /*
-    if ("onboardingQualifications" in qualifications) {
-        if (qualifications.onboardingQualifications.indexOf("LabelingCurbRamp") == -1) {
-            onboardingStatus = "LabelingCurbRamp";
-        } else if (qualifications.onboardingQualifications.indexOf("CompletingATask") == -1) {
-            onboardingStatus = "CompletingATask";
-        } else if (qualifications.onboardingQualifications.indexOf("SkipAlley") == -1) {
-            onboardingStatus = "SkipAlley";
-        } else {
-            onboardingStatus = 'Done';
-        }
-    } else {
-        onboardingStatus = 'Done';
-    }
-    */
 
     onboardingStatus = 'Done';
 
@@ -147,21 +96,6 @@ $(document).ready(function(){
         return false;
     }
 
-    //
-    // Set parameters for instantiating objects.
-    //
-    // var exampleWindowParam;
-    // exampleWindowParam = {};
-    // exampleWindowParam.domIds = {
-    //     holder : '#Holder_Examples',
-    //     closeButtonHolder : '#Holder_ExamplesCloseButton',
-    //     StopSign_OneLeg : '#Example_OneLegBusStopSign',
-    //     StopSign_TwoLegs : '#Example_TwoLegBusStopSign',
-    //     StopSign_Column : '#Example_ColumnBusStopSign',
-    //     NextToCurb : '#Example_NextToCurb',
-    //     AwayFromCurb : '#Example_AwayFromCurb'
-    // };
-
     var canvasParam = {};
     canvasParam.domIds = {'canvas': 'labelCanvas'};
 
@@ -176,134 +110,45 @@ $(document).ready(function(){
     formParam.domIds = {};
     formParam.domIds.canvas = 'onboardingCanvas';
 
-    // var overlayMessageBoxParam = {};
-    // overlayMessageBoxParam.domIds = {
-    //     Holder_OverlayMessage : "#OverlayMessageBox",
-    //     OverlayMessage : "#OverlayMessage"
-    // };
 
     var missionDescriptionParam = {};
-    // missionDescriptionParam.domIds = {
-    //     descriptionMessage : "#CurrentStatus_Description"
-    // };
     missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
 
     var labeledLandmarkFeedbackParam = {};
     labeledLandmarkFeedbackParam.domIds = {};
-    //
-    // var qualificationBadgesParam = {};
-    // qualificationBadgesParam.domIds = {};
 
-    var progressFeedbackParam = {};
-    progressFeedbackParam.domIds = {};
-    progressFeedbackParam.message = "";
-
-    // var actionStackParam = {};
-    // actionStackParam.domIds = {
-    //     'redoButton' : "#ActionStackRedoButton",
-    //     'undoButton' : "#ActionStackUndoButton"
-    // };
-
-    // var zoomControlParam = {};
-    // zoomControlParam.domIds = {
-    //     zoomInButton: '#ZoomControlZoomInButton',
-    //     zoomOutButton: '#ZoomControlZoomOutButton'
-    // };
-
-    // var tooltipParam = {};
-    // tooltipParam.domIds = {
-    //     tooltipHolder: '#HolderTooltip'
-    // };
-
-    var mapParam = {};
-
-    //
     // Instantiate objects.
-    //
-
     svw.ui = new UI($);
     svw.tracker = new Tracker();
     svw.keyboard = new Keyboard($);
     svw.canvas = new Canvas($, canvasParam);
     svw.form = new Form($, formParam);
-    // svw.examples = new ExampleWindow(exampleWindowParam);
+    svw.examples = undefined
     svw.overlayMessageBox = new OverlayMessageBox($);
     svw.missionDescription = new MissionDescription($, missionDescriptionParam);
     svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($, labeledLandmarkFeedbackParam);
-    // svw.qualificationBadges = new QualificationBadges($, qualificationBadgesParam);
-    svw.progressFeedback = new ProgressFeedback($, progressFeedbackParam);
+    svw.qualificationBadges = undefined;
+    svw.progressFeedback = new ProgressFeedback($);
     svw.actionStack = new ActionStack($);
     svw.ribbon = new RibbonMenu($);
     svw.messageBox = new MessageBox($);
     svw.zoomControl = new ZoomControl($);
-    // svw.tooltip = new Tooltip($, tooltipParam);
+    svw.tooltip = undefined;
     svw.onboarding = undefined;
+    svw.progressPov = new ProgressPov($);
     svw.main = new Main($);
 
-    // onboardingStatus = getURLParameter('onboardingStatus');
-    // if (!onboardingStatus) {
-    //     onboardingStatus = $.cookies.get('onboardingStatus');
-    //     onboardingStatus = onboardingStatus ? onboardingStatus : "LabelingCurbRamp";
-    // }
     onboardingStatus = 'Done';
-
-    // if (onboardingStatus !== "Done") {
-    //     var onboardingParam = {};
-    //     onboardingParam.domIds = {};
-    //     onboardingParam.domIds.canvas = 'onboardingCanvas';
-    //     onboardingParam.turker_id = turkerId;
-    //     if (onboardingStatus === "LabelingCurbRamp" ||
-    //         onboardingStatus === "onboarding1") {
-    //         onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_LabelingCurbRamps'); ?>';
-    //         svw.onboarding = new Onboarding_LabelingCurbRamps(onboardingParam, $);
-    //         $.cookies.set('onboardingStatus', 'CompletingATask');
-    //     } else if (onboardingStatus === "CompletingATask" ||
-    //         onboardingStatus === "onboarding2") {
-    //         onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_CompletingATask'); ?>';
-    //         svw.onboarding = new Onboarding_LabelingCurbRampsDifficultScene2(onboardingParam, $);
-    //         $.cookies.set('onboardingStatus', 'SkipAlley');
-    //     } else if (onboardingStatus === "SkipAlley" ||
-    //         onboardingStatus === "onboarding3") {
-    //         onboardingParam.qualification_url = ''; // '<?php echo url_for('Qualify_SkipAlley'); ?>';
-    //         svw.onboarding = new Onboarding_SkipAlleyWithoutCurbRamps(onboardingParam, $);
-    //         $.cookies.set('onboardingStatus', 'LabelingCurbRamp');
-    //     }  else {
-    //         svw.onboarding = undefined;
-    //         $.cookies.set('onboardingStatus', 'LabelingCurbRamp');
-    //     }
-    // }
     svw.onboarding = false;
-
-
-
     svw.form.disableSubmit();
-
-    //
-    // Set a progress bar.
-    var progressPovParam = {};
-    // if ('onboarding' in svw && svw.onboarding) {
-    //     progressPovParam.pov = svw.onboarding.panoramaPov;
-    // }
-    svw.progressPov = new ProgressPov(progressPovParam, $);
-
-
     svw.tracker.push('TaskStart');
     //
     // Set map parameters and instantiate it.
+    var mapParam = {};
     mapParam.canvas = svw.canvas;
     mapParam.overlayMessageBox = svw.overlayMessageBox;
 
 
-    // Get latlng and pov data from svw.onboarding or use data from PHP
-    if (svw.onboarding) {
-        // mapParam.latlng = svw.onboarding.latlng;
-        // // mapParam.panoramaPov = svw.onboarding.panoramaPov;
-        // // Set the bus stop icon on map
-        // mapParam.Lat = SVLat;
-        // mapParam.Lng = SVLng;
-        // mapParam.panoramaPov = svw.onboarding.panoramaPov;
-        // mapParam.taskPanoId = svw.onboarding.panoId;
-    } else {
         var taskDescription;
         var taskSpecification;
         var SVLat;
@@ -313,46 +158,13 @@ $(document).ready(function(){
         var panoId = '_AUz5cV_ofocoDbesxY3Kw';
         taskDescription = 'PilotTask_v2_MountPleasant';
 
-        /*
-        $.ajax({
-            async: false,
-            dataType: "json",
-            url: task_url,
-            type: 'get',
-            data: {
-                worker_id: turkerId,
-                task_description: taskDescription,
-                pano_id: '_AUz5cV_ofocoDbesxY3Kw'
-            },
-            success: function (result) {
-                if (result.error) {
-                    throw result.error.message;
-                }
-                taskSpecification = result;
-            },
-            error: function (result) {
-                throw result;
-            }
-        });
-        */
-
-        // if (taskSpecification.error) {
-        if (false) { // todo
-            // svw.messageBox.setPosition(0, 300, width=920, height=90, background=true);
-            // svw.messageBox.setMessage(taskSpecification.message);
-            // svw.messageBox.show();
-            // return false;
-        } else {
-            var task = null; // Todo. taskSpecification.intersections[0];
+            var task = null;
             var nearbyPanoIds = [];
             var totalTaskCount = -1;
             var taskPanoramaId = '';
             var taskRemaining = -1;
             var taskCompleted = -1;
-            //var SVLat;
-            //var SVLng;
-            //var headingEstimate = 0;
-            //var currentProgress = 0;
+
             var isFirstTask = false;
 
             totalTaskCount = 1; // taskSpecification.numAllTasks;
@@ -365,7 +177,6 @@ $(document).ready(function(){
             svw.form.setTaskPanoramaId(panoId); // Todo. task.TaskPanoramaId);
             SVLat = parseFloat(38.894799); // Todo
             SVLng = parseFloat(-77.021906); // Todo
-            // headingEstimate = getHeadingEstimate(SVLat, SVLng, BusStopLat, BusStopLng);
             currentProgress = parseFloat(currentProgress);
 
             mapParam.Lat = SVLat;
@@ -375,22 +186,11 @@ $(document).ready(function(){
                 pitch: -10,
                 zoom: 1
             };
-            // mapParam.targetLat = task.Lat;
-            // mapParam.targetLng = task.Lng;
-            mapParam.taskPanoId = panoId; // task.NearestGSVPanoramaId;
+
+            mapParam.taskPanoId = panoId;
 
             // Build a list of pano ids that a user can access.
             nearbyPanoIds = [mapParam.taskPanoId];
-
-            /*
-            if (task.nearByPanoIds) {
-                var nearbyPanoidsLen = 1; // task.nearbyPanoIds.length;
-                for (var i = 0; i < nearbyPanoidsLen; i += 1) {
-                    nearbyPanoIds.push(taskSpecification.nearbyPanoIds[i].GSVPanoramaId);
-                }
-            }
-            */
-
             mapParam.availablePanoIds = nearbyPanoIds;
 
             svw.missionDescription.setCurrentStatusDescription('Your mission is to ' +
@@ -398,9 +198,6 @@ $(document).ready(function(){
             svw.progressFeedback.setProgress(currentProgress);
             svw.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
                 " out of " + totalTaskCount + ".");
-            // svw.qualificationBadges.giveBusStopAuditorBadge();
-            // svw.qualificationBadges.giveBusStopExplorerBadge();
-
 
             if (isFirstTask) {
                 svw.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
@@ -411,31 +208,11 @@ $(document).ready(function(){
             } else {
                 svw.messageBox.hide();
             }
-        }
-
-
-    }
-
 
     // Instantiation
     svw.map = new Map(mapParam);
     svw.map.setStatus('hideNonavailablePanoLinks', true);
 
-
-    // Execute onboarding if they are defined
-    if (svw.onboarding) {
-        // svw.onboarding.set('map', svw.map);
-        svw.onboarding.start();
-    } else {
-        //
-        // Debug
-        // Show pano id and city names.
-        //var str = "PanoId: " + getPanoId() + "<br/>City: " + task.City;
-        // $("#debug").html(str);
-    }
-    // svw.keyboard.set('exampleWindow', svw.examples);
-
-    // svw.quickCheck = new Onboarding_QuickCheckCurbRamps({}, $); // debug
 });
 </script>
 </head>
