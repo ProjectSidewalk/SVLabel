@@ -28,14 +28,17 @@ function ZoomControl ($, param) {
     function _init (param) {
         // Initialization function
 
-        if ('domIds' in param) {
-          $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
-          $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
-        }
-
-
-        // Attach listeners to buttons
-        if ($buttonZoomIn && $buttonZoomOut) {
+        //if ('domIds' in param) {
+        if (svw.ui && svw.ui.zoomControl) {
+          $buttonZoomIn = svw.ui.zoomControl.zoomIn;
+          $buttonZoomOut = svw.ui.zoomControl.zoomOut;
+          // $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
+          // $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
+        // }
+        //
+        //
+        // // Attach listeners to buttons
+        // if ($buttonZoomIn && $buttonZoomOut) {
           $buttonZoomIn.bind('click', buttonZoomInClick);
           $buttonZoomOut.bind('click', buttonZoomOutClick);
         }
@@ -75,7 +78,6 @@ function ZoomControl ($, param) {
             if ('canvas' in svw) {
               svw.canvas.cancelDrawing();
             }
-            console.log("hhd");
             if ('panorama' in svw) {
                 console.log("hi");
                 var currentPov = svw.panorama.getPov();
@@ -125,13 +127,11 @@ function ZoomControl ($, param) {
             return false;
         }
 
-        //
         // Cancel drawing when zooming in or out.
         if ('canvas' in svw) {
           svw.canvas.cancelDrawing();
         }
 
-        //
         // Set the zoom level and change the panorama properties.
         var zoomLevel = undefined;
         zoomLevelIn = parseInt(zoomLevelIn);

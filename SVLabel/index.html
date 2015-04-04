@@ -176,16 +176,16 @@ $(document).ready(function(){
     formParam.domIds = {};
     formParam.domIds.canvas = 'onboardingCanvas';
 
-    var overlayMessageBoxParam = {};
-    overlayMessageBoxParam.domIds = {
-        Holder_OverlayMessage : "#OverlayMessageBox",
-        OverlayMessage : "#OverlayMessage"
-    };
+    // var overlayMessageBoxParam = {};
+    // overlayMessageBoxParam.domIds = {
+    //     Holder_OverlayMessage : "#OverlayMessageBox",
+    //     OverlayMessage : "#OverlayMessage"
+    // };
 
     var missionDescriptionParam = {};
-    missionDescriptionParam.domIds = {
-        descriptionMessage : "#CurrentStatus_Description"
-    };
+    // missionDescriptionParam.domIds = {
+    //     descriptionMessage : "#CurrentStatus_Description"
+    // };
     missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
 
     var labeledLandmarkFeedbackParam = {};
@@ -204,11 +204,11 @@ $(document).ready(function(){
     //     'undoButton' : "#ActionStackUndoButton"
     // };
 
-    var zoomControlParam = {};
-    zoomControlParam.domIds = {
-        zoomInButton: '#ZoomControlZoomInButton',
-        zoomOutButton: '#ZoomControlZoomOutButton'
-    };
+    // var zoomControlParam = {};
+    // zoomControlParam.domIds = {
+    //     zoomInButton: '#ZoomControlZoomInButton',
+    //     zoomOutButton: '#ZoomControlZoomOutButton'
+    // };
 
     // var tooltipParam = {};
     // tooltipParam.domIds = {
@@ -227,7 +227,7 @@ $(document).ready(function(){
     svw.canvas = new Canvas($, canvasParam);
     svw.form = new Form($, formParam);
     // svw.examples = new ExampleWindow(exampleWindowParam);
-    svw.overlayMessageBox = new OverlayMessageBox(overlayMessageBoxParam);
+    svw.overlayMessageBox = new OverlayMessageBox($);
     svw.missionDescription = new MissionDescription($, missionDescriptionParam);
     svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($, labeledLandmarkFeedbackParam);
     // svw.qualificationBadges = new QualificationBadges($, qualificationBadgesParam);
@@ -235,7 +235,7 @@ $(document).ready(function(){
     svw.actionStack = new ActionStack($);
     svw.ribbon = new RibbonMenu($);
     svw.messageBox = new MessageBox($);
-    svw.zoomControl = new ZoomControl($, zoomControlParam);
+    svw.zoomControl = new ZoomControl($);
     // svw.tooltip = new Tooltip($, tooltipParam);
     svw.onboarding = undefined;
     svw.main = new Main($);

@@ -13,14 +13,17 @@ function MissionDescription ($, params) {
     ////////////////////////////////////////////////////////////////////////////////
     function init (params) {
         // Initialize DOM elements
-        $currentStatusDescription = $(params.domIds.descriptionMessage);
+        if (svw.ui && svw.ui.missinDescription) {
+          // $currentStatusDescription = $(params.domIds.descriptionMessage);
+          $currentStatusDescription = svw.ui.missinDescription.description;
+          $currentStatusDescription.html(params.description);
 
-        if ('description' in params && params.description) {
-            $currentStatusDescription.html(params.description);
-        } else {
-            $currentStatusDescription.html('DefaultDescription');
+          // if ('description' in params && params.description) {
+          //     $currentStatusDescription.html(params.description);
+          // } else {
+          //     $currentStatusDescription.html('DefaultDescription');
+          // }
         }
-
     }
 
 
@@ -28,8 +31,10 @@ function MissionDescription ($, params) {
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
     self.setCurrentStatusDescription = function (description) {
+      if (svw.ui && svw.ui.missinDescription) {
         $currentStatusDescription.html(description);
-        return this;
+      }
+      return this;
     };
 
     init(params);

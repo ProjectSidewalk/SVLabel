@@ -20,6 +20,26 @@ function UI ($, params) {
       self.actionStack.redo = $buttonRedo;
       self.actionStack.undo = $buttonUndo;
 
+      // LabeledLandmarkFeedback DOMs
+      $labelCountCurbRamp = $("#LabeledLandmarkCount_CurbRamp");
+      $labelCountNoCurbRamp = $("#LabeledLandmarkCount_NoCurbRamp");
+      $submittedLabelMessage = $("#LabeledLandmarks_SubmittedLabelCount");
+
+      self.labeledLandmark = {}
+      self.labeledLandmark.curbRamp = $labelCountCurbRamp;
+      self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
+      self.labeledLandmark.submitted = $submittedLabelMessage;
+
+      // MissionDescription DOMs
+      $currentStatusDescription = $("#CurrentStatus_Description")
+      self.missinDescription = {};
+      self.missinDescription.description = $currentStatusDescription;
+
+      // OverlayMessage
+      self.overlayMessage = {};
+      self.overlayMessage.box = $("#OverlayMessageBox");
+      self.overlayMessage.message = $("#OverlayMessage");
+
       // Ribbon menu DOMs
       $divStreetViewHolder = $("#Holder_StreetView");
       $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
@@ -32,16 +52,13 @@ function UI ($, params) {
       self.ribbonMenu.bottonBottomBorders = $ribbonButtonBottomLines;
       self.ribbonMenu.connector = $ribbonConnector;
 
-      // LabeledLandmarkFeedback DOMs
-      $labelCountCurbRamp = $("#LabeledLandmarkCount_CurbRamp");
-      $labelCountNoCurbRamp = $("#LabeledLandmarkCount_NoCurbRamp");
-      $submittedLabelMessage = $("#LabeledLandmarks_SubmittedLabelCount");
+      // ZoomControl DOMs
+      $buttonZoomIn = $("#ZoomControlZoomInButton");
+      $buttonZoomOut = $("#ZoomControlZoomOutButton");
 
-      self.labeledLandmark = {}
-      self.labeledLandmark.curbRamp = $labelCountCurbRamp;
-      self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
-      self.labeledLandmark.submitted = $submittedLabelMessage;
-
+      self.zoomControl = {};
+      self.zoomControl.zoomIn = $buttonZoomIn;
+      self.zoomControl.zoomOut = $buttonZoomOut;
 
     }
 
