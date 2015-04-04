@@ -2,6 +2,7 @@
 
 var svw = svw || {};
 
+
 function Main ($, params) {
     var self = {moduleName: 'MainUI'};
     var properties = {};

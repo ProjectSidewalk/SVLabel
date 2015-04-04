@@ -507,7 +507,7 @@ function Path (points, params) {
                 var r = point.getProperty('radiusInnerCircle');
                 ctx.save();
                 ctx.strokeStyle = properties.strokeStyle;
-                lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
+                svw.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
                 ctx.restore();
             }
         }

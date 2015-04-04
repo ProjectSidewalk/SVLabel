@@ -1,10 +1,4 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 2/1/13
- * Time: 11:30 AM
- * To change this template use File | Settings | File Templates.
- */
+
 ////////////////////////////////////////
 // Street View Global functions that can
 // be accessed from anywhere
@@ -16,8 +10,67 @@ var panorama;
 svw.panorama = panorama;
 
 //
-// Fog related variables.
+// Helper functions
 //
+function getPanoId() {
+    if (svw.panorama) {
+        var panoId = svw.panorama.getPano();
+        return panoId;
+    } else {
+        throw 'getPanoId() (in Map.js): panorama not defined.'
+    }
+}
+svw.getPanoId = getPanoId;
+
+
+function getPosition() {
+    if (svw.panorama) {
+        var pos = svw.panorama.getPosition();
+        if (pos) {
+            var ret = {
+                'lat' : pos.lat(),
+                'lng' : pos.lng()
+            };
+            return ret;
+        }
+    } else {
+        throw 'getPosition() (in Map.js): panorama not defined.';
+    }
+}
+svw.getPosition = getPosition;
+
+
+function getPOV() {
+    if (svw.panorama) {
+        var pov = svw.panorama.getPov();
+
+        // Pov can be less than 0. So adjust it.
+        while (pov.heading < 0) {
+            pov.heading += 360;
+        }
+
+        // Pov can be more than 360. Adjust it.
+        while (pov.heading > 360) {
+            pov.heading -= 360;
+        }
+        return pov;
+    } else {
+        throw 'getPOV() (in Map.js): panoarama not defined.';
+    }
+}
+
+
+function getLinks () {
+    if (svw.panorama) {
+        var links = svw.panorama.getLinks();
+        return links;
+    } else {
+        throw 'getLinks() (in Map.js): panorama not defined.';
+    }
+}
+
+//
+// Fog related variables.
 var fogMode = true;
 var fogSet = false;
 var current;
@@ -37,7 +90,7 @@ var polys = [];
 // Map Class Constructor
 //
 function Map (params) {
-    var oPublic = {className: 'Map'};
+    var self = {className: 'Map'};
     var canvas;
     var overlayMessageBox;
     var className = 'Map';
@@ -136,7 +189,7 @@ function Map (params) {
     } else if (('Lat' in params) && ('Lng' in params)) {
         properties.latlng = {'lat': params.Lat, 'lng': params.Lng};
     } else {
-        throw oPublic.className + ': latlng not defined.';
+        throw self.className + ': latlng not defined.';
     }
 
     // fenway = new google.maps.LatLng(params.targetLat, params.targetLng);
@@ -188,7 +241,7 @@ function Map (params) {
     map.setOptions({styles: mapStyleOptions});
 
     function init(params) {
-        oPublic.properties = properties; // Make properties oPublic.
+        self.properties = properties; // Make properties public.
         properties.browser = getBrowser();
 
         // canvas = params.canvas;
@@ -216,9 +269,9 @@ function Map (params) {
                 pov: properties.panoramaPov
             };
 
-            throw oPublic.className + ' init(): Specifying a dropping point with a latlng coordinate is no longer a good idea. It does not drop the pegman on the specified position.';
+            throw self.className + ' init(): Specifying a dropping point with a latlng coordinate is no longer a good idea. It does not drop the pegman on the specified position.';
         } else {
-            throw oPublic.className + ' init(): The pano id nor panorama position is give. Cannot initialize the panorama.';
+            throw self.className + ' init(): The pano id nor panorama position is give. Cannot initialize the panorama.';
         }
 
         var panoCanvas = document.getElementById('pano');
@@ -263,7 +316,7 @@ function Map (params) {
         map.setStreetView(svw.panorama);
 
         // Set it to walking mode initially.
-        google.maps.event.addListenerOnce(svw.panorama, "pano_changed", oPublic.modeSwitchWalkClick);
+        google.maps.event.addListenerOnce(svw.panorama, "pano_changed", self.modeSwitchWalkClick);
 
         streetViewInit = setInterval(initStreetView, 100);
 
@@ -407,10 +460,11 @@ function Map (params) {
 
             svw.canvas.clear();
 
-            if (status.currentPanoId !== getPanoId()) {
-            	svw.canvas.setVisibilityBasedOnLocation('visible', getPanoId());
+            if (status.currentPanoId !== svw
+              .getPanoId()) {
+            	svw.canvas.setVisibilityBasedOnLocation('visible', svw.getPanoId());
             }
-            status.currentPanoId = getPanoId();
+            status.currentPanoId = svw.getPanoId();
 
 
             if (properties.mode === 'Evaluation') {
@@ -522,7 +576,7 @@ function Map (params) {
 
             if (svw.canvas) {
                 svw.canvas.clear();
-                svw.canvas.setVisibilityBasedOnLocation('visible', getPanoId());
+                svw.canvas.setVisibilityBasedOnLocation('visible', svw.getPanoId());
                 if (properties.mode === 'Evaluation') {
                     myTables.updateCanvas();
                 }
@@ -533,7 +587,7 @@ function Map (params) {
                 fogUpdate();
             }
         } else {
-            throw oPublic.className + ' updateMap(): panorama not defined.';
+            throw self.className + ' updateMap(): panorama not defined.';
         }
     }
 
@@ -772,9 +826,9 @@ function Map (params) {
     }
 
     ////////////////////////////////////////
-    // oPublic functions
+    // Public functions
     ////////////////////////////////////////
-    oPublic.disableWalking = function () {
+    self.disableWalking = function () {
         if (!status.lockDisableWalking) {
             disableWalking();
             return this;
@@ -783,7 +837,7 @@ function Map (params) {
         }
     };
 
-    oPublic.enableWalking = function () {
+    self.enableWalking = function () {
         // This method enables users to walk and change the camera angle.
         if (!status.lockDisableWalking) {
             enableWalking();
@@ -793,22 +847,22 @@ function Map (params) {
         }
     };
 
-    oPublic.getInitialPanoId = function () {
+    self.getInitialPanoId = function () {
         // This method returns the panorama id of the position this user is dropped.
         return properties.initialPanoId;
     };
 
-    oPublic.getMaxPitch = function () {
+    self.getMaxPitch = function () {
         // This method returns a max pitch
         return properties.maxPitch;
     };
 
-    oPublic.getMinPitch = function () {
+    self.getMinPitch = function () {
         // This method returns a min pitch
         return properties.minPitch;
     };
 
-    oPublic.getProperty = function (prop) {
+    self.getProperty = function (prop) {
         // This method returns a value of a specified property.
         if (prop in properties) {
             return properties[prop];
@@ -817,24 +871,24 @@ function Map (params) {
         }
     };
 
-    oPublic.hideLinks = function () {
+    self.hideLinks = function () {
         // This method hides links (arrows to adjacent panoramas.)
         hideLinks();
         return this;
     };
 
-    oPublic.lockDisableWalking = function () {
+    self.lockDisableWalking = function () {
         // This method locks status.disableWalking
         status.lockDisableWalking = true;
         return this;
     };
 
-    oPublic.lockRenderLabels = function () {
+    self.lockRenderLabels = function () {
         lock.renderLabels = true;
         return this;
     };
 
-    oPublic.modeSwitchWalkClick = function () {
+    self.modeSwitchWalkClick = function () {
         // This function brings a div element for drawing labels in front of
         // $svPanoramaLayer = getPanoramaLayer();
         // $svPanoramaLayer.append($divLabelDrawingLayer);
@@ -848,7 +902,7 @@ function Map (params) {
         }
     };
 
-    oPublic.modeSwitchLabelClick = function () {
+    self.modeSwitchLabelClick = function () {
         // This function
         $divLabelDrawingLayer.css('z-index','1');
         $divViewControlLayer.css('z-index', '0');
@@ -863,7 +917,7 @@ function Map (params) {
 
     };
 
-    oPublic.plotMarkers = function () {
+    self.plotMarkers = function () {
         // Examples for plotting markers:
         // https://google-developers.appspot.com/maps/documentation/javascript/examples/icon-complex?hl=fr-FR
         if (canvas) {
@@ -904,26 +958,26 @@ function Map (params) {
         return false;
     };
 
-    oPublic.setHeadingRange = function (range) {
+    self.setHeadingRange = function (range) {
         // This method sets the minimum and maximum heading angle that users can adjust the Street View camera.
         properties.minHeading = range[0];
         properties.maxHeading = range[1];
         return this;
     };
 
-    oPublic.setMode = function (modeIn) {
+    self.setMode = function (modeIn) {
         properties.mode = modeIn;
         return this;
     };
 
-    oPublic.setPitchRange = function (range) {
+    self.setPitchRange = function (range) {
         // This method sets the minimum and maximum pitch angle that users can adjust the Street View camera.
         properties.minPitch = range[0];
         properties.maxPitch = range[1];
         return this;
     };
 
-    oPublic.setPov = function (pov, duration, callback) {
+    self.setPov = function (pov, duration, callback) {
         // Change the pov.
         // If a transition duration is set, smoothly change the pov over the time specified (milli-sec)
         if (('panorama' in svw) && svw.panorama) {
@@ -1025,7 +1079,7 @@ function Map (params) {
         return this;
     };
 
-    oPublic.setStatus = function (key, value) {
+    self.setStatus = function (key, value) {
         // This funciton sets the current status of the instantiated object
         if (key in status) {
 
@@ -1049,78 +1103,20 @@ function Map (params) {
         return false;
     };
 
-    oPublic.unlockDisableWalking = function () {
+    self.unlockDisableWalking = function () {
         status.lockDisableWalking = false;
         return this;
     };
 
-    oPublic.unlockRenderLabels = function () {
+    self.unlockRenderLabels = function () {
         lock.renderLabels = false;
         return this;
     };
 
-    oPublic.test = function () {
+    self.test = function () {
         canvas.testCases.renderLabels();
     };
 
     init(params);
-    return oPublic;
-}
-
-//
-// Helper functions
-//
-function getPanoId() {
-    if (svw.panorama) {
-        var panoId = svw.panorama.getPano();
-        return panoId;
-    } else {
-        throw 'getPanoId() (in Map.js): panorama not defined.'
-    }
-}
-
-
-function getPosition() {
-    if (svw.panorama) {
-        var pos = svw.panorama.getPosition();
-        if (pos) {
-            var ret = {
-                'lat' : pos.lat(),
-                'lng' : pos.lng()
-            };
-            return ret;
-        }
-    } else {
-        throw 'getPosition() (in Map.js): panorama not defined.';
-    }
-}
-
-
-function getPOV() {
-    if (svw.panorama) {
-        var pov = svw.panorama.getPov();
-
-        // Pov can be less than 0. So adjust it.
-        while (pov.heading < 0) {
-            pov.heading += 360;
-        }
-
-        // Pov can be more than 360. Adjust it.
-        while (pov.heading > 360) {
-            pov.heading -= 360;
-        }
-        return pov;
-    } else {
-        throw 'getPOV() (in Map.js): panoarama not defined.';
-    }
-}
-
-
-function getLinks () {
-    if (svw.panorama) {
-        var links = svw.panorama.getLinks();
-        return links;
-    } else {
-        throw 'getLinks() (in Map.js): panorama not defined.';
-    }
+    return self;
 }
