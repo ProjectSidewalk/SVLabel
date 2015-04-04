@@ -1,13 +1,6 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 3/18/13
- * Time: 7:38 PM
- * To change this template use File | Settings | File Templates.
- */
-function CurrentMissionDescription (params) {
-    var oPublic = {
-        className : 'CurrentMissionDescription'
+function MissionDescription ($, params) {
+    var self = {
+        className : 'MissionDescription'
     };
     var properties = {};
     var status = {};
@@ -34,11 +27,11 @@ function CurrentMissionDescription (params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    oPublic.setCurrentStatusDescription = function (description) {
+    self.setCurrentStatusDescription = function (description) {
         $currentStatusDescription.html(description);
         return this;
     };
 
     init(params);
-    return oPublic;
+    return self;
 }

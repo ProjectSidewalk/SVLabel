@@ -1,11 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 2/25/13
- * Time: 1:44 AM
- * To change this template use File | Settings | File Templates.
- */
-
 function OverlayMessageBox (params) {
     var oPublic = {
             'className' : 'OverlayMessageBox'

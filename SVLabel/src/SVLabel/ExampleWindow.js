@@ -1,4 +1,4 @@
-function ExampleWindow (params) {
+function ExampleWindow ($, params) {
     var api = {
             className : 'ExampleWindow'
         };

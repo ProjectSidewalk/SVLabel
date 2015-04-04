@@ -7,7 +7,7 @@
  */
 
 function Tracker () {
-    var oPublic = {className: 'Tracker'};
+    var self = {className: 'Tracker'};
     var actions = [];
     var availableActionTypes = [
         'TaskStart',
@@ -124,16 +124,16 @@ function Tracker () {
     ////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////
-    oPublic.getActions = function () {
+    self.getActions = function () {
         return actions;
     };
 
-    oPublic.getAvailableActionTypes = function () {
+    self.getAvailableActionTypes = function () {
       var tempArray = availableActionTypes.slice(0);
       return tempArray;
     };
 
-    oPublic.push = function (action, param) {
+    self.push = function (action, param) {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
         if (availableActionTypes.indexOf(action) === -1) {
@@ -222,5 +222,5 @@ function Tracker () {
         }
     };
 
-    return oPublic;
+    return self;
 }

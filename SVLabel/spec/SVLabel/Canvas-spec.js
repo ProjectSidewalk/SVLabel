@@ -1,6 +1,6 @@
 describe("Specs for the Canvas module.", function () {
   var param = {};
-  var canvas = new Canvas(param, $);
+  var canvas = new Canvas($, param);
 
   // A fake label class.
   var FakeLabel = function (param) {

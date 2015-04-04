@@ -12,7 +12,6 @@ function Main ($, params) {
     // Private Functions
     ////////////////////////////////////////
     function _init (params) {
-
     }
 
     ////////////////////////////////////////

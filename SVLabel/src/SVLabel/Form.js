@@ -6,8 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 
-function Form (params) {
-    var oPublic = {
+function Form ($, params) {
+    var self = {
         'className' : 'Form'
     };
 
@@ -111,8 +111,8 @@ function Form (params) {
         if (assignmentId && assignmentId === 'ASSIGNMENT_ID_NOT_AVAILABLE') {
             properties.isPreviewMode = true;
             properties.isAMTTask = true;
-            oPublic.unlockDisableSubmit().disableSubmit().lockDisableSubmit();
-            oPublic.unlockDisableSkip().disableSkip().lockDisableSkip();
+            self.unlockDisableSubmit().disableSubmit().lockDisableSubmit();
+            self.unlockDisableSkip().disableSkip().lockDisableSkip();
         } else if (hasWorkerId && !assignmentId) {
             properties.isPreviewMode = false;
             properties.isAMTTask = false;
@@ -144,8 +144,8 @@ function Form (params) {
                 '</div>' +
                 '</div>';
             $("body").append(dom);
-            oPublic.disableSubmit();
-            oPublic.lockDisableSubmit();
+            self.disableSubmit();
+            self.lockDisableSubmit();
         }
 
         if (!('onboarding' in svw && svw.onboarding)) {
@@ -343,8 +343,8 @@ function Form (params) {
         // If this is a task with ground truth labels, check if users made any mistake.
         if ('goldenInsertion' in svw && svw.goldenInsertion) {
             var numMistakes = svw.goldenInsertion.reviewLabels();
-            oPublic.disableSubmit().lockDisableSubmit();
-            oPublic.disableSkip().lockDisableSkip();
+            self.disableSubmit().lockDisableSubmit();
+            self.disableSkip().lockDisableSkip();
             return false;
         }
 
@@ -454,7 +454,7 @@ function Form (params) {
 
             window.location.reload();
         } else {
-            throw oPublic.className + ": This method cannot be called without GoldenInsertion";
+            throw self.className + ": This method cannot be called without GoldenInsertion";
         }
         return false;
     }
@@ -506,7 +506,7 @@ function Form (params) {
         //
         // If this is a task with ground truth labels, check if users made any mistake.
         if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            oPublic.disableSubmit().lockDisableSubmit();
+            self.disableSubmit().lockDisableSubmit();
             $btnSkip.attr('disabled', true);
             $btnConfirmSkip.attr('disabled', true);
             $divSkipOptions.css({
@@ -572,7 +572,7 @@ function Form (params) {
                     },
                     error: function (result) {
                         throw result;
-                        // console.error(oPublic.className, result);
+                        // console.error(self.className, result);
                     }
                 });
             } catch (e) {
@@ -681,7 +681,7 @@ function Form (params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    oPublic.checkSubmittable = function () {
+    self.checkSubmittable = function () {
         // This method checks whether users can submit labels or skip this task by first checking if they
         // assessed all the angles of the street view.
         // Enable/disable form a submit button and a skip button
@@ -695,26 +695,26 @@ function Form (params) {
 
         if (1 - completionRate < 0.01) {
             if (labelCount > 0) {
-                oPublic.enableSubmit();
-                oPublic.disableSkip();
+                self.enableSubmit();
+                self.disableSkip();
             } else {
-                oPublic.disableSubmit();
-                oPublic.enableSkip();
+                self.disableSubmit();
+                self.enableSkip();
             }
             return true;
         } else {
-            oPublic.disableSubmit();
-            oPublic.disableSkip();
+            self.disableSubmit();
+            self.disableSkip();
             return false;
         }
     };
 
-    oPublic.compileSubmissionData = function () {
+    self.compileSubmissionData = function () {
         // This method returns the return value of a private method compileSubmissionData();
         return compileSubmissionData();
     }
 
-    oPublic.disableSubmit = function () {
+    self.disableSubmit = function () {
         if (!lock.disableSubmit) {
             status.disableSubmit = true;
             //  $btnSubmit.attr('disabled', true);
@@ -725,7 +725,7 @@ function Form (params) {
     };
 
 
-    oPublic.disableSkip = function () {
+    self.disableSkip = function () {
         if (!lock.disableSkip) {
             status.disableSkip = true;
             // $btnSkip.attr('disabled', true);
@@ -736,7 +736,7 @@ function Form (params) {
     };
 
 
-    oPublic.enableSubmit = function () {
+    self.enableSubmit = function () {
         if (!lock.disableSubmit) {
             status.disableSubmit = false;
             // $btnSubmit.attr('disabled', false);
@@ -747,7 +747,7 @@ function Form (params) {
     };
 
 
-    oPublic.enableSkip = function () {
+    self.enableSkip = function () {
         if (!lock.disableSkip) {
             status.disableSkip = false;
             // $btnSkip.attr('disabled', false);
@@ -757,64 +757,64 @@ function Form (params) {
         return false;
     };
 
-    oPublic.goldenInsertionSubmit = function () {
+    self.goldenInsertionSubmit = function () {
         // This method allows GoldenInsetion to submit the task.
         return goldenInsertionSubmit();
     };
 
-    oPublic.isPreviewMode = function () {
+    self.isPreviewMode = function () {
         // This method returns whether the task is in preview mode or not.
         return properties.isPreviewMode;
     };
 
-    oPublic.lockDisableSubmit = function () {
+    self.lockDisableSubmit = function () {
         lock.disableSubmit = true;
         return this;
     };
 
 
-    oPublic.lockDisableSkip = function () {
+    self.lockDisableSkip = function () {
         lock.disableSkip = true;
         return this;
     };
 
-    oPublic.setPreviousLabelingTaskId = function (val) {
+    self.setPreviousLabelingTaskId = function (val) {
         // This method sets the labelingTaskId
         properties.previousLabelingTaskId = val;
         return this;
     };
 
-    oPublic.setTaskDescription = function (val) {
+    self.setTaskDescription = function (val) {
         // This method sets the taskDescription
         properties.taskDescription = val;
         return this;
     };
 
 
-    oPublic.setTaskRemaining = function (val) {
+    self.setTaskRemaining = function (val) {
         // This method sets the number of remaining tasks
         properties.taskRemaining = val;
         return this;
     };
 
-    oPublic.setTaskPanoramaId = function (val) {
+    self.setTaskPanoramaId = function (val) {
         // This method sets the taskPanoramaId. Note it is not same as the GSV panorama id.
         properties.taskPanoramaId = val;
         return this;
     };
 
 
-    oPublic.unlockDisableSubmit = function () {
+    self.unlockDisableSubmit = function () {
         lock.disableSubmit = false;
         return this;
     };
 
 
-    oPublic.unlockDisableSkip = function () {
+    self.unlockDisableSkip = function () {
         lock.disableSkipButton = false;
         return this;
     };
 
     _init(params);
-    return oPublic;
+    return self;
 }

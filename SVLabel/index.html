@@ -150,17 +150,17 @@ $(document).ready(function(){
     //
     // Set parameters for instantiating objects.
     //
-    var exampleWindowParam;
-    exampleWindowParam = {};
-    exampleWindowParam.domIds = {
-        holder : '#Holder_Examples',
-        closeButtonHolder : '#Holder_ExamplesCloseButton',
-        StopSign_OneLeg : '#Example_OneLegBusStopSign',
-        StopSign_TwoLegs : '#Example_TwoLegBusStopSign',
-        StopSign_Column : '#Example_ColumnBusStopSign',
-        NextToCurb : '#Example_NextToCurb',
-        AwayFromCurb : '#Example_AwayFromCurb'
-    };
+    // var exampleWindowParam;
+    // exampleWindowParam = {};
+    // exampleWindowParam.domIds = {
+    //     holder : '#Holder_Examples',
+    //     closeButtonHolder : '#Holder_ExamplesCloseButton',
+    //     StopSign_OneLeg : '#Example_OneLegBusStopSign',
+    //     StopSign_TwoLegs : '#Example_TwoLegBusStopSign',
+    //     StopSign_Column : '#Example_ColumnBusStopSign',
+    //     NextToCurb : '#Example_NextToCurb',
+    //     AwayFromCurb : '#Example_AwayFromCurb'
+    // };
 
     var canvasParam = {};
     canvasParam.domIds = {'canvas': 'labelCanvas'};
@@ -176,17 +176,17 @@ $(document).ready(function(){
     formParam.domIds = {};
     formParam.domIds.canvas = 'onboardingCanvas';
 
-    var overlayMessageBoxParam = {};
-    overlayMessageBoxParam.domIds = {
-        Holder_OverlayMessage : "#OverlayMessageBox",
-        OverlayMessage : "#OverlayMessage"
-    };
+    // var overlayMessageBoxParam = {};
+    // overlayMessageBoxParam.domIds = {
+    //     Holder_OverlayMessage : "#OverlayMessageBox",
+    //     OverlayMessage : "#OverlayMessage"
+    // };
 
-    var currentMissionDescriptionParam = {};
-    currentMissionDescriptionParam.domIds = {
+    var missionDescriptionParam = {};
+    missionDescriptionParam.domIds = {
         descriptionMessage : "#CurrentStatus_Description"
     };
-    currentMissionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
+    missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
 
     var labeledLandmarkFeedbackParam = {};
     labeledLandmarkFeedbackParam.domIds = {};
@@ -220,15 +220,15 @@ $(document).ready(function(){
     //
     // Instantiate objects.
     //
-    svw.main = new Main($);
+
     svw.ui = new MainUI($);
     svw.tracker = new Tracker();
     svw.keyboard = new Keyboard($);
-    svw.canvas = new Canvas(canvasParam, $);
-    svw.form = new Form(formParam);
-    svw.examples = new ExampleWindow(exampleWindowParam);
-    svw.overlayMessageBox = new OverlayMessageBox(overlayMessageBoxParam);
-    svw.currentMissionDescription = new CurrentMissionDescription(currentMissionDescriptionParam);
+    svw.canvas = new Canvas($, canvasParam);
+    svw.form = new Form($, formParam);
+    // svw.examples = new ExampleWindow(exampleWindowParam);
+    // svw.overlayMessageBox = new OverlayMessageBox(overlayMessageBoxParam);
+    svw.missionDescription = new MissionDescription($, missionDescriptionParam);
     svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback(labeledLandmarkFeedbackParam);
     svw.qualificationBadges = new QualificationBadges(qualificationBadgesParam);
     svw.progressFeedback = new ProgressFeedback(progressFeedbackParam);
@@ -238,6 +238,7 @@ $(document).ready(function(){
     svw.zoomControl = new ZoomControl(zoomControlParam, $);
     svw.tooltip = new Tooltip(tooltipParam, $);
     svw.onboarding = undefined;
+    svw.main = new Main($);
 
     onboardingStatus = getURLParameter('onboardingStatus');
     if (!onboardingStatus) {
