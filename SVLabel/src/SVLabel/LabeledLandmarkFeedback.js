@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 3/18/13
- * Time: 7:37 PM
- * To change this template use File | Settings | File Templates.
- */
 function LabeledLandmarkFeedback (params) {
     var oPublic = {
         className : 'LabeledLandmarkFeedback'

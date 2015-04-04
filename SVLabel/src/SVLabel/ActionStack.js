@@ -8,7 +8,7 @@
 var svw = svw || {};
 
 function ActionStack (params) {
-    var oPublic = {
+    var self = {
         'className' : 'ActionStack'
         };
     var properties = {};
@@ -50,7 +50,7 @@ function ActionStack (params) {
           if ('tracker' in svw) {
             svw.tracker.push('Click_Redo');
           }
-            oPublic.redo();
+            self.redo();
         }
     }
 
@@ -60,15 +60,15 @@ function ActionStack (params) {
           if ('tracker' in svw) {
             svw.tracker.push('Click_Undo');
           }
-            oPublic.undo();
+            self.undo();
         }
     }
 
 
     ////////////////////////////////////////
-    // oPublic Functions
+    // Publie methods
     ////////////////////////////////////////
-    oPublic.disableRedo = function () {
+    self.disableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = true;
             $buttonRedo.css('opacity', 0.5);
@@ -79,7 +79,7 @@ function ActionStack (params) {
     };
 
 
-    oPublic.disableUndo = function () {
+    self.disableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = true;
             $buttonUndo.css('opacity', 0.5);
@@ -90,7 +90,7 @@ function ActionStack (params) {
     };
 
 
-    oPublic.enableRedo = function () {
+    self.enableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = false;
             $buttonRedo.css('opacity', 1);
@@ -101,7 +101,7 @@ function ActionStack (params) {
     };
 
 
-    oPublic.enableUndo = function () {
+    self.enableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = false;
             $buttonUndo.css('opacity', 1);
@@ -111,26 +111,26 @@ function ActionStack (params) {
         }
     };
 
-    oPublic.getStatus = function(key) {
+    self.getStatus = function(key) {
         if (!(key in status)) {
             console.warn("You have passed an invalid key for status.")
         }
         return status[key];
     };
 
-    oPublic.lockDisableRedo = function () {
+    self.lockDisableRedo = function () {
         lock.disableRedo = true;
         return this;
     };
 
 
-    oPublic.lockDisableUndo = function () {
+    self.lockDisableUndo = function () {
         lock.disableUndo = true;
         return this;
     };
 
 
-    oPublic.pop = function () {
+    self.pop = function () {
         // Delete the last action
         if (actionStack.length > 0) {
             status.actionStackCursor -= 1;
@@ -140,10 +140,10 @@ function ActionStack (params) {
     };
 
 
-    oPublic.push = function (action, label) {
+    self.push = function (action, label) {
         var availableActionList = ['addLabel', 'deleteLabel'];
         if (availableActionList.indexOf(action) === -1) {
-            throw oPublic.className + ": Illegal action.";
+            throw self.className + ": Illegal action.";
         }
 
         var actionItem = {
@@ -162,7 +162,7 @@ function ActionStack (params) {
     };
 
 
-    oPublic.redo = function () {
+    self.redo = function () {
         // Redo an action
         if (!status.disableRedo) {
             if (actionStack.length > status.actionStackCursor) {
@@ -187,13 +187,13 @@ function ActionStack (params) {
         }
     };
 
-    oPublic.size = function () {
+    self.size = function () {
         // return the size of the stack
 
         return actionStack.length;
     };
 
-    oPublic.undo = function () {
+    self.undo = function () {
         // Undo an action
         if (!status.disableUndo) {
             status.actionStackCursor -= 1;
@@ -222,25 +222,25 @@ function ActionStack (params) {
     };
 
 
-    oPublic.unlockDisableRedo = function () {
+    self.unlockDisableRedo = function () {
         lock.disableRedo = false;
         return this;
     };
 
 
-    oPublic.unlockDisableUndo = function () {
+    self.unlockDisableUndo = function () {
         lock.disableUndo = false;
         return this;
     };
 
-    oPublic.getLock = function(key) {
+    self.getLock = function(key) {
         if (!(key in lock)) {
           console.warn("You have passed an invalid key for status.")
         }
         return lock[key];
-    }        
+    }
 
-    oPublic.updateOpacity = function () {
+    self.updateOpacity = function () {
         // Change opacity
         if (status.actionStackCursor < actionStack.length) {
             $buttonRedo.css('opacity', 1);
@@ -267,5 +267,5 @@ function ActionStack (params) {
     ////////////////////////////////////////
     init(params);
 
-    return oPublic;
+    return self;
 }

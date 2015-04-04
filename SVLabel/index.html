@@ -9,8 +9,10 @@
 <script src="vendor/jquery-1.7.2.min.js"></script>
 <script src="vendor/jquery.hoverIntent.minified.js"></script>
 <script src="vendor/jquery.cookies.2.2.0.min.js"></script>
-<script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDzYR4m-3upEQ-bIQam35ixN1BgxnPsY7k&sensor=false"></script>
+<script src="vendor/kinetic-v4.3.3.min.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDzYR4m-3upEQ-bIQam35ixN1BgxnPsY7k&sensor=false"></script>
+<script src="src/SVLabel/Main.js"></script>
+<script src="src/SVLabel/Main.UI.js"></script>
 <script src="src/SVLabel/Utilities.js"></script>
 <script src="src/SVLabel/UtilitiesColor.js"></script>
 <script src="src/SVLabel/UtilitiesShape.js"></script>
@@ -32,7 +34,6 @@
 <script src="src/SVLabel/Onboarding/Onboarding_LabelingCurbRampsDifficultScene2.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_SkipAlleyWithoutCurbRamps.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_QuickCheckCurbRamps.js"></script>
-<script src="vendor/kinetic-v4.3.3.min.js"></script>
 <script src="src/SVLabel/Onboarding/Onboarding_GrabAndDragAnimation.js"></script>
 <script src="src/SVLabel/ExampleWindow.js"></script>
 <script src="src/SVLabel/Keyboard.js"></script>
@@ -217,6 +218,8 @@ $(document).ready(function(){
     //
     // Instantiate objects.
     //
+    svw.main = new Main($);
+    svw.ui = new MainUI($);
     svw.tracker = new Tracker();
     svw.keyboard = new Keyboard($);
     svw.canvas = new Canvas(canvasParam, $);
