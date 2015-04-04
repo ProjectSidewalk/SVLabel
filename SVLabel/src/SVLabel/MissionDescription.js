@@ -17,12 +17,6 @@ function MissionDescription ($, params) {
           // $currentStatusDescription = $(params.domIds.descriptionMessage);
           $currentStatusDescription = svw.ui.missinDescription.description;
           $currentStatusDescription.html(params.description);
-
-          // if ('description' in params && params.description) {
-          //     $currentStatusDescription.html(params.description);
-          // } else {
-          //     $currentStatusDescription.html('DefaultDescription');
-          // }
         }
     }
 

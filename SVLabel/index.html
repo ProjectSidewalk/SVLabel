@@ -292,16 +292,7 @@ $(document).ready(function(){
     // Set map parameters and instantiate it.
     mapParam.canvas = svw.canvas;
     mapParam.overlayMessageBox = svw.overlayMessageBox;
-    mapParam.domIds = {
-        canvas: "canvas#labelCanvas",
-        divMapCanvas : "map_canvas",
-        divLabelDrawingLayer : "div#labelDrawingLayer",
-        divPano : "div#pano",
-        divStreetViewHolder : "div#streetViewHolder",
-        divViewControlLayer : "div#viewControlLayer",
-        spanModeSwitchWalk : "span#modeSwitchWalk",
-        spanModeSwitchDraw : "span#modeSwitchDraw"
-    };
+
 
     // Get latlng and pov data from svw.onboarding or use data from PHP
     if (svw.onboarding) {
@@ -654,7 +645,7 @@ $(document).ready(function(){
         </div>
     </div>
     <div id="Holder_GoogleMap">
-        <div id="map_canvas" class="Window_GoogleMap" style="">
+        <div id="google-maps" class="Window_GoogleMap" style="">
 
         </div>
         <div id="mapOverlay" class="Window_GoogleMap" style="z-index: 1">

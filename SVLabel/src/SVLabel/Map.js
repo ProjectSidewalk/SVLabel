@@ -212,7 +212,7 @@ function Map (params) {
         zoom: 18
     };
 
-    var mapCanvas = document.getElementById(params.domIds.divMapCanvas);
+    var mapCanvas = document.getElementById("google-maps");
     map = new google.maps.Map(mapCanvas, mapOptions);
 
     // Styling google map.
@@ -286,21 +286,18 @@ function Map (params) {
         svw.panorama.set('panControl', false);
         svw.panorama.set('zoomControl', false);
 
-        // panorama.setPov({heading:90,pitch:0,zoom:1});
         properties.initialPanoId = params.taskPanoId;
-        $canvas = $(params.domIds.canvas);
-        $divLabelDrawingLayer = $(params.domIds.divLabelDrawingLayer);
-        $divPano = $(params.domIds.divPano);
-        $divStreetViewHolder = $(params.domIds.divStreetViewHolder);
-        $divViewControlLayer = $(params.domIds.divViewControlLayer);
-        $spanModeSwitchWalk = $(params.domIds.spanModeSwitchWalk);
-        $spanModeSwitchDraw = $(params.domIds.spanModeSwitchDraw);
+        $canvas = svw.ui.map.canvas;
+        $divLabelDrawingLayer = svw.ui.map.drawingLayer;
+        $divPano = svw.ui.map.pano;
+        $divStreetViewHolder = svw.ui.map.streetViewHolder;
+        $divViewControlLayer = svw.ui.map.viewControlLayer;
+        $spanModeSwitchWalk = svw.ui.map.modeSwitchWalk;
+        $spanModeSwitchDraw = svw.ui.map.modeSwitchDraw;
 
-        //
         // Set so the links to panoaramas that are not listed on availablePanoIds will be removed
         status.availablePanoIds = params.availablePanoIds;
 
-        //
         // Attach listeners to dom elements
         $divViewControlLayer.bind('mousedown', viewControlLayerMouseDown);
         $divViewControlLayer.bind('mouseup', viewControlLayerMouseUp);
@@ -332,7 +329,6 @@ function Map (params) {
         }
         fogParam.interval = setInterval(initFog, 250);
 
-        //
         // Hide the dude on the top-left of the map.
         mapIconInterval = setInterval(removeIcon, 0.2);
 

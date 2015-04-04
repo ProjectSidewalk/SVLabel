@@ -30,6 +30,16 @@ function UI ($, params) {
       self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
       self.labeledLandmark.submitted = $submittedLabelMessage;
 
+      // Map DOMs
+      self.map = {};
+      self.map.canvas = $("canvas#labelCanvas");
+      self.map.drawingLayer = $("div#labelDrawingLayer");
+      self.map.pano = $("div#pano");
+      self.map.streetViewHolder = $("div#streetViewHolder");
+      self.map.viewControlLayer = $("div#viewControlLayer");
+      self.map.modeSwitchWalk = $("span#modeSwitchWalk");
+      self.map.modeSwitchDraw = $("span#modeSwitchDraw");
+
       // MissionDescription DOMs
       $currentStatusDescription = $("#CurrentStatus_Description")
       self.missinDescription = {};
