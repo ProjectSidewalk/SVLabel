@@ -1,13 +1,6 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 2/25/13
- * Time: 5:07 PM
- * To change this template use File | Settings | File Templates.
- */
 var svw = svw || {};
 
-function ActionStack (params) {
+function ActionStack ($, params) {
     var self = {
         'className' : 'ActionStack'
         };

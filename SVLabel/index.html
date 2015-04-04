@@ -12,7 +12,7 @@
 <script src="vendor/kinetic-v4.3.3.min.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDzYR4m-3upEQ-bIQam35ixN1BgxnPsY7k&sensor=false"></script>
 <script src="src/SVLabel/Main.js"></script>
-<script src="src/SVLabel/Main.UI.js"></script>
+<script src="src/SVLabel/UI.js"></script>
 <script src="src/SVLabel/util/Utilities.js"></script>
 <script src="src/SVLabel/util/UtilitiesMath.js"></script>
 <script src="src/SVLabel/util/UtilitiesColor.js"></script>
@@ -39,9 +39,9 @@
 <script src="src/SVLabel/Onboarding/Onboarding_GrabAndDragAnimation.js"></script>
 <script src="src/SVLabel/ExampleWindow.js"></script>
 <script src="src/SVLabel/Keyboard.js"></script>
-<script src="src/SVLabel/CurrentMissionDescription.js"></script>
+<script src="src/SVLabel/MissionDescription.js"></script>
 <script src="src/SVLabel/LabeledLandmarkFeedback.js"></script>
-<script src="src/SVLabel/QualificationBadges.js"></script>
+<!-- <script src="src/SVLabel/QualificationBadges.js"></script> -->
 <script src="src/SVLabel/ProgressFeedback.js"></script>
 <script src="src/SVLabel/Tracker.js"></script>
 <script src="src/SVLabel/MessageBox.js"></script>
@@ -190,9 +190,9 @@ $(document).ready(function(){
 
     var labeledLandmarkFeedbackParam = {};
     labeledLandmarkFeedbackParam.domIds = {};
-
-    var qualificationBadgesParam = {};
-    qualificationBadgesParam.domIds = {};
+    //
+    // var qualificationBadgesParam = {};
+    // qualificationBadgesParam.domIds = {};
 
     var progressFeedbackParam = {};
     progressFeedbackParam.domIds = {};
@@ -221,7 +221,7 @@ $(document).ready(function(){
     // Instantiate objects.
     //
 
-    svw.ui = new MainUI($);
+    svw.ui = new UI($);
     svw.tracker = new Tracker();
     svw.keyboard = new Keyboard($);
     svw.canvas = new Canvas($, canvasParam);
@@ -229,14 +229,14 @@ $(document).ready(function(){
     // svw.examples = new ExampleWindow(exampleWindowParam);
     // svw.overlayMessageBox = new OverlayMessageBox(overlayMessageBoxParam);
     svw.missionDescription = new MissionDescription($, missionDescriptionParam);
-    svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback(labeledLandmarkFeedbackParam);
-    svw.qualificationBadges = new QualificationBadges(qualificationBadgesParam);
-    svw.progressFeedback = new ProgressFeedback(progressFeedbackParam);
-    svw.actionStack = new ActionStack(actionStackParam);
+    svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($, labeledLandmarkFeedbackParam);
+    // svw.qualificationBadges = new QualificationBadges($, qualificationBadgesParam);
+    svw.progressFeedback = new ProgressFeedback($, progressFeedbackParam);
+    svw.actionStack = new ActionStack($, actionStackParam);
     svw.ribbon = new RibbonMenu($);
-    svw.messageBox = new MessageBox();
-    svw.zoomControl = new ZoomControl(zoomControlParam, $);
-    svw.tooltip = new Tooltip(tooltipParam, $);
+    svw.messageBox = new MessageBox($);
+    svw.zoomControl = new ZoomControl($, zoomControlParam);
+    svw.tooltip = new Tooltip($, tooltipParam);
     svw.onboarding = undefined;
     svw.main = new Main($);
 
@@ -403,13 +403,13 @@ $(document).ready(function(){
 
             mapParam.availablePanoIds = nearbyPanoIds;
 
-            svw.currentMissionDescription.setCurrentStatusDescription('Your mission is to ' +
+            svw.missionDescription.setCurrentStatusDescription('Your mission is to ' +
                 '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
             svw.progressFeedback.setProgress(currentProgress);
             svw.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
                 " out of " + totalTaskCount + ".");
-            svw.qualificationBadges.giveBusStopAuditorBadge();
-            svw.qualificationBadges.giveBusStopExplorerBadge();
+            // svw.qualificationBadges.giveBusStopAuditorBadge();
+            // svw.qualificationBadges.giveBusStopExplorerBadge();
 
 
             if (isFirstTask) {

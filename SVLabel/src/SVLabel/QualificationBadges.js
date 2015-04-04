@@ -1,15 +1,5 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 3/18/13
- * Time: 7:33 PM
- * To change this template use File | Settings | File Templates.
- */
-
-function QualificationBadges (params) {
-    var oPublic = {
-        className : 'QualificationBadges'
-    };
+function QualificationBadges ($, params) {
+    var self = { className : 'QualificationBadges' };
     var properties = {
         badgeClassName : 'Badge',
         badgePlaceHolderImagePath : "public/img/badges/EmptyBadge.png",
@@ -25,7 +15,7 @@ function QualificationBadges (params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Private functions
     ////////////////////////////////////////////////////////////////////////////////
-    function init (params) {
+    function _init (params) {
         $badgeImageHolderBusStopAuditor = $("#BadgeImageHolder_BusStopAuditor");
         $badgeImageHolderBusStopExplorer = $("#BadgeImageHolder_BusStopExplorer");
 
@@ -40,18 +30,18 @@ function QualificationBadges (params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    oPublic.giveBusStopAuditorBadge = function () {
+    self.giveBusStopAuditorBadge = function () {
         $badgeImageHolderBusStopAuditor.html('<img src="' + properties.busStopAuditorImagePath +
             '" class="' + properties.badgeClassName + '">');
         return this;
     };
 
 
-    oPublic.giveBusStopExplorerBadge = function () {
+    self.giveBusStopExplorerBadge = function () {
         $badgeImageHolderBusStopExplorer.html('<img src="' + properties.busStopExplorerImagePath +
             '" class="' + properties.badgeClassName + '">')
     };
 
-    init(params);
-    return oPublic;
+    _init(params);
+    return self;
 }
