@@ -1,3 +1,3 @@
-Tohme
+SVLabel
 =====
-Tohme repository
+SVLabel library for Tohme
