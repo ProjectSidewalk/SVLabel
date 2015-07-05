@@ -6,10 +6,12 @@
 <title>Street View Labeler - Demo Interface</title>
 <link rel="stylesheet" href="css/Fonts.css" />
 <link rel="stylesheet" href="css/StreetViewWalker.css" />
-<script src="vendor/jquery-1.7.2.min.js"></script>
-<script src="vendor/jquery.hoverIntent.minified.js"></script>
-<script src="vendor/jquery.cookies.2.2.0.min.js"></script>
-<script src="vendor/kinetic-v4.3.3.min.js"></script>
+<script src="lib/jquery-1.7.2.min.js"></script>
+<script src="lib/jquery.hoverIntent.minified.js"></script>
+<script src="lib/jquery.cookies.2.2.0.min.js"></script>
+<script src="lib/kinetic-v4.3.3.min.js"></script>
+<script src="lib/clipper.js"></script>
+
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDzYR4m-3upEQ-bIQam35ixN1BgxnPsY7k&sensor=false"></script>
 <script src="src/SVLabel/Main.js"></script>
 <script src="src/SVLabel/UI.js"></script>
@@ -18,12 +20,10 @@
 <script src="src/SVLabel/util/UtilitiesColor.js"></script>
 <script src="src/SVLabel/util/UtilitiesShape.js"></script>
 <script src="src/SVLabel/util/UtilitiesSidewalk.js"></script>
-
 <script src="src/SVLabel/Point.js"></script>
 <script src="src/SVLabel/Path.js"></script>
 <script src="src/SVLabel/Label.js"></script>
 <script src="src/SVLabel/Canvas.js"></script>
-<script src="vendor/clipper.js"></script>
 <script src="src/Fog.js"></script>
 <script src="src/SVLabel/Map.js"></script>
 <script src="src/SVLabel/RibbonMenu.js"></script>
@@ -43,7 +43,7 @@
 <script src="src/SVLabel/Tooltip.js"></script>
 <script src="src/SVLabel/ProgressPov.js"></script>
 <script>
-var svw = svw || {};
+var svl = svl || {};
 
 $(document).ready(function(){
     //
@@ -75,7 +75,7 @@ $(document).ready(function(){
     missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
     mainParam.missionDescription = missionDescriptionParam
 
-    svw.main = new Main($, mainParam);
+    svl.main = new Main($, mainParam);
 });
 </script>
 </head>

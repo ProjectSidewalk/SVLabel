@@ -27,11 +27,11 @@ function ActionStack ($, params) {
     ////////////////////////////////////////
     function init (params) {
         // Initialization function
-        if (svw.ui && svw.ui.actionStack) {
+        if (svl.ui && svl.ui.actionStack) {
           // $buttonRedo = $(params.domIds.redoButton);
           // $buttonUndo = $(params.domIds.undoButton);
-          $buttonRedo = svw.ui.actionStack.redo;
-          $buttonUndo = svw.ui.actionStack.undo;
+          $buttonRedo = svl.ui.actionStack.redo;
+          $buttonUndo = svl.ui.actionStack.undo;
           $buttonRedo.css('opacity', 0.5);
           $buttonUndo.css('opacity', 0.5);
 
@@ -44,8 +44,8 @@ function ActionStack ($, params) {
 
     function buttonRedoClick () {
         if (!status.disableRedo) {
-          if ('tracker' in svw) {
-            svw.tracker.push('Click_Redo');
+          if ('tracker' in svl) {
+            svl.tracker.push('Click_Redo');
           }
             self.redo();
         }
@@ -54,8 +54,8 @@ function ActionStack ($, params) {
 
     function buttonUndoClick () {
         if (!status.disableUndo) {
-          if ('tracker' in svw) {
-            svw.tracker.push('Click_Undo');
+          if ('tracker' in svl) {
+            svl.tracker.push('Click_Undo');
           }
             self.undo();
         }
@@ -67,7 +67,7 @@ function ActionStack ($, params) {
     self.disableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = true;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonRedo.css('opacity', 0.5);
             }
             return this;
@@ -80,7 +80,7 @@ function ActionStack ($, params) {
     self.disableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = true;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonUndo.css('opacity', 0.5);
             }
             return this;
@@ -93,7 +93,7 @@ function ActionStack ($, params) {
     self.enableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = false;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonRedo.css('opacity', 1);
             }
             return this;
@@ -106,7 +106,7 @@ function ActionStack ($, params) {
     self.enableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = false;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonUndo.css('opacity', 1);
             }
             return this;
@@ -172,21 +172,21 @@ function ActionStack ($, params) {
             if (actionStack.length > status.actionStackCursor) {
                 var actionItem = actionStack[status.actionStackCursor];
                 if (actionItem.action === 'addLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Redo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Redo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', false);
                 } else if (actionItem.action === 'deleteLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Redo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Redo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', true);
                     actionItem.label.setVisibility('hidden');
                 }
                 status.actionStackCursor += 1;
             }
-            if ('canvas' in svw) {
-              svw.canvas.clear().render2();
+            if ('canvas' in svl) {
+              svl.canvas.clear().render2();
             }
         }
     };
@@ -204,13 +204,13 @@ function ActionStack ($, params) {
             if(status.actionStackCursor >= 0) {
                 var actionItem = actionStack[status.actionStackCursor];
                 if (actionItem.action === 'addLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Undo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Undo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', true);
                 } else if (actionItem.action === 'deleteLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Undo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Undo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', false);
                     actionItem.label.setVisibility('visible');
@@ -219,8 +219,8 @@ function ActionStack ($, params) {
                 status.actionStackCursor = 0;
             }
 
-            if ('canvas' in svw) {
-              svw.canvas.clear().render2();
+            if ('canvas' in svl) {
+              svl.canvas.clear().render2();
             }
         }
     };
@@ -246,7 +246,7 @@ function ActionStack ($, params) {
 
     self.updateOpacity = function () {
         // Change opacity
-        if (svw.ui && svw.ui.actionStack) {
+        if (svl.ui && svl.ui.actionStack) {
           if (status.actionStackCursor < actionStack.length) {
               $buttonRedo.css('opacity', 1);
           } else {

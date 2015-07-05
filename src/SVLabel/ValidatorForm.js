@@ -1,11 +1,5 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 7/6/13
- * Time: 12:40 PM
- * To change this template use File | Settings | File Templates.
- */
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function ValidatorForm (param, $) {
     var oPublic = {className: 'ValidatorForm'};
@@ -34,7 +28,7 @@ function ValidatorForm (param, $) {
     function submit () {
         // This method collects validation labels and submit the data to
         // the API specified by properties.submitURL.
-        if (!('validator' in svw) || !svw.validator) {
+        if (!('validator' in svl) || !svl.validator) {
             throw oPublic.className + ': Validator not defined.';
         }
         var taskGSVPanoId = properties.panoId;
@@ -87,13 +81,13 @@ function ValidatorForm (param, $) {
 
             //
             // Get interactions
-            svw.tracker.push('TaskSubmit');
-            data.userInteraction = svw.tracker.getActions();
+            svl.tracker.push('TaskSubmit');
+            data.userInteraction = svl.tracker.getActions();
 
             data.labels = [];
 
             // Format the validation labels
-            var validatorLabels = svw.validator.getLabels();
+            var validatorLabels = svl.validator.getLabels();
             len = validatorLabels.length;
             for (i = 0; i < len; i++) {
                 console.log(validatorLabels[i]);

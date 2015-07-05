@@ -1,3 +1,6 @@
+/** @namespace */
+var svl = svl || {};
+
 function ProgressFeedback ($, params) {
     var self = {
         className : 'ProgressFeedback'

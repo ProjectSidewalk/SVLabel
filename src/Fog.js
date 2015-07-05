@@ -8,8 +8,9 @@
  *
  **/
 
-var svw = svw || {};
-
+ /** @namespace */
+ var svl = svl || {};
+ 
 /** Google Maps Fog API
  *
  * @ Requirements:

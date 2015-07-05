@@ -1,6 +1,5 @@
-// Todo: Kotaro should move all the core constants to this file.
-
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 
 function Main ($, param) {
@@ -14,33 +13,33 @@ function Main ($, param) {
     function _init (param) {
       // Instantiate objects.
       param = param || {};
-      svw.ui = new UI($);
-      svw.tracker = new Tracker();
-      svw.keyboard = new Keyboard($);
-      svw.canvas = new Canvas($);
-      svw.form = new Form($, param.form);
-      svw.examples = undefined
-      svw.overlayMessageBox = new OverlayMessageBox($);
-      svw.missionDescription = new MissionDescription($, param.missionDescription);
-      svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
-      svw.qualificationBadges = undefined;
-      svw.progressFeedback = new ProgressFeedback($);
-      svw.actionStack = new ActionStack($);
-      svw.ribbon = new RibbonMenu($);
-      svw.messageBox = new MessageBox($);
-      svw.zoomControl = new ZoomControl($);
-      svw.tooltip = undefined;
-      svw.onboarding = undefined;
-      svw.progressPov = new ProgressPov($);
+      svl.ui = new UI($);
+      svl.tracker = new Tracker();
+      svl.keyboard = new Keyboard($);
+      svl.canvas = new Canvas($);
+      svl.form = new Form($, param.form);
+      svl.examples = undefined
+      svl.overlayMessageBox = new OverlayMessageBox($);
+      svl.missionDescription = new MissionDescription($, param.missionDescription);
+      svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
+      svl.qualificationBadges = undefined;
+      svl.progressFeedback = new ProgressFeedback($);
+      svl.actionStack = new ActionStack($);
+      svl.ribbon = new RibbonMenu($);
+      svl.messageBox = new MessageBox($);
+      svl.zoomControl = new ZoomControl($);
+      svl.tooltip = undefined;
+      svl.onboarding = undefined;
+      svl.progressPov = new ProgressPov($);
 
 
-      svw.form.disableSubmit();
-      svw.tracker.push('TaskStart');
+      svl.form.disableSubmit();
+      svl.tracker.push('TaskStart');
       //
       // Set map parameters and instantiate it.
       var mapParam = {};
-      mapParam.canvas = svw.canvas;
-      mapParam.overlayMessageBox = svw.overlayMessageBox;
+      mapParam.canvas = svl.canvas;
+      mapParam.overlayMessageBox = svl.overlayMessageBox;
 
       var SVLat;
       var SVLng;
@@ -60,9 +59,9 @@ function Main ($, param) {
       taskCompleted = totalTaskCount - taskRemaining;
       currentProgress = taskCompleted / totalTaskCount;
 
-      svw.form.setTaskRemaining(taskRemaining);
-      svw.form.setTaskDescription('TestTask');
-      svw.form.setTaskPanoramaId(panoId);
+      svl.form.setTaskRemaining(taskRemaining);
+      svl.form.setTaskDescription('TestTask');
+      svl.form.setTaskPanoramaId(panoId);
       SVLat = parseFloat(38.894799); // Todo
       SVLng = parseFloat(-77.021906); // Todo
       currentProgress = parseFloat(currentProgress);
@@ -78,25 +77,25 @@ function Main ($, param) {
       nearbyPanoIds = [mapParam.taskPanoId];
       mapParam.availablePanoIds = nearbyPanoIds;
 
-      svw.missionDescription.setCurrentStatusDescription('Your mission is to ' +
+      svl.missionDescription.setCurrentStatusDescription('Your mission is to ' +
           '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
-      svw.progressFeedback.setProgress(currentProgress);
-      svw.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
+      svl.progressFeedback.setProgress(currentProgress);
+      svl.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
           " out of " + totalTaskCount + ".");
 
       if (isFirstTask) {
-          svw.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
-          svw.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
+          svl.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
+          svl.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
               "Now the actual task begins. Click OK to start the task.");
-          svw.messageBox.appendOKButton();
-          svw.messageBox.show();
+          svl.messageBox.appendOKButton();
+          svl.messageBox.show();
       } else {
-          svw.messageBox.hide();
+          svl.messageBox.hide();
       }
 
       // Instantiation
-      svw.map = new Map(mapParam);
-      svw.map.setStatus('hideNonavailablePanoLinks', true);
+      svl.map = new Map(mapParam);
+      svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
 
     ////////////////////////////////////////

@@ -1,3 +1,5 @@
+/** @constructor */
+
 function LabeledLandmarkFeedback ($, params) {
     var self = { className : 'LabeledLandmarkFeedback' };
     var properties = {};
@@ -14,10 +16,10 @@ function LabeledLandmarkFeedback ($, params) {
     function _init (params) {
       //
       // Initialize the jQuery DOM elements
-      if (svw.ui && svw.ui.ribbonMenu) {
-        $labelCountCurbRamp = svw.ui.labeledLandmark.curbRamp;
-        $labelCountNoCurbRamp = svw.ui.labeledLandmark.noCurbRamp;
-        $submittedLabelMessage = svw.ui.labeledLandmark.submitted;
+      if (svl.ui && svl.ui.ribbonMenu) {
+        $labelCountCurbRamp = svl.ui.labeledLandmark.curbRamp;
+        $labelCountNoCurbRamp = svl.ui.labeledLandmark.noCurbRamp;
+        $submittedLabelMessage = svl.ui.labeledLandmark.submitted;
 
         $labelCountCurbRamp.html(0);
         $labelCountNoCurbRamp.html(0);
@@ -32,7 +34,7 @@ function LabeledLandmarkFeedback ($, params) {
         // This method takes labelCount object that holds label names with
         // corresponding label counts. This function sets the label counts
         // that appears in the feedback window.
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           $labelCountCurbRamp.html(labelCount['CurbRamp']);
           $labelCountNoCurbRamp.html(labelCount['NoCurbRamp']);
         }
@@ -44,7 +46,7 @@ function LabeledLandmarkFeedback ($, params) {
         if (!param) {
             return this;
         }
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           if ('message' in param) {
               $submittedLabelMessage.html(message);
           } else if ('numCurbRampLabels' in param && 'numMissingCurbRampLabels' in param) {

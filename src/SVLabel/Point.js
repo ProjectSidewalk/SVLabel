@@ -1,4 +1,6 @@
-var svw = svw || {}; // Street View Walker namespace.
+/** @namespace */
+var svl = svl || {};
+
 function Point (x, y, pov, params) {
   'use strict';
     // Point object constructor.
@@ -44,12 +46,12 @@ function Point (x, y, pov, params) {
         //
         // Adjust the zoom level
         var zoom = pov.zoom;
-        var zoomFactor = svw.zoomFactor[zoom];
-        var svImageHeight = svw.svImageHeight;
-        var svImageWidth = svw.svImageWidth;
+        var zoomFactor = svl.zoomFactor[zoom];
+        var svImageHeight = svl.svImageHeight;
+        var svImageWidth = svl.svImageWidth;
         self.svImageCoordinate = {};
-        self.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svw.alpha_x * (x - (svw.canvasWidth / 2)) / zoomFactor);
-        self.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svw.alpha_y * (y - (svw.canvasHeight / 2)) / zoomFactor);
+        self.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svl.alpha_x * (x - (svl.canvasWidth / 2)) / zoomFactor);
+        self.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svl.alpha_y * (y - (svl.canvasHeight / 2)) / zoomFactor);
         // svImageCoordinate.x could be negative, so adjust it.
         if (self.svImageCoordinate.x < 0) {
             self.svImageCoordinate.x = self.svImageCoordinate.x + svImageWidth;
@@ -145,8 +147,8 @@ function Point (x, y, pov, params) {
 
         //
         // POV adjustment
-        self.canvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
-        return svw.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
+        self.canvasCoordinate = svl.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
+        return svl.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
     };
 
     self.getCanvasX = getCanvasX;
@@ -354,48 +356,48 @@ function Point (x, y, pov, params) {
 }
 
 
-svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
+svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     // This function takes the current pov of the Street View as a parameter
     // and returns a canvas coordinate of a point (xIn, yIn).
     var x;
     var y;
     var zoom = pov.zoom;
-    var svImageWidth = svw.svImageWidth * svw.zoomFactor[zoom];
-    var svImageHeight = svw.svImageHeight * svw.zoomFactor[zoom];
+    var svImageWidth = svl.svImageWidth * svl.zoomFactor[zoom];
+    var svImageHeight = svl.svImageHeight * svl.zoomFactor[zoom];
 
-    xIn = xIn * svw.zoomFactor[zoom];
-    yIn = yIn * svw.zoomFactor[zoom];
+    xIn = xIn * svl.zoomFactor[zoom];
+    yIn = yIn * svl.zoomFactor[zoom];
 
     x = xIn - (svImageWidth * pov.heading) / 360;
-    x = x / svw.alpha_x + svw.canvasWidth / 2;
+    x = x / svl.alpha_x + svl.canvasWidth / 2;
 
     //
     // When POV is near 0 or near 360, points near the two vertical edges of
     // the SV image does not appear. Adjust accordingly.
-    var edgeOfSvImageThresh = 360 * svw.alpha_x * (svw.canvasWidth / 2) / (svImageWidth) + 10;
+    var edgeOfSvImageThresh = 360 * svl.alpha_x * (svl.canvasWidth / 2) / (svImageWidth) + 10;
 
     if (pov.heading < edgeOfSvImageThresh) {
         // Update the canvas coordinate of the point if
-        // its svImageCoordinate.x is larger than svImageWidth - alpha_x * (svw.canvasWidth / 2).
-        if (svImageWidth - svw.alpha_x * (svw.canvasWidth / 2) < xIn) {
+        // its svImageCoordinate.x is larger than svImageWidth - alpha_x * (svl.canvasWidth / 2).
+        if (svImageWidth - svl.alpha_x * (svl.canvasWidth / 2) < xIn) {
             x = (xIn - svImageWidth) - (svImageWidth * pov.heading) / 360;
-            x = x / svw.alpha_x + svw.canvasWidth / 2;
+            x = x / svl.alpha_x + svl.canvasWidth / 2;
         }
     } else if (pov.heading > 360 - edgeOfSvImageThresh) {
-        if (svw.alpha_x * (svw.canvasWidth / 2) > xIn) {
+        if (svl.alpha_x * (svl.canvasWidth / 2) > xIn) {
             x = (xIn + svImageWidth) - (svImageWidth * pov.heading) / 360;
-            x = x / svw.alpha_x + svw.canvasWidth / 2;
+            x = x / svl.alpha_x + svl.canvasWidth / 2;
         }
     }
 
     y = yIn - (svImageHeight / 2) * (pov.pitch / 90);
-    y = y / svw.alpha_y + svw.canvasHeight / 2;
+    y = y / svl.alpha_y + svl.canvasHeight / 2;
 
 
     //
     // Adjust the zoom level
     //
-    //var zoomFactor = svw.zoomFactor[zoom];
+    //var zoomFactor = svl.zoomFactor[zoom];
     //x = x * zoomFactor;
     //y = y * zoomFactor;
 
@@ -403,7 +405,7 @@ svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     return {x : x, y : y};
 }
 
-svw.zoomFactor = {
+svl.zoomFactor = {
     1: 1,
     2: 2.1,
     3: 4,

@@ -1,3 +1,6 @@
+/** @namespace */
+var svl = svl || {};
+
 function MissionDescription ($, params) {
     var self = {
         className : 'MissionDescription'
@@ -13,9 +16,9 @@ function MissionDescription ($, params) {
     ////////////////////////////////////////////////////////////////////////////////
     function init (params) {
         // Initialize DOM elements
-        if (svw.ui && svw.ui.missinDescription) {
+        if (svl.ui && svl.ui.missinDescription) {
           // $currentStatusDescription = $(params.domIds.descriptionMessage);
-          $currentStatusDescription = svw.ui.missinDescription.description;
+          $currentStatusDescription = svl.ui.missinDescription.description;
           $currentStatusDescription.html(params.description);
         }
     }
@@ -25,7 +28,7 @@ function MissionDescription ($, params) {
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
     self.setCurrentStatusDescription = function (description) {
-      if (svw.ui && svw.ui.missinDescription) {
+      if (svl.ui && svl.ui.missinDescription) {
         $currentStatusDescription.html(description);
       }
       return this;

@@ -1,3 +1,7 @@
+/** @namespace */
+var svl = svl || {};
+var panorama;
+svl.panorama = panorama;
 
 ////////////////////////////////////////
 // Street View Global functions that can
@@ -5,27 +9,25 @@
 ////////////////////////////////////////
 // Get the camera point-of-view (POV)
 // http://www.geocodezip.com/v3_Streetview_lookAt.html?lat=34.016673&lng=-118.501322&zoom=18&type=k
-var svw = svw || {};
-var panorama;
-svw.panorama = panorama;
+
 
 //
 // Helper functions
 //
 function getPanoId() {
-    if (svw.panorama) {
-        var panoId = svw.panorama.getPano();
+    if (svl.panorama) {
+        var panoId = svl.panorama.getPano();
         return panoId;
     } else {
         throw 'getPanoId() (in Map.js): panorama not defined.'
     }
 }
-svw.getPanoId = getPanoId;
+svl.getPanoId = getPanoId;
 
 
 function getPosition() {
-    if (svw.panorama) {
-        var pos = svw.panorama.getPosition();
+    if (svl.panorama) {
+        var pos = svl.panorama.getPosition();
         if (pos) {
             var ret = {
                 'lat' : pos.lat(),
@@ -37,12 +39,12 @@ function getPosition() {
         throw 'getPosition() (in Map.js): panorama not defined.';
     }
 }
-svw.getPosition = getPosition;
+svl.getPosition = getPosition;
 
 
 function getPOV() {
-    if (svw.panorama) {
-        var pov = svw.panorama.getPov();
+    if (svl.panorama) {
+        var pov = svl.panorama.getPov();
 
         // Pov can be less than 0. So adjust it.
         while (pov.heading < 0) {
@@ -58,18 +60,18 @@ function getPOV() {
         throw 'getPOV() (in Map.js): panoarama not defined.';
     }
 }
-svw.getPOV = getPOV;
+svl.getPOV = getPOV;
 
 
 function getLinks () {
-    if (svw.panorama) {
-        var links = svw.panorama.getLinks();
+    if (svl.panorama) {
+        var links = svl.panorama.getLinks();
         return links;
     } else {
         throw 'getLinks() (in Map.js): panorama not defined.';
     }
 }
-svw.getLinks = getLinks;
+svl.getLinks = getLinks;
 
 //
 // Fog related variables.
@@ -81,7 +83,7 @@ var previousPoints = [];
 var radius = .1;
 var isNotfirst = 0;
 var paths;
-svw.fog = undefined;;
+svl.fog = undefined;;
 var au = [];
 var pty = [];
 //au = adjustFog(fog, current.lat(), current.lng(), radius);
@@ -277,23 +279,23 @@ function Map (params) {
         }
 
         var panoCanvas = document.getElementById('pano');
-        svw.panorama = new google.maps.StreetViewPanorama(panoCanvas,panoramaOptions);
-        svw.panorama.set('addressControl', false);
-        svw.panorama.set('clickToGo', false);
-        svw.panorama.set('disableDefaultUI', true);
-        svw.panorama.set('linksControl', true);
-        svw.panorama.set('navigationControl', false);
-        svw.panorama.set('panControl', false);
-        svw.panorama.set('zoomControl', false);
+        svl.panorama = new google.maps.StreetViewPanorama(panoCanvas,panoramaOptions);
+        svl.panorama.set('addressControl', false);
+        svl.panorama.set('clickToGo', false);
+        svl.panorama.set('disableDefaultUI', true);
+        svl.panorama.set('linksControl', true);
+        svl.panorama.set('navigationControl', false);
+        svl.panorama.set('panControl', false);
+        svl.panorama.set('zoomControl', false);
 
         properties.initialPanoId = params.taskPanoId;
-        $canvas = svw.ui.map.canvas;
-        $divLabelDrawingLayer = svw.ui.map.drawingLayer;
-        $divPano = svw.ui.map.pano;
-        $divStreetViewHolder = svw.ui.map.streetViewHolder;
-        $divViewControlLayer = svw.ui.map.viewControlLayer;
-        $spanModeSwitchWalk = svw.ui.map.modeSwitchWalk;
-        $spanModeSwitchDraw = svw.ui.map.modeSwitchDraw;
+        $canvas = svl.ui.map.canvas;
+        $divLabelDrawingLayer = svl.ui.map.drawingLayer;
+        $divPano = svl.ui.map.pano;
+        $divStreetViewHolder = svl.ui.map.streetViewHolder;
+        $divViewControlLayer = svl.ui.map.viewControlLayer;
+        $spanModeSwitchWalk = svl.ui.map.modeSwitchWalk;
+        $spanModeSwitchDraw = svl.ui.map.modeSwitchDraw;
 
         // Set so the links to panoaramas that are not listed on availablePanoIds will be removed
         status.availablePanoIds = params.availablePanoIds;
@@ -307,24 +309,24 @@ function Map (params) {
 
         // Add listeners to the SV panorama
         // https://developers.google.com/maps/documentation/javascript/streetview#StreetViewEvents
-        google.maps.event.addListener(svw.panorama, "pov_changed", povUpdated);
-        google.maps.event.addListener(svw.panorama, "position_changed", povUpdated);
-        google.maps.event.addListener(svw.panorama, "pano_changed", updateMap);
+        google.maps.event.addListener(svl.panorama, "pov_changed", povUpdated);
+        google.maps.event.addListener(svl.panorama, "position_changed", povUpdated);
+        google.maps.event.addListener(svl.panorama, "pano_changed", updateMap);
 
         // Connect the map view and panorama view
-        map.setStreetView(svw.panorama);
+        map.setStreetView(svl.panorama);
 
         // Set it to walking mode initially.
-        google.maps.event.addListenerOnce(svw.panorama, "pano_changed", self.modeSwitchWalkClick);
+        google.maps.event.addListenerOnce(svl.panorama, "pano_changed", self.modeSwitchWalkClick);
 
         streetViewInit = setInterval(initStreetView, 100);
 
         //
         // Set the fog parameters
         // Comment out to disable the fog feature.
-        if ("onboarding" in svw &&
-            svw.onboarding &&
-            svw.onboarding.className === "Onboarding_LabelingCurbRampsDifficultScene") { //"zoomViewAngles" in params) {
+        if ("onboarding" in svl &&
+            svl.onboarding &&
+            svl.onboarding.className === "Onboarding_LabelingCurbRampsDifficultScene") { //"zoomViewAngles" in params) {
             fogParam.zoomViewAngles = [Math.PI / 2, Math.PI / 4, Math.PI / 8];
         }
         fogParam.interval = setInterval(initFog, 250);
@@ -377,12 +379,12 @@ function Map (params) {
     }
 
     function fogUpdate () {
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 
         if (pov) {
             var heading = pov.heading;
             var dir = heading * (Math.PI / 180);
-            svw.fog.updateFromPOV(current, radius, dir, Math.PI/2);
+            svl.fog.updateFromPOV(current, radius, dir, Math.PI/2);
         }
         return;
     }
@@ -429,8 +431,8 @@ function Map (params) {
             fogParam.center = current;
             fogParam.radius = 200;
 
-            current = svw.panorama.getPosition();
-            svw.fog = new Fog(map, fogParam);
+            current = svl.panorama.getPosition();
+            svl.fog = new Fog(map, fogParam);
             fogSet = true;
             window.clearInterval(fogParam.interval);
             fogUpdate();
@@ -452,29 +454,29 @@ function Map (params) {
 
     function povUpdated () {
         // This is a callback function that is fired when pov is changed
-        if (svw.canvas) {
+        if (svl.canvas) {
             var latlng = getPosition();
-            var heading = svw.getPOV().heading;
+            var heading = svl.getPOV().heading;
 
-            svw.canvas.clear();
+            svl.canvas.clear();
 
-            if (status.currentPanoId !== svw
+            if (status.currentPanoId !== svl
               .getPanoId()) {
-            	svw.canvas.setVisibilityBasedOnLocation('visible', svw.getPanoId());
+            	svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
             }
-            status.currentPanoId = svw.getPanoId();
+            status.currentPanoId = svl.getPanoId();
 
 
             if (properties.mode === 'Evaluation') {
                 myTables.updateCanvas();
             }
-            svw.canvas.render2();
+            svl.canvas.render2();
         }
 
 
         // Sean & Vicki Fog code
-        if (fogMode && "fog" in svw) {
-            current = svw.panorama.getPosition();
+        if (fogMode && "fog" in svl) {
+            current = svl.panorama.getPosition();
             if (current) {
                 if (!fogSet) {
 
@@ -568,17 +570,17 @@ function Map (params) {
 
     function updateMap () {
         // This function updates the map pane.
-        if (svw.panorama) {
-            var panoramaPosition = svw.panorama.getPosition();
+        if (svl.panorama) {
+            var panoramaPosition = svl.panorama.getPosition();
             map.setCenter(panoramaPosition);
 
-            if (svw.canvas) {
-                svw.canvas.clear();
-                svw.canvas.setVisibilityBasedOnLocation('visible', svw.getPanoId());
+            if (svl.canvas) {
+                svl.canvas.clear();
+                svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
                 if (properties.mode === 'Evaluation') {
                     myTables.updateCanvas();
                 }
-                svw.canvas.render2();
+                svl.canvas.render2();
             }
 
             if (fogSet) {
@@ -591,8 +593,8 @@ function Map (params) {
 
     function updatePov (dx, dy) {
         // Update POV of Street View as a user drag a mouse cursor.
-        if (svw.panorama) {
-            var pov = svw.panorama.getPov(),
+        if (svl.panorama) {
+            var pov = svl.panorama.getPov(),
                 alpha = 0.25;
 
             pov.heading -= alpha * dx;
@@ -630,7 +632,7 @@ function Map (params) {
             //
             // Set the property this object. Then update the Street View image
             properties.panoramaPov = pov;
-            svw.panorama.setPov(pov);
+            svl.panorama.setPov(pov);
         } else {
             throw className + ' updatePov(): panorama not defined!';
         }
@@ -647,7 +649,7 @@ function Map (params) {
             // Setting a cursor
             // http://www.jaycodesign.co.nz/css/cross-browser-css-grab-cursors-for-dragging/
             try {
-                if (!svw.keyboard.isShiftDown()) {
+                if (!svl.keyboard.isShiftDown()) {
                     setViewControlLayerCursor('ClosedHand');
                     // $divViewControlLayer.css("cursor", "url(public/img/cursors/openhand.cur) 4 4, move");
                 } else {
@@ -666,7 +668,7 @@ function Map (params) {
                 $('svg')[0].addEventListener('click', function (e) {
                     var targetPanoId = e.target.getAttribute('pano');
                     if (targetPanoId) {
-                        svw.tracker.push('WalkTowards', {'TargetPanoId': targetPanoId});
+                        svl.tracker.push('WalkTowards', {'TargetPanoId': targetPanoId});
                     }
                 });
                 status.panoLinkListenerSet = true;
@@ -675,7 +677,7 @@ function Map (params) {
             }
         }
 
-        svw.tracker.push('ViewControl_MouseDown', {x: mouseStatus.leftDownX, y:mouseStatus.leftDownY});
+        svl.tracker.push('ViewControl_MouseDown', {x: mouseStatus.leftDownX, y:mouseStatus.leftDownY});
     }
 
     function viewControlLayerMouseUp (e) {
@@ -686,13 +688,13 @@ function Map (params) {
         mouseStatus.isLeftDown = false;
         mouseStatus.leftUpX = mouseposition(e, this).x;
         mouseStatus.leftUpY = mouseposition(e, this).y;
-        svw.tracker.push('ViewControl_MouseUp', {x:mouseStatus.leftUpX, y:mouseStatus.leftUpY});
+        svl.tracker.push('ViewControl_MouseUp', {x:mouseStatus.leftUpX, y:mouseStatus.leftUpY});
 
         if (!status.disableWalking) {
             // Setting a mouse cursor
             // http://www.jaycodesign.co.nz/css/cross-browser-css-grab-cursors-for-dragging/
             try {
-                if (!svw.keyboard.isShiftDown()) {
+                if (!svl.keyboard.isShiftDown()) {
                     setViewControlLayerCursor('OpenHand');
                     // $divViewControlLayer.css("cursor", "url(public/img/cursors/openhand.cur) 4 4, move");
                 } else {
@@ -708,16 +710,16 @@ function Map (params) {
         if (currTime - mouseStatus.prevMouseUpTime < 300) {
             // Double click
             // canvas.doubleClickOnCanvas(mouseStatus.leftUpX, mouseStatus.leftDownY);
-            svw.tracker.push('ViewControl_DoubleClick');
-            if (svw.keyboard.isShiftDown()) {
+            svl.tracker.push('ViewControl_DoubleClick');
+            if (svl.keyboard.isShiftDown()) {
                 // If Shift is down, then zoom out with double click.
-                svw.zoomControl.zoomOut();
-                svw.tracker.push('ViewControl_ZoomOut');
+                svl.zoomControl.zoomOut();
+                svl.tracker.push('ViewControl_ZoomOut');
             } else {
                 // If Shift is up, then zoom in wiht double click.
-                // svw.zoomControl.zoomIn();
-                svw.zoomControl.pointZoomIn(mouseStatus.leftUpX, mouseStatus.leftUpY);
-                svw.tracker.push('ViewControl_ZoomIn');
+                // svl.zoomControl.zoomIn();
+                svl.zoomControl.pointZoomIn(mouseStatus.leftUpX, mouseStatus.leftUpY);
+                svl.tracker.push('ViewControl_ZoomIn');
             }
         }
 
@@ -738,7 +740,7 @@ function Map (params) {
             showLinks(2000);
             if (!mouseStatus.isLeftDown) {
                 try {
-                    if (!svw.keyboard.isShiftDown()) {
+                    if (!svl.keyboard.isShiftDown()) {
                         setViewControlLayerCursor('OpenHand');
                         // $divViewControlLayer.css("cursor", "url(public/img/cursors/openhand.cur) 4 4, move");
                     } else {
@@ -761,9 +763,9 @@ function Map (params) {
             // If a mouse is being dragged on the control layer, move the sv image.
             var dx = mouseStatus.currX - mouseStatus.prevX;
             var dy = mouseStatus.currY - mouseStatus.prevY;
-            var pov = svw.getPOV();
+            var pov = svl.getPOV();
             var zoom = pov.zoom;
-            var zoomLevel = svw.zoomFactor[zoom];
+            var zoomLevel = svl.zoomFactor[zoom];
 
             dx = dx / (2 * zoomLevel);
             dy = dy / (2 * zoomLevel);
@@ -778,30 +780,30 @@ function Map (params) {
 
         //
         // Show label delete menu
-        if ('canvas' in svw && svw.canvas) {
-            var item = svw.canvas.isOn(mouseStatus.currX,  mouseStatus.currY);
+        if ('canvas' in svl && svl.canvas) {
+            var item = svl.canvas.isOn(mouseStatus.currX,  mouseStatus.currY);
             if (item && item.className === "Point") {
                 var path = item.belongsTo();
                 var selectedLabel = path.belongsTo();
 
-                svw.canvas.setCurrentLabel(selectedLabel);
-                svw.canvas.showLabelTag(selectedLabel);
-                svw.canvas.clear();
-                svw.canvas.render2();
+                svl.canvas.setCurrentLabel(selectedLabel);
+                svl.canvas.showLabelTag(selectedLabel);
+                svl.canvas.clear();
+                svl.canvas.render2();
             } else if (item && item.className === "Label") {
                 var selectedLabel = item;
-                svw.canvas.setCurrentLabel(selectedLabel);
-                svw.canvas.showLabelTag(selectedLabel);
+                svl.canvas.setCurrentLabel(selectedLabel);
+                svl.canvas.showLabelTag(selectedLabel);
             } else if (item && item.className === "Path") {
                 var label = item.belongsTo();
-                svw.canvas.clear();
-                svw.canvas.render2();
-                svw.canvas.showLabelTag(label);
+                svl.canvas.clear();
+                svl.canvas.render2();
+                svl.canvas.showLabelTag(label);
             }
             else {
                 // canvas.hideDeleteLabel();
-                svw.canvas.showLabelTag(undefined);
-                svw.canvas.setCurrentLabel(undefined);
+                svl.canvas.showLabelTag(undefined);
+                svl.canvas.setCurrentLabel(undefined);
             }
         }
 
@@ -978,8 +980,8 @@ function Map (params) {
     self.setPov = function (pov, duration, callback) {
         // Change the pov.
         // If a transition duration is set, smoothly change the pov over the time specified (milli-sec)
-        if (('panorama' in svw) && svw.panorama) {
-            var currentPov = svw.panorama.getPov();
+        if (('panorama' in svl) && svl.panorama) {
+            var currentPov = svl.panorama.getPov();
             var end = false;
             var interval;
 
@@ -1050,7 +1052,7 @@ function Map (params) {
                         currentPov.pitch += pitchIncrement;
                         currentPov.heading = (currentPov.heading + 360) % 360; //Math.ceil(currentPov.heading);
                         currentPov.pitch = currentPov.pitch; // Math.ceil(currentPov.pitch);
-                        svw.panorama.setPov(currentPov);
+                        svl.panorama.setPov(currentPov);
                     } else {
                         //
                         // Set the pov to adjust the zoom level. Then clear the interval.
@@ -1060,7 +1062,7 @@ function Map (params) {
                         }
                         //pov.heading = Math.ceil(pov.heading);
                         //pov.pitch = Math.ceil(pov.pitch);
-                        svw.panorama.setZoom(pov.zoom);
+                        svl.panorama.setZoom(pov.zoom);
                         window.clearInterval(interval);
                         if (callback) {
                             callback();
@@ -1070,7 +1072,7 @@ function Map (params) {
 
 
             } else {
-                svw.panorama.setPov(pov);
+                svl.panorama.setPov(pov);
             }
         }
 

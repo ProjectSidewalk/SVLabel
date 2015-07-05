@@ -1,12 +1,6 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 6/5/13
- * Time: 3:06 PM
- * To change this template use File | Settings | File Templates.
- */
-var svw = svw || {};
-svw.misc = {};
+/** @namespace */
+var svl = svl || {};
+svl.misc = {};
 
 
 function getHeadingEstimate(SourceLat, SourceLng, TargetLat, TargetLng) {
@@ -63,7 +57,7 @@ function getLabelCursorImagePath() {
         },
     }
 }
-svw.misc.getLabelCursorImagePath = getLabelCursorImagePath;
+svl.misc.getLabelCursorImagePath = getLabelCursorImagePath;
 
 
 //
@@ -141,7 +135,7 @@ function getLabelIconImagePath(labelType) {
         }
     }
 }
-svw.misc.getIconImagePaths = getLabelIconImagePath;
+svl.misc.getIconImagePaths = getLabelIconImagePath;
 
 
 //
@@ -221,7 +215,7 @@ function getLabelInstructions () {
         }
     }
 }
-svw.misc.getLabelInstructions = getLabelInstructions;
+svl.misc.getLabelInstructions = getLabelInstructions;
 
 function getRibbonConnectionPositions () {
     return {
@@ -365,13 +359,13 @@ function getLabelDescriptions () {
         }
     }
 }
-svw.misc.getLabelDescriptions = getLabelDescriptions;
+svl.misc.getLabelDescriptions = getLabelDescriptions;
 
 // Todo. Get rid of this global function.
 function getLabelColors () {
     return SidewalkColorScheme();
 }
-svw.misc.getLabelColors = getLabelColors;
+svl.misc.getLabelColors = getLabelColors;
 
 
 function SidewalkColorScheme () {

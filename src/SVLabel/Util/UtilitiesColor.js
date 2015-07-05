@@ -1,16 +1,9 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 2/24/13
- * Time: 8:11 PM
- * To change this template use File | Settings | File Templates.
- */
+/** @namespace */
+var svl = svl || {};
+svl.util = svl.util || {};
+svl.util.color = {};
 
-var svw = svw || {};
-svw.util = svw.util || {};
-svw.util.color = {};
-
-svw.util.color.RGBToRGBA = function (rgb, alpha) {
+svl.util.color.RGBToRGBA = function (rgb, alpha) {
     if(!alpha){
         alpha = '0.5';
     }
@@ -40,7 +33,7 @@ function changeAlphaRGBA(rgba, alpha) {
         return rgba;
     }
 }
-svw.util.color.changeAlphaRGBA = changeAlphaRGBA;
+svl.util.color.changeAlphaRGBA = changeAlphaRGBA;
 
 function changeDarknessRGBA(rgba, value) {
     // This function takes rgba and value as argumetns
@@ -77,7 +70,7 @@ function changeDarknessRGBA(rgba, value) {
     }
     return rgba;
 }
-svw.util.color.changeDarknessRGBA = changeDarknessRGBA;
+svl.util.color.changeDarknessRGBA = changeDarknessRGBA;
 
 /**
  * Converts an RGB color value to HSL. Conversion formula
@@ -112,7 +105,7 @@ function rgbToHsl(r, g, b){
 
     return [h, s, l];
 }
-svw.util.color.rgbToHsl = rgbToHsl;
+svl.util.color.rgbToHsl = rgbToHsl;
 
 /**
  * Converts an HSL color value to RGB. Conversion formula
@@ -149,7 +142,7 @@ function hslToRgb(h, s, l){
 
     return [r * 255, g * 255, b * 255];
 }
-svw.util.color.hslToRgb = hslToRgb;
+svl.util.color.hslToRgb = hslToRgb;
 
 /**
  * Converts an RGB color value to HSV. Conversion formula

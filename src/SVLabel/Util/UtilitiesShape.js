@@ -1,14 +1,7 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 5/28/13
- * Time: 3:12 PM
- * To change this template use File | Settings | File Templates.
- */
-
-var svw = svw || {};
-svw.util = svw.util || {};
-svw.util.shape = {};
+/** @namespace */
+var svl = svl || {};
+svl.util = svl.util || {};
+svl.util.shape = {};
 
 
 function lineWithRoundHead (ctx, x1, y1, r1, x2, y2, r2, sourceFormIn, sourceStrokeStyleIn, sourceFillStyleIn, targetFormIn, targetStrokeStyleIn, targetFillStyleIn) {
@@ -105,4 +98,4 @@ function lineWithRoundHead (ctx, x1, y1, r1, x2, y2, r2, sourceFormIn, sourceStr
     }
     return;
 }
-svw.util.shape.lineWithRoundHead = lineWithRoundHead;
+svl.util.shape.lineWithRoundHead = lineWithRoundHead;

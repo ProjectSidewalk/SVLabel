@@ -1,11 +1,7 @@
 /**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 3/15/13
- * Time: 9:08 PM
- * To change this template use File | Settings | File Templates.
+ * @namespace
  */
-var svw = svw || {};
+var svl = svl || {};
 
 function Keyboard ($) {
     var oPublic = {
@@ -48,8 +44,8 @@ function Keyboard ($) {
     function documentKeyDown(e) {
         // The callback method that is triggered with a keyUp event.
         if (!status.focusOnTextField) {
-          if ('tracker' in svw) {
-            svw.tracker.push('KeyDown', {'keyCode': e.keyCode});
+          if ('tracker' in svl) {
+            svl.tracker.push('KeyDown', {'keyCode': e.keyCode});
           }
             switch (e.keyCode) {
                 case 16:
@@ -65,8 +61,8 @@ function Keyboard ($) {
 
         // This is a callback method that is triggered when a keyDown event occurs.
         if (!status.focusOnTextField) {
-          if ('tracker' in svw) {
-            svw.tracker.push('KeyUp', {'keyCode': e.keyCode});
+          if ('tracker' in svl) {
+            svl.tracker.push('KeyUp', {'keyCode': e.keyCode});
           }
             switch (e.keyCode) {
                 case 16:
@@ -75,31 +71,31 @@ function Keyboard ($) {
                     break;
                 case 27:
                     // "Escape"
-                    svw.canvas.cancelDrawing();
+                    svl.canvas.cancelDrawing();
                     break;
                 case 67:
                     // "c" for CurbRamp. Switch the mode to the CurbRamp labeling mode.
-                    svw.ribbon.modeSwitchClick("CurbRamp");
+                    svl.ribbon.modeSwitchClick("CurbRamp");
                     break
                 case 69:
                     // "e" for Explore. Switch the mode to Walk (camera) mode.
-                    svw.ribbon.modeSwitchClick("Walk");
+                    svl.ribbon.modeSwitchClick("Walk");
                     break;
                 case 77:
                     // "m" for MissingCurbRamp. Switch the mode to the MissingCurbRamp labeling mode.
-                    svw.ribbon.modeSwitchClick("NoCurbRamp");
+                    svl.ribbon.modeSwitchClick("NoCurbRamp");
                     break;
                 case 90:
                     // "z" for zoom. By default, it will zoom in. If "shift" is down, it will zoom out.
                     if (status.shiftDown) {
                         // Zoom out
-                        if ("zoomControl" in svw) {
-                            svw.zoomControl.zoomOut();
+                        if ("zoomControl" in svl) {
+                            svl.zoomControl.zoomOut();
                         }
                     } else {
                         // Zoom in
-                        if ("zoomControl" in svw)
-                            svw.zoomControl.zoomIn();
+                        if ("zoomControl" in svl)
+                            svl.zoomControl.zoomIn();
                     }
             }
         }

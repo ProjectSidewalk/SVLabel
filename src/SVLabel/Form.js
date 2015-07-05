@@ -1,3 +1,6 @@
+/** @namespace */
+var svl = svl || {};
+
 function Form ($, params) {
     var self = {
         'className' : 'Form'
@@ -140,7 +143,7 @@ function Form ($, params) {
             self.lockDisableSubmit();
         }
 
-        // if (!('onboarding' in svw && svw.onboarding)) {
+        // if (!('onboarding' in svl && svl.onboarding)) {
         //     messageCanvas = new Onboarding(params, $)
         // }
 
@@ -180,7 +183,7 @@ function Form ($, params) {
         var hitId;
         var assignmentId;
         var turkerId;
-        var taskGSVPanoId = svw.map.getInitialPanoId();
+        var taskGSVPanoId = svl.map.getInitialPanoId();
 
 
         hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
@@ -228,10 +231,10 @@ function Form ($, params) {
             operating_system: getOperatingSystem()
         };
 
-        data.userInteraction = svw.tracker.getActions();
+        data.userInteraction = svl.tracker.getActions();
 
         data.labels = [];
-        var labels = svw.canvas.getLabels();
+        var labels = svl.canvas.getLabels();
         for(var i = 0; i < labels.length; i += 1) {
             var label = labels[i];
             var prop = label.getProperties();
@@ -331,8 +334,8 @@ function Form ($, params) {
 
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            var numMistakes = svw.goldenInsertion.reviewLabels();
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+            var numMistakes = svl.goldenInsertion.reviewLabels();
             self.disableSubmit().lockDisableSubmit();
             self.disableSkip().lockDisableSkip();
             return false;
@@ -359,7 +362,7 @@ function Form ($, params) {
         //
         // Submit collected data if a user is not in onboarding mode.
         if (!properties.onboarding) {
-            svw.tracker.push('TaskSubmit');
+            svl.tracker.push('TaskSubmit');
 
             data = compileSubmissionData();
 
@@ -411,11 +414,11 @@ function Form ($, params) {
 
     function goldenInsertionSubmit () {
         // This method submits the labels that a user provided on golden insertion task and refreshes the page.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            svw.tracker.push('GoldenInsertion_Submit');
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+            svl.tracker.push('GoldenInsertion_Submit');
             var url = properties.dataStoreUrl;
             var data;
-            svw.goldenInsertion.disableOkButton();
+            svl.goldenInsertion.disableOkButton();
 
             data = compileSubmissionData();
             data.labelingTask.description = "GoldenInsertion";
@@ -452,9 +455,9 @@ function Form ($, params) {
     function showDisabledSubmitButtonMessage () {
         // This method is called from formSubmit method when a user clicks the submit button evne then have
         // not looked around and inspected the entire panorama.
-        var completionRate = parseInt(svw.progressPov.getCompletionRate() * 100, 10);
+        var completionRate = parseInt(svl.progressPov.getCompletionRate() * 100, 10);
 
-        if (!('onboarding' in svw && svw.onboarding) &&
+        if (!('onboarding' in svl && svl.onboarding) &&
             (completionRate < 100)) {
             var message = "You have inspected " + completionRate + "% of the scene. Let's inspect all the corners before you submit the task!";
             var $OkBtn;
@@ -495,14 +498,14 @@ function Form ($, params) {
         var data = {};
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
             self.disableSubmit().lockDisableSubmit();
             $btnSkip.attr('disabled', true);
             $btnConfirmSkip.attr('disabled', true);
             $divSkipOptions.css({
                 visibility: 'hidden'
             });
-            var numMistakes = svw.goldenInsertion.reviewLabels()
+            var numMistakes = svl.goldenInsertion.reviewLabels()
             return false;
         }
 
@@ -531,7 +534,7 @@ function Form ($, params) {
 
         // Submit collected data if a user is not in oboarding mode.
         if (!properties.onboarding) {
-            svw.tracker.push('TaskSubmitSkip');
+            svl.tracker.push('TaskSubmitSkip');
 
             //
             // Compile the submission data with compileSubmissionData method,
@@ -596,7 +599,7 @@ function Form ($, params) {
         if (status.disableSkip) {
             showDisabledSubmitButtonMessage();
         } else {
-            svw.tracker.push('Click_OpenSkipWindow');
+            svl.tracker.push('Click_OpenSkipWindow');
             $divSkipOptions.css({
                 visibility: 'visible'
             });
@@ -609,7 +612,7 @@ function Form ($, params) {
         // This method closes the skip menu.
         e.preventDefault(); // Do not submit the form!
 
-        svw.tracker.push('Click_CloseSkipWindow');
+        svl.tracker.push('Click_CloseSkipWindow');
 
         $divSkipOptions.css({
             visibility: 'hidden'
@@ -623,7 +626,7 @@ function Form ($, params) {
         // If the clicked radio button is 'Other', check if a user has entered a text.
         // If the text is entered, then enable submit. Otherwise disable submit.
         status.radioValue = $(this).attr('value');
-        svw.tracker.push('Click_SkipRadio', {RadioValue: status.radioValue});
+        svl.tracker.push('Click_SkipRadio', {RadioValue: status.radioValue});
 
         if (status.radioValue !== 'Other:') {
             status.skipReasonDescription = status.radioValue;
@@ -675,13 +678,13 @@ function Form ($, params) {
         // This method checks whether users can submit labels or skip this task by first checking if they
         // assessed all the angles of the street view.
         // Enable/disable form a submit button and a skip button
-        if ('progressPov' in svw && svw.progressPov) {
-            var completionRate = svw.progressPov.getCompletionRate();
+        if ('progressPov' in svl && svl.progressPov) {
+            var completionRate = svl.progressPov.getCompletionRate();
         } else {
             var completionRate = 0;
         }
 
-        var labelCount = svw.canvas.getNumLabels();
+        var labelCount = svl.canvas.getNumLabels();
 
         if (1 - completionRate < 0.01) {
             if (labelCount > 0) {

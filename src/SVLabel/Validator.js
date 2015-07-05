@@ -1,4 +1,5 @@
-var svw = svw || {}; // Street View Walker namespace.
+/** @namespace */
+var svl = svl || {};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Validator

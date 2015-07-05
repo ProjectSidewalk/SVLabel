@@ -1,4 +1,5 @@
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function ZoomControl ($, param) {
     var self = {
@@ -29,9 +30,9 @@ function ZoomControl ($, param) {
         // Initialization function
 
         //if ('domIds' in param) {
-        if (svw.ui && svw.ui.zoomControl) {
-          $buttonZoomIn = svw.ui.zoomControl.zoomIn;
-          $buttonZoomOut = svw.ui.zoomControl.zoomOut;
+        if (svl.ui && svl.ui.zoomControl) {
+          $buttonZoomIn = svl.ui.zoomControl.zoomIn;
+          $buttonZoomOut = svl.ui.zoomControl.zoomOut;
           // $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
           // $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
         // }
@@ -47,27 +48,27 @@ function ZoomControl ($, param) {
 
     function buttonZoomInClick () {
         // This is a callback function for zoom-in button. This function increments a sv zoom level.
-        if ('tracker' in svw) {
-          svw.tracker.push('Click_ZoomIn');
+        if ('tracker' in svl) {
+          svl.tracker.push('Click_ZoomIn');
         }
 
         if (!status.disableZoomIn) {
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom + 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
         }
     }
 
     function buttonZoomOutClick () {
         // This is a callback function for zoom-out button. This function decrements a sv zoom level.
-        if ('traker' in svw) {
-          svw.tracker.push('Click_ZoomOut');
+        if ('traker' in svl) {
+          svl.tracker.push('Click_ZoomOut');
         }
 
         if (!status.disableZoomOut) {
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom - 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
         }
     }
 
@@ -75,22 +76,22 @@ function ZoomControl ($, param) {
         // This method takes a (x, y) canvas point and sets a zoom level.
         if (!status.disableZoomIn) {
             // Cancel drawing when zooming in or out.
-            if ('canvas' in svw) {
-              svw.canvas.cancelDrawing();
+            if ('canvas' in svl) {
+              svl.canvas.cancelDrawing();
             }
-            if ('panorama' in svw) {
+            if ('panorama' in svl) {
                 console.log("hi");
-                var currentPov = svw.panorama.getPov();
+                var currentPov = svl.panorama.getPov();
                 var currentZoomLevel = currentPov.zoom;
 
                 if (currentZoomLevel >= properties.maxZoomLevel) {
                     return false;
                 }
 
-                var width = svw.canvasWidth;
-                var height = svw.canvasHeight;
-                var minPitch = svw.map.getProperty('minPitch');
-                var maxPitch = svw.map.getProperty('maxPitch');
+                var width = svl.canvasWidth;
+                var height = svl.canvasHeight;
+                var minPitch = svl.map.getProperty('minPitch');
+                var maxPitch = svl.map.getProperty('maxPitch');
 
                 var zoomFactor = currentZoomLevel; // This needs to be fixed as it wouldn't work above level 3.
                 var deltaHeading = (x - (width / 2)) / width * (90 / zoomFactor); // Ugh. Hard coding.
@@ -103,8 +104,8 @@ function ZoomControl ($, param) {
 
                 //
                 // Adjust the pitch angle.
-                var maxPitch = svw.map.getMaxPitch();
-                var minPitch = svw.map.getMinPitch();
+                var maxPitch = svl.map.getMaxPitch();
+                var minPitch = svl.map.getMinPitch();
                 if (pov.pitch > maxPitch) {
                     pov.pitch = maxPitch;
                 } else if (pov.pitch < minPitch) {
@@ -113,7 +114,7 @@ function ZoomControl ($, param) {
 
                 //
                 // Adjust the pitch so it won't exceed max/min pitch.
-                svw.panorama.setPov(pov);
+                svl.panorama.setPov(pov);
                 return currentZoomLevel;
             } else {
                 return false;
@@ -128,8 +129,8 @@ function ZoomControl ($, param) {
         }
 
         // Cancel drawing when zooming in or out.
-        if ('canvas' in svw) {
-          svw.canvas.cancelDrawing();
+        if ('canvas' in svl) {
+          svl.canvas.cancelDrawing();
         }
 
         // Set the zoom level and change the panorama properties.
@@ -142,7 +143,7 @@ function ZoomControl ($, param) {
         } else {
             zoomLevel = zoomLevelIn;
         }
-        svw.panorama.setZoom(zoomLevel);
+        svl.panorama.setZoom(zoomLevel);
         return zoomLevel;
     }
 
@@ -233,7 +234,7 @@ function ZoomControl ($, param) {
     };
 
     self.updateOpacity = function () {
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 
         if (pov) {
             var zoom = pov.zoom;
@@ -300,9 +301,9 @@ function ZoomControl ($, param) {
     self.zoomIn = function () {
         // This method is called from outside this object to zoom in to a GSV image.
         if (!status.disableZoomIn) {
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom + 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
             return this;
         } else {
             return false;
@@ -313,9 +314,9 @@ function ZoomControl ($, param) {
         // This method is called from outside this class to zoom out from a GSV image.
         if (!status.disableZoomOut) {
             // ViewControl_ZoomOut
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom - 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
             return this;
         } else {
             return false;

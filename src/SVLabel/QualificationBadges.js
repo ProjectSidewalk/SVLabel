@@ -1,3 +1,6 @@
+/** @namespace */
+var svl = svl || {};
+
 function QualificationBadges ($, params) {
     var self = { className : 'QualificationBadges' };
     var properties = {

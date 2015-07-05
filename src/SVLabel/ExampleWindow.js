@@ -1,3 +1,6 @@
+/** @namespace */
+var svl = svl || {};
+
 function ExampleWindow ($, params) {
     var api = {
             className : 'ExampleWindow'

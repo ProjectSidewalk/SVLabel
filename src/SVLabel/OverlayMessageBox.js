@@ -1,5 +1,8 @@
+/** @namespace */
+var svl = svl || {};
+
 function OverlayMessageBox ($, params) {
-    var oPublic = {
+    var self = {
             'className' : 'OverlayMessageBox'
         };
     var properties = {
@@ -17,11 +20,11 @@ function OverlayMessageBox ($, params) {
         // Initialization function.
         // $divOverlayMessage = $(params.domIds.OverlayMessage);
         // $divOverlayMessageBox = $(params.domIds.Holder_OverlayMessage);
-        if (svw.ui && svw.ui.overlayMessage) {
-          $divOverlayMessage = svw.ui.overlayMessage.message;
-          $divOverlayMessageBox = svw.ui.overlayMessage.box;
+        if (svl.ui && svl.ui.overlayMessage) {
+          $divOverlayMessage = svl.ui.overlayMessage.message;
+          $divOverlayMessageBox = svl.ui.overlayMessage.box;
 
-          oPublic.setMessage('Walk');
+          self.setMessage('Walk');
         }
 
     }
@@ -29,9 +32,9 @@ function OverlayMessageBox ($, params) {
     ////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////
-    oPublic.setMessage = function (mode, message) {
-        var instructions = svw.misc.getLabelInstructions(),
-            labelColors = svw.misc.getLabelColors();
+    self.setMessage = function (mode, message) {
+        var instructions = svl.misc.getLabelInstructions(),
+            labelColors = svl.misc.getLabelColors();
 
         if ((mode in instructions) &&
             (mode in labelColors)) {
@@ -60,7 +63,7 @@ function OverlayMessageBox ($, params) {
         }
     };
 
-    oPublic.setVisibility = function (val) {
+    self.setVisibility = function (val) {
         // Set the visibility to visible or hidden.
         if (val === 'visible' || val === 'hidden') {
             properties.visibility = val;
@@ -73,5 +76,5 @@ function OverlayMessageBox ($, params) {
     ////////////////////////////////////////
     init();
 
-    return oPublic;
+    return self;
 }

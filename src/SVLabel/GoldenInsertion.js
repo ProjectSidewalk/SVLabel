@@ -1,11 +1,7 @@
 /**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 9/1/13
- * Time: 4:07 PM
- * To change this template use File | Settings | File Templates.
+ *  @namespace
  */
-var svw = svw || {};
+var svl = svl || {};
 
 function GoldenInsertion (param, $) {
     var oPublic = {
@@ -52,8 +48,8 @@ function GoldenInsertion (param, $) {
 
     function clickOK () {
         // This is a callback function that is invoked when a user clicked an OK button on the final message.
-        if ('form' in svw && svw.form) {
-            svw.form.goldenInsertionSubmit();
+        if ('form' in svl && svl.form) {
+            svl.form.goldenInsertionSubmit();
         } else {
             throw oPublic.className + ": Cannnot submit without a Form object.";
         }
@@ -72,11 +68,11 @@ function GoldenInsertion (param, $) {
 
     function reviseFalseNegative (label) {
         // This method sets the camera angle to a false negative label and asks a user to label it.
-        if (('canvas' in svw && svw.canvas) &&
-            ('map' in svw && svw.map)) {
-            svw.tracker.push('GoldenInsertion_ReviseFalseNegative');
+        if (('canvas' in svl && svl.canvas) &&
+            ('map' in svl && svl.map)) {
+            svl.tracker.push('GoldenInsertion_ReviseFalseNegative');
             var labelId = label.getLabelId();
-            var systemLabels = svw.canvas.getSystemLabels(true);
+            var systemLabels = svl.canvas.getSystemLabels(true);
             var systemLabelIndex;
             var systemLabelsLength = systemLabels.length;
 
@@ -107,16 +103,16 @@ function GoldenInsertion (param, $) {
                 status.boxMessage = "You did not label this <b>missing curb ramp</b>. Please draw an outline around it.";
             }
 
-            svw.messageBox.hide();
-            svw.map.setPov(pov, properties.cameraMovementDuration, function () {
+            svl.messageBox.hide();
+            svl.map.setPov(pov, properties.cameraMovementDuration, function () {
                 status.currentLabel = label;
                 showMessage();
                 //
                 // Automatically switch to the CurbRamp or NoCurbRamp labeling mode based on the given label type.
                 if (labelType === 'CurbRamp') {
-                    svw.ribbon.modeSwitch('CurbRamp');
+                    svl.ribbon.modeSwitch('CurbRamp');
                 } else if (labelType === 'NoCurbRamp') {
-                    svw.ribbon.modeSwitch('NoCurbRamp');
+                    svl.ribbon.modeSwitch('NoCurbRamp');
                 }
             });
             var blue = 'rgba(0,0,255, 0.5)';
@@ -129,13 +125,13 @@ function GoldenInsertion (param, $) {
         if (!overlap || typeof overlap !== "number") {
             overlap = 0;
         }
-        if (('canvas' in svw && svw.canvas) &&
-            ('map' in svw && svw.map)) {
-            svw.tracker.push('GoldenInsertion_ReviseFalsePositive');
+        if (('canvas' in svl && svl.canvas) &&
+            ('map' in svl && svl.map)) {
+            svl.tracker.push('GoldenInsertion_ReviseFalsePositive');
             var labelId = label.getLabelId();
-            var userLabels = svw.canvas.getUserLabels(true);
+            var userLabels = svl.canvas.getUserLabels(true);
             var userLabelIndex;
-            var userLabelsLength = svw.canvas.getUserLabelCount();
+            var userLabelsLength = svl.canvas.getUserLabelCount();
 
             //
             // Find a reference to the right user label
@@ -191,8 +187,8 @@ function GoldenInsertion (param, $) {
             // Ask an user to delete the label that is wrong.
             // Keep checking if the user deleted the label or not by counting the number of user labels.
             // Move on once the user have corrected the mistake.
-            svw.messageBox.hide();
-            svw.map.setPov(pov, properties.cameraMovementDuration, function () {
+            svl.messageBox.hide();
+            svl.map.setPov(pov, properties.cameraMovementDuration, function () {
                 status.currentLabel = label;
                 showMessage();
             });
@@ -205,13 +201,13 @@ function GoldenInsertion (param, $) {
     function reviewLabels () {
         // Deprecated. Use reviewLabels2
         // This method reviews if user provided labels align well with system provided (golden/ground truth) labels.
-        // This method extract system labels and user labels from svw.canvas, then compares overlap.
+        // This method extract system labels and user labels from svl.canvas, then compares overlap.
         // Finally it returns the number of mistakes identified.
-        if (('canvas' in svw && svw.canvas) &&
-            ('form' in svw && svw.form) &&
-            ('map' in svw && svw.map)) {
-            var userLabels = svw.canvas.getLabels('user');
-            var systemLabels = svw.canvas.getLabels('system');
+        if (('canvas' in svl && svl.canvas) &&
+            ('form' in svl && svl.form) &&
+            ('map' in svl && svl.map)) {
+            var userLabels = svl.canvas.getLabels('user');
+            var systemLabels = svl.canvas.getLabels('system');
             var userLabelIndex;
             var systemLabelIndex;
 
@@ -225,7 +221,7 @@ function GoldenInsertion (param, $) {
                 return !label.isDeleted() && label.isVisible();
             });
 
-            var userLabelsLength = svw.canvas.getUserLabelCount();
+            var userLabelsLength = svl.canvas.getUserLabelCount();
             var systemLabelsLength = systemLabels.length;
             var falseNegativeLabels = []; // This array stores ids of missed system labels.
             var falsePositiveLabels = []; // This array stores ids of false user labels.
@@ -312,7 +308,7 @@ function GoldenInsertion (param, $) {
                 var messageBoxY = 320;
                 var width = 720;
                 var height = null;
-                svw.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
+                svl.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
                 $("#GoldenInsertionOkButton").bind('click', clickOK);
                 return 0;
             }
@@ -322,14 +318,14 @@ function GoldenInsertion (param, $) {
 
     function reviewLabels2 () {
         // This method reviews if user provided labels align well with system provided (golden/ground truth) labels.
-        // This method extract system labels and user labels from svw.canvas, then compares overlap.
-        if (('canvas' in svw && svw.canvas) &&
-            ('form' in svw && svw.form) &&
-            ('map' in svw && svw.map) &&
-            ('panorama' in svw && svw.panorama)) {
-            svw.tracker.push('GoldenInsertion_ReviewLabels');
-            var userLabels = svw.canvas.getLabels('user');
-            var systemLabels = svw.canvas.getLabels('system');
+        // This method extract system labels and user labels from svl.canvas, then compares overlap.
+        if (('canvas' in svl && svl.canvas) &&
+            ('form' in svl && svl.form) &&
+            ('map' in svl && svl.map) &&
+            ('panorama' in svl && svl.panorama)) {
+            svl.tracker.push('GoldenInsertion_ReviewLabels');
+            var userLabels = svl.canvas.getLabels('user');
+            var systemLabels = svl.canvas.getLabels('system');
             var allLabels = [];
             var userLabelIndex;
             var systemLabelIndex;
@@ -355,7 +351,7 @@ function GoldenInsertion (param, $) {
             });
             var allLabels = _userLabels.concat(_systemLabels);
             allLabels = allLabels.map(function (label) {
-                var currentHeading = svw.panorama.getPov().heading;
+                var currentHeading = svl.panorama.getPov().heading;
                 var labelHeading = label.getLabelPov().heading; //label.//label.getProperty("panoramaHeading");
                 var weight = 10; // Add a weight to system labels so they tend to be corrected after correcting user labels.
                 label.relativeHeading = parseInt((labelHeading - currentHeading + 360) % 360);
@@ -462,7 +458,7 @@ function GoldenInsertion (param, $) {
             var messageBoxY = 320;
             var width = 700;
             var height = null;
-            svw.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
+            svl.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
             $("#GoldenInsertionOkButton").bind('click', clickOK);
             return;
         }
@@ -480,7 +476,7 @@ function GoldenInsertion (param, $) {
         var boundingbox = status.currentLabel.getBoundingBox();
         var messageBoxX = boundingbox.x + boundingbox.width + 50;
         var messageBoxY = boundingbox.y + boundingbox.height / 2 + 60;
-        svw.messageBox.setMessage(status.boxMessage).setPosition(messageBoxX, messageBoxY).show();
+        svl.messageBox.setMessage(status.boxMessage).setPosition(messageBoxX, messageBoxY).show();
 
         //
         // Show a "click here" message and bind events to mode switch buttons.
@@ -508,9 +504,9 @@ function GoldenInsertion (param, $) {
         var messageBoxY = 320;
         var width = 720;
         var height = null;
-        svw.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
+        svl.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
         $("#GoldenInsertionOkButton").bind('click', function () {
-            svw.messageBox.hide();
+            svl.messageBox.hide();
             if ("overlap" in params) {
                 callback(params.label, params.overlap);
             } else {
@@ -557,7 +553,7 @@ function GoldenInsertion (param, $) {
     return oPublic;
 }
 
-svw.formatRecordsToGoldenLabels = function (records) {
+svl.formatRecordsToGoldenLabels = function (records) {
     // This method takes records from database and format it into labels that the Canvas object can read.
     var i;
     var goldenLabels = {};
@@ -638,4 +634,4 @@ svw.formatRecordsToGoldenLabels = function (records) {
     return ret;
 };
 
-svw.formatRecordsToLabels = svw.formatRecordsToGoldenLabels;
+svl.formatRecordsToLabels = svl.formatRecordsToGoldenLabels;

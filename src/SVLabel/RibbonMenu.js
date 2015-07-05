@@ -1,4 +1,5 @@
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function RibbonMenu ($, params) {
     var self = {className: 'RibbonMenu'};
@@ -37,20 +38,20 @@ function RibbonMenu ($, params) {
         }
 
 
-        var labelColors = svw.misc.getLabelColors();
+        var labelColors = svl.misc.getLabelColors();
 
         //
         // Initialize the jQuery DOM elements
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           // $divStreetViewHolder = $("#Holder_StreetView");
 
-          $divStreetViewHolder = svw.ui.ribbonMenu.streetViewHolder;
+          $divStreetViewHolder = svl.ui.ribbonMenu.streetViewHolder;
           // $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
-          $ribbonButtonBottomLines = svw.ui.ribbonMenu.bottonBottomBorders;
+          $ribbonButtonBottomLines = svl.ui.ribbonMenu.bottonBottomBorders;
           // $ribbonConnector = $("#StreetViewLabelRibbonConnection");
-          $ribbonConnector = svw.ui.ribbonMenu.connector;
+          $ribbonConnector = svl.ui.ribbonMenu.connector;
           // $spansModeSwitches = $('span.modeSwitch');
-          $spansModeSwitches = svw.ui.ribbonMenu.buttons;
+          $spansModeSwitches = svl.ui.ribbonMenu.buttons;
 
           //
           // Initialize the color of the lines at the bottom of ribbon menu icons
@@ -96,8 +97,8 @@ function RibbonMenu ($, params) {
 
             //
             // Whenever the ribbon menu is clicked, cancel drawing.
-            if ('canvas' in svw && svw.canvas && svw.canvas.isDrawing()) {
-                svw.canvas.cancelDrawing();
+            if ('canvas' in svl && svl.canvas && svl.canvas.isDrawing()) {
+                svl.canvas.cancelDrawing();
             }
 
 
@@ -105,26 +106,26 @@ function RibbonMenu ($, params) {
             ribbonConnectorPositions = getRibbonConnectionPositions();
             borderColor = labelColors[labelType].fillStyle;
 
-            if ('map' in svw && svw.map) {
+            if ('map' in svl && svl.map) {
                 if (labelType === 'Walk') {
                     // Switch to walking mode.
                     self.setStatus('mode', 'Walk');
                     self.setStatus('selectedLabelType', undefined);
-                    if (svw.map) {
-                      svw.map.modeSwitchWalkClick();
+                    if (svl.map) {
+                      svl.map.modeSwitchWalkClick();
                     }
                 } else {
                     // Switch to labeling mode.
                     self.setStatus('mode', labelType);
                     self.setStatus('selectedLabelType', labelType);
-                    if (svw.map) {
-                      svw.map.modeSwitchLabelClick();
+                    if (svl.map) {
+                      svl.map.modeSwitchLabelClick();
                     }
                 }
             }
             // Set border color
 
-            if (svw.ui && svw.ui.ribbonMenu) {
+            if (svl.ui && svl.ui.ribbonMenu) {
               setModeSwitchBorderColors(labelType);
               setModeSwitchBackgroundColors(labelType);
               $ribbonConnector.css("left", ribbonConnectorPositions[labelType].labelRibbonConnection);
@@ -133,8 +134,8 @@ function RibbonMenu ($, params) {
             }
 
             // Set the instructional message
-            if (svw.overlayMessageBox) {
-                svw.overlayMessageBox.setMessage(labelType);
+            if (svl.overlayMessageBox) {
+                svl.overlayMessageBox.setMessage(labelType);
             }
         }
     }
@@ -153,7 +154,7 @@ function RibbonMenu ($, params) {
 
             //
             // Track the user action
-            svw.tracker.push('Click_ModeSwitch_' + labelType);
+            svl.tracker.push('Click_ModeSwitch_' + labelType);
             modeSwitch(labelType);
         }
     }
@@ -185,7 +186,7 @@ function RibbonMenu ($, params) {
     function setModeSwitchBackgroundColors (mode) {
         // background: -moz-linear-gradient(center top , #fff, #eee);
         // background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee));
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           var labelType;
           var labelColors;
           var borderColor;
@@ -222,7 +223,7 @@ function RibbonMenu ($, params) {
 
     function setModeSwitchBorderColors (mode) {
         // This method sets the border color of the ribbon menu buttons
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           var labelType, labelColors, borderColor;
           labelColors = getLabelColors();
           borderColor = labelColors[mode].fillStyle;
@@ -264,7 +265,7 @@ function RibbonMenu ($, params) {
     self.disableModeSwitch = function () {
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = true;
-            if (svw.ui && svw.ui.ribbonMenu) {
+            if (svl.ui && svl.ui.ribbonMenu) {
               $spansModeSwitches.css('opacity', 0.5);
             }
         }
@@ -274,7 +275,7 @@ function RibbonMenu ($, params) {
     self.disableLandmarkLabels = function () {
         // This function dims landmark labels and
         // also set status.disableLandmarkLabels to true
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           $.each($spansModeSwitches, function (i, v) {
               var labelType = $(v).attr('val');
               if (!(labelType === 'Walk' ||
@@ -293,7 +294,7 @@ function RibbonMenu ($, params) {
         // This method enables mode switch.
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = false;
-            if (svw.ui && svw.ui.ribbonMenu) {
+            if (svl.ui && svl.ui.ribbonMenu) {
               $spansModeSwitches.css('opacity', 1);
             }
         }
@@ -301,7 +302,7 @@ function RibbonMenu ($, params) {
     };
 
     self.enableLandmarkLabels = function () {
-      if (svw.ui && svw.ui.ribbonMenu) {
+      if (svl.ui && svl.ui.ribbonMenu) {
         $.each($spansModeSwitches, function (i, v) {
             var labelType = $(v).attr('val');
             $(v).css('opacity', 1);

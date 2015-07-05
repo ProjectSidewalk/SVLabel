@@ -1,3 +1,6 @@
+/** @namespace */
+var svl = svl || {};
+
 function MessageBox ($, param) {
     var self = {className: 'MessageBox'};
     var OKButton = '<button id="MessageBoxOkButton" class="button" style="position: absolute; bottom: 10px; left: 10px;">OK</button>';
@@ -82,11 +85,11 @@ function MessageBox ($, param) {
         $divMessageBox.append(OKButton);
 
         $("#MessageBoxOkButton").on('click', function () {
-            if ('tracker' in svw && svw.tracker) {
+            if ('tracker' in svl && svl.tracker) {
                 if (message) {
-                    svw.tracker.push('MessageBox_ClickOk', {message: message});
+                    svl.tracker.push('MessageBox_ClickOk', {message: message});
                 } else {
-                    svw.tracker.push('MessageBox_ClickOk');
+                    svl.tracker.push('MessageBox_ClickOk');
                 }
             }
             $divMessageBoxHolder.css({

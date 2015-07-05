@@ -1,4 +1,5 @@
-var svw = svw || {}; // Street View Walker namespace.
+/** @namespace */
+var svl = svl || {};
 
 function Path (points, params) {
     // Path object constructor
@@ -163,7 +164,7 @@ function Path (points, params) {
         return {
           x: xMin,
           y: yMin,
-          width: (svw.svImageWidth - xMin) + xMax,
+          width: (svl.svImageWidth - xMin) + xMax,
           height: yMax - yMin,
           boundary: true
         }
@@ -200,19 +201,19 @@ function Path (points, params) {
         var canvasWidthInGSVImage = 3328;
         for (i = 0; i < len; i += 1) {
             if (pov.heading < 180) {
-                if (max > svw.svImageWidth - canvasWidthInGSVImage) {
+                if (max > svl.svImageWidth - canvasWidthInGSVImage) {
                     if (imCoords[i].x > canvasWidthInGSVImage) {
-                        imCoords[i].x -= svw.svImageWidth;
+                        imCoords[i].x -= svl.svImageWidth;
                     }
                 }
             } else {
                 if (min < canvasWidthInGSVImage) {
-                    if (imCoords[i].x < svw.svImageWidth - canvasWidthInGSVImage) {
-                        imCoords[i].x += svw.svImageWidth;
+                    if (imCoords[i].x < svl.svImageWidth - canvasWidthInGSVImage) {
+                        imCoords[i].x += svl.svImageWidth;
                     }
                 }
             }
-            canvasCoord = svw.gsvImageCoordinate2CanvasCoordinate(imCoords[i].x, imCoords[i].y, pov);
+            canvasCoord = svl.gsvImageCoordinate2CanvasCoordinate(imCoords[i].x, imCoords[i].y, pov);
             canvasCoords.push(canvasCoord);
         }
 
@@ -376,14 +377,14 @@ function Path (points, params) {
             // Check if a bounding box is on a boundary
             if (!(boundingbox1.boundary && boundingbox2.boundary)) {
                 if (boundingbox1.boundary) {
-                    boundingbox1.x = boundingbox1.x - svw.svImageWidth;
+                    boundingbox1.x = boundingbox1.x - svl.svImageWidth;
                     if (boundingbox2.x > 6000) {
-                        boundingbox2.x = boundingbox2.x - svw.svImageWidth;
+                        boundingbox2.x = boundingbox2.x - svl.svImageWidth;
                     }
                 } else if (boundingbox2.boundary) {
-                    boundingbox2.x = boundingbox2.x - svw.svImageWidth;
+                    boundingbox2.x = boundingbox2.x - svl.svImageWidth;
                     if (boundingbox1.x > 6000) {
-                        boundingbox1.x = boundingbox1.x - svw.svImageWidth;
+                        boundingbox1.x = boundingbox1.x - svl.svImageWidth;
                     }
                 }
             }
@@ -507,7 +508,7 @@ function Path (points, params) {
                 var r = point.getProperty('radiusInnerCircle');
                 ctx.save();
                 ctx.strokeStyle = properties.strokeStyle;
-                svw.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
+                svl.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
                 ctx.restore();
             }
         }

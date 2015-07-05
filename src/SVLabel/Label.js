@@ -1,8 +1,10 @@
-var svw = svw || {}; // Street View Walker namespace.
+/** @namespace */
+var svl = svl || {}; // Street View Walker namespace.
 
-////////////////////////////////////////////////////////////////////////////////
-// Label class
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * Label class
+ * @constructor
+ */
 function Label (pathIn, params) {
     var oPublic = {
         className: 'Label'
@@ -277,14 +279,14 @@ function Label (pathIn, params) {
                     for (i = 0; i < len; i++) {
                         points[i].setFillStyle(fillStyle);
                     }
-                    svw.canvas.clear().render2();
+                    svl.canvas.clear().render2();
                 } else {
                     highlighted = true;
                     path.setFillStyle(fillStyleHighlight);
                     for (i = 0; i < len; i++) {
                         points[i].setFillStyle(fillStyleHighlight);
                     }
-                    svw.canvas.clear().render2();
+                    svl.canvas.clear().render2();
                     numberOfBlinks -= 1;
                 }
             } else {
@@ -293,11 +295,11 @@ function Label (pathIn, params) {
                     for (i = 0; i < len; i++) {
                         points[i].setFillStyle(fillStyle);
                     }
-                    svw.canvas.clear().render2();
+                    svl.canvas.clear().render2();
                 }
 
                 oPublic.setAlpha(0.05);
-                svw.canvas.clear().render2();
+                svl.canvas.clear().render2();
                 window.clearInterval(interval);
             }
         }, 500);
@@ -321,8 +323,8 @@ function Label (pathIn, params) {
             fillStyle = 'rgba(200,200,200,0.5)';
         } else {
             // fillStyle = path.getFillStyle();
-            // fillStyle = svw.util.color.changeDarknessRGBA(fillStyle, 0.9);
-            // fillStyle = svw.util.color.changeAlphaRGBA(fillStyle, 0.1);
+            // fillStyle = svl.util.color.changeDarknessRGBA(fillStyle, 0.9);
+            // fillStyle = svl.util.color.changeAlphaRGBA(fillStyle, 0.1);
             fillStyle = 'rgba(255,165,0,0.8)';
         }
         path.setFillStyle(fillStyle);
@@ -412,18 +414,18 @@ function Label (pathIn, params) {
         var points = oPublic.getPoints();
         var svImageXs = points.map(function(point) {return point.svImageCoordinate.x;});
 
-        if (svImageXs.max() - svImageXs.min() > (svw.svImageWidth / 2)) {
+        if (svImageXs.max() - svImageXs.min() > (svl.svImageWidth / 2)) {
             svImageXs = svImageXs.map(function (x) {
-                if (x < (svw.svImageWidth / 2)) {
-                    x += svw.svImageWidth;
+                if (x < (svl.svImageWidth / 2)) {
+                    x += svl.svImageWidth;
                 }
                 return x;
             })
-            var labelSvImageX = parseInt(svImageXs.mean(), 10) % svw.svImageWidth;
+            var labelSvImageX = parseInt(svImageXs.mean(), 10) % svl.svImageWidth;
         } else {
             var labelSvImageX = parseInt(svImageXs.mean(), 10);
         }
-        heading = parseInt((labelSvImageX / svw.svImageWidth) * 360, 10) % 360;
+        heading = parseInt((labelSvImageX / svl.svImageWidth) * 360, 10) % 360;
 
         return {
             heading: parseInt(heading, 10),
@@ -606,7 +608,7 @@ function Label (pathIn, params) {
         var len = points.length;
         var fill = path.getFillStyle();
 
-        fill = svw.util.color.changeAlphaRGBA(fill, 0.3);
+        fill = svl.util.color.changeAlphaRGBA(fill, 0.3);
 
         path.setFillStyle(fill);
         for (; i < len; i++) {

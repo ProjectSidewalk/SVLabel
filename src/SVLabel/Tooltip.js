@@ -1,12 +1,5 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 8/19/13
- * Time: 9:44 PM
- * To change this template use File | Settings | File Templates.
- */
-
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function Tooltip ($, param) {
     var self = {className: 'Tooltip'};
