@@ -463,9 +463,9 @@ function Canvas ($, param) {
         return;
     }
 
-    //////////
+    ////////////////////////////////////////
     // Public methods
-    //////////
+    ////////////////////////////////////////
     /**
      * Cancel drawing while use is drawing a label
      * @method
