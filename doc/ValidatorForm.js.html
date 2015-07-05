@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ValidatorForm.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ValidatorForm.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created with JetBrains PhpStorm.
+ * User: kotarohara
+ * Date: 7/6/13
+ * Time: 12:40 PM
+ * To change this template use File | Settings | File Templates.
+ */
+var svw = svw || {};
+
+function ValidatorForm (param, $) {
+    var oPublic = {className: 'ValidatorForm'};
+    var properties = {
+        dataStoreUrl: undefined,
+        onboarding: undefined,
+        taskDescription: undefined,
+        taskPanoramaId: undefined,
+        assignmentId: undefined,
+        hitId: undefined,
+        turkerId: undefined
+    };
+    var labelBinId = undefined;
+
+    var $btnSubmit;
+
+    ////////////////////////////////////////
+    // Private functions
+    ////////////////////////////////////////
+    function init (param) {
+        for (attr in properties) {
+            properties[attr] = param[attr];
+        }
+    }
+
+    function submit () {
+        // This method collects validation labels and submit the data to
+        // the API specified by properties.submitURL.
+        if (!('validator' in svw) || !svw.validator) {
+            throw oPublic.className + ': Validator not defined.';
+        }
+        var taskGSVPanoId = properties.panoId;
+        var url = properties.dataStoreUrl;
+        var hitId;
+        var assignmentId;
+        var turkerId;
+        var data = {};
+        var i;
+        var len;
+
+
+        //
+        hitId = properties.hitId ? properties.hitId : 'Test_Hit';
+        assignmentId = properties.assignmentId? properties.assignmentId : 'Test_Assignment';
+        turkerId = properties.turkerId ? properties.turkerId : 'Test_Kotaro';
+
+
+        // Submit collected data if a user is not in oboarding mode.
+        if (!properties.onboarding) {
+            // if (true) {
+            data.assignment = {
+                amazon_turker_id : turkerId,
+                amazon_hit_id : hitId,
+                amazon_assignment_id : assignmentId,
+                interface_type : 'StreetViewValidator',
+                interface_version : '1',
+                completed : 0,
+                task_description : properties.taskDescription
+            };
+
+            data.labelBinId = labelBinId;
+            data.validationTask = {
+                task_panorama_id: properties.taskPanoramaId,
+                task_gsv_panorama_id : taskGSVPanoId,
+                description: ""
+            };
+
+            data.validationTaskEnvironment = {
+                browser: getBrowser(),
+                browser_version: getBrowserVersion(),
+                browser_width: $(window).width(),
+                browser_height: $(window).height(),
+                screen_width: screen.width,
+                screen_height: screen.height,
+                avail_width: screen.availWidth,		// total width - interface (taskbar)
+                avail_height: screen.availHeight,		// total height - interface };
+                operating_system: getOperatingSystem()
+            };
+
+            //
+            // Get interactions
+            svw.tracker.push('TaskSubmit');
+            data.userInteraction = svw.tracker.getActions();
+
+            data.labels = [];
+
+            // Format the validation labels
+            var validatorLabels = svw.validator.getLabels();
+            len = validatorLabels.length;
+            for (i = 0; i &lt; len; i++) {
+                console.log(validatorLabels[i]);
+                var temp = {};
+                temp.labelId = validatorLabels[i].points[0].LabelId;
+                temp.result = validatorLabels[i].validationLabel === "Disagree" ? 0 : 1;
+                data.labels.push(temp);
+            }
+
+            // Add the value in the comment field if there are any.
+//            var comment = $textieldComment.val();
+//            data.comment = undefined;
+//            if (comment &amp;&amp;
+//                comment !== $textieldComment.attr('title')) {
+//                data.comment = $textieldComment.val();
+//            }
+
+            // Submit data to
+            try {
+                $.ajax({
+                    async: false,
+                    url: url,
+                    type: 'post',
+                    data: data,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.error) {
+                            throw result.error.message;
+                        }
+                    },
+                    error: function (result) {
+                        throw result;
+                        // console.error(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
+
+
+            if (properties.taskRemaining > 1) {
+                window.location.reload();
+            } else {
+                if (properties.isAMTTask) {
+                    $('input[name="assignmentId"]').attr('value', assignmentId);
+                    $('input[name="workerId"]').attr('value', turkerId);
+                    $('input[name="hitId"]').attr('value', hitId);
+                    return true;
+                } else {
+                    window.location.reload();
+                    //window.location = '/';
+                    return false;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    ////////////////////////////////////////
+    // Public functions
+    ////////////////////////////////////////
+    oPublic.setLabelBinId = function (binId) {
+        labelBinId = binId;
+        return this;
+    };
+
+    oPublic.submit = function () {
+        return submit();
+    };
+
+    ////////////////////////////////////////
+    // Initialize
+    ////////////////////////////////////////
+    init(param);
+    return oPublic;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#RightClickMenu">RightClickMenu</a></li><li><a href="global.html#svw">svw</a></li><li><a href="global.html#Tracker">Tracker</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 05 2015 06:25:01 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
