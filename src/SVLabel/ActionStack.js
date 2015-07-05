@@ -1,4 +1,5 @@
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function ActionStack ($, params) {
     var self = {
