@@ -37,7 +37,7 @@ ehthumbs.db
 Thumbs.db
 
 
-SVLabel/.idea
+.idea
 
 #
 logs
@@ -55,14 +55,14 @@ lib-cov
 coverage
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
-SVLabel/.grunt
+.grunt
 
 # node-waf configuration
-SVLabel/.lock-wscript
+.lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-SVLabel/build/Release
+build/Release
 
 # Dependency directory
 # https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
-SVLabel/node_modules
+node_modules
