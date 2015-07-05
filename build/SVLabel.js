@@ -268,7 +268,8 @@ var Kinetic={};(function(){Kinetic.version="4.3.3",Kinetic.Filters={},Kinetic.Pl
 ();var a=this;this.on("mousedown.kinetic touchstart.kinetic",function(b){Kinetic.getNodeDragging()||a._startDrag(b)})},Kinetic.Node.prototype._dragChange=function(){if(this.attrs.draggable)this._listenDrag();else{this._dragCleanup();var a=this.getStage(),b=Kinetic.DD;a&&b.node&&b.node._id===this._id&&b._endDrag()}},Kinetic.Node.prototype._dragCleanup=function(){this.off("mousedown.kinetic"),this.off("touchstart.kinetic")},Kinetic.Node.prototype.isDraggable=Kinetic.Node.prototype.getDraggable,Kinetic.Node.addGettersSetters(Kinetic.Node,["dragBoundFunc","dragOnTop"]);var a=document.getElementsByTagName("html")[0];a.addEventListener("mouseup",Kinetic.DD._endDrag,!0),a.addEventListener("touchend",Kinetic.DD._endDrag,!0)}(),function(){Kinetic.Transition=function(a,b){function e(a,b,d,f){for(var g in a)g!=="duration"&&g!=="easing"&&g!=="callback"&&(Kinetic.Type._isObject(a[g])?(d[g]={},e(a[g],b[g],d[g],f)):c._add(c._getTween(b,g,a[g],d,f)))}var c=this,d={};this.node=a,this.config=b,this.tweens=[],e(b,a.attrs,d,d),this.tweens[0].onStarted=function(){},this.tweens[0].onStopped=function(){a.transAnim.stop()},this.tweens[0].onResumed=function(){a.transAnim.start()},this.tweens[0].onLooped=function(){},this.tweens[0].onChanged=function(){},this.tweens[0].onFinished=function(){var c={};for(var d in b)d!=="duration"&&d!=="easing"&&d!=="callback"&&(c[d]=b[d]);a.transAnim.stop(),a.setAttrs(c),b.callback&&b.callback()}},Kinetic.Transition.prototype={start:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].start()},stop:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].stop()},resume:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].resume()},_onEnterFrame:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].onEnterFrame()},_add:function(a){this.tweens.push(a)},_getTween:function(a,b,c,d,e){var f=this.config,g=this.node,h=f.easing;h===undefined&&(h="linear");var i=new Kinetic.Tween(g,function(a){d[b]=a,g.setAttrs(e)},Kinetic.Tweens[h],a[b],c,f.duration);return i}},Kinetic.Node.prototype.transitionTo=function(a){var b=this,c=new Kinetic.Transition(this,a);return this.transAnim||(this.transAnim=new Kinetic.Animation),this.transAnim.func=function(){c._onEnterFrame()},this.transAnim.node=this.nodeType==="Stage"?this:this.getLayer(),c.start(),this.transAnim.start(),this.trans=c,c}}(),function(){Kinetic.Container=function(a){this._containerInit(a)},Kinetic.Container.prototype={_containerInit:function(a){this.children=[],Kinetic.Node.call(this,a)},getChildren:function(){return this.children},removeChildren:function(){while(this.children.length>0)this.children[0].remove()},add:function(a){var b=Kinetic.Global,c=this.children;return a.index=c.length,a.parent=this,c.push(a),this},get:function(a){var b=new Kinetic.Collection;if(a.charAt(0)==="#"){var c=this._getNodeById(a.slice(1));c&&b.push(c)}else if(a.charAt(0)==="."){var d=this._getNodesByName(a.slice(1));Kinetic.Collection.apply(b,d)}else{var e=[],f=this.getChildren(),g=f.length;for(var h=0;h<g;h++)e=e.concat(f[h]._get(a));Kinetic.Collection.apply(b,e)}return b},_getNodeById:function(a){var b=this.getStage(),c=Kinetic.Global,d=c.ids[a];return d!==undefined&&this.isAncestorOf(d)?d:null},_getNodesByName:function(a){var b=Kinetic.Global,c=b.names[a]||[];return this._getDescendants(c)},_get:function(a){var b=Kinetic.Node.prototype._get.call(this,a),c=this.getChildren(),d=c.length;for(var e=0;e<d;e++)b=b.concat(c[e]._get(a));return b},toObject:function(){var a=Kinetic.Node.prototype.toObject.call(this);a.children=[];var b=this.getChildren(),c=b.length;for(var d=0;d<c;d++){var e=b[d];a.children.push(e.toObject())}return a},_getDescendants:function(a){var b=[],c=a.length;for(var d=0;d<c;d++){var e=a[d];this.isAncestorOf(e)&&b.push(e)}return b},isAncestorOf:function(a){var b=a.getParent();while(b){if(b._id===this._id)return!0;b=b.getParent()}return!1},clone:function(a){var b=Kinetic.Node.prototype.clone.call(this,a);for(var c in this.children)b.add(this.children[c].clone());return b},getIntersections:function(){var a=Kinetic.Type._getXY(Array.prototype.slice.call(arguments)),b=[],c=this.get("Shape"),d=c.length;for(var e=0;e<d;e++){var f=c[e];f.isVisible()&&f.intersects(a)&&b.push(f)}return b},_setChildrenIndices:function(){var a=this.children,b=a.length;for(var c=0;c<b;c++)a[c].index=c},draw:function(){this.drawScene(),this.drawHit()},drawScene:function(a){if(this.isVisible()){var b=this.children,c=b.length;for(var d=0;d<c;d++)b[d].drawScene(a)}},drawHit:function(){if(this.isVisible()&&this.isListening()){var a=this.children,b=a.length;for(var c=0;c<b;c++)a[c].drawHit()}}},Kinetic.Global.extend(Kinetic.Container,Kinetic.Node)}(),function(){function a(a){a.fill()}function b(a){a.stroke()}function c(a){a.fill()}function d(a){a.stroke()}Kinetic.Shape=function(a){this._initShape(a)},Kinetic.Shape.prototype={_initShape:function(e){this.setDefaultAttrs({fillEnabled:!0,strokeEnabled:!0,shadowEnabled:!0,dashArrayEnabled:!0,fillPriority:"color"}),this.nodeType="Shape",this._fillFunc=a,this._strokeFunc=b,this._fillFuncHit=c,this._strokeFuncHit=d;var f=Kinetic.Global.shapes,g;for(;;){g=Kinetic.Type._getRandomColorKey();if(g&&!(g in f))break}this.colorKey=g,f[g]=this,Kinetic.Node.call(this,e)},getContext:function(){return this.getLayer().getContext()},getCanvas:function(){return this.getLayer().getCanvas()},hasShadow:function(){return!!(this.getShadowColor()||this.getShadowBlur()||this.getShadowOffset())},hasFill:function(){return!!(this.getFill()||this.getFillPatternImage()||this.getFillLinearGradientStartPoint()||this.getFillRadialGradientStartPoint())},_get:function(a){return this.nodeType===a||this.shapeType===a?[this]:[]},intersects:function(){var a=Kinetic.Type._getXY(Array.prototype.slice.call(arguments)),b=this.getStage(),c=b.hitCanvas;c.clear(),this.drawScene(c);var d=c.context.getImageData(Math.round(a.x),Math.round(a.y),1,1).data;return d[3]>0},enableFill:function(){this.setAttr("fillEnabled",!0)},disableFill:function(){this.setAttr("fillEnabled",!1)},enableStroke:function(){this.setAttr("strokeEnabled",!0)},disableStroke:function(){this.setAttr("strokeEnabled",!1)},enableShadow:function(){this.setAttr("shadowEnabled",!0)},disableShadow:function(){this.setAttr("shadowEnabled",!1)},enableDashArray:function(){this.setAttr("dashArrayEnabled",!0)},disableDashArray:function(){this.setAttr("dashArrayEnabled",!1)},remove:function(){Kinetic.Node.prototype.remove.call(this),delete Kinetic.Global.shapes[this.colorKey]},drawScene:function(a){var b=this.attrs,c=b.drawFunc,a=a||this.getLayer().getCanvas(),d=a.getContext();c&&this.isVisible()&&(d.save(),a._applyOpacity(this),a._applyLineJoin(this),a._applyAncestorTransforms(this),c.call(this,a),d.restore())},drawHit:function(){var a=this.attrs,b=a.drawHitFunc||a.drawFunc,c=this.getLayer().hitCanvas,d=c.getContext();b&&this.isVisible()&&this.isListening()&&(d.save(),c._applyLineJoin(this),c._applyAncestorTransforms(this),b.call(this,c),d.restore())},_setDrawFuncs:function(){!this.attrs.drawFunc&&this.drawFunc&&this.setDrawFunc(this.drawFunc),!this.attrs.drawHitFunc&&this.drawHitFunc&&this.setDrawHitFunc(this.drawHitFunc)}},Kinetic.Global.extend(Kinetic.Shape,Kinetic.Node),Kinetic.Node.addGettersSetters(Kinetic.Shape,["stroke","lineJoin","lineCap","strokeWidth","drawFunc","drawHitFunc","dashArray","shadowColor","shadowBlur","shadowOpacity","fillPatternImage","fill","fillPatternX","fillPatternY","fillLinearGradientColorStops","fillRadialGradientStartRadius","fillRadialGradientEndRadius","fillRadialGradientColorStops","fillPatternRepeat","fillEnabled","strokeEnabled","shadowEnabled","dashArrayEnabled","fillPriority"]),Kinetic.Node.addPointGettersSetters(Kinetic.Shape,["fillPatternOffset","fillPatternScale","fillLinearGradientStartPoint","fillLinearGradientEndPoint","fillRadialGradientStartPoint","fillRadialGradientEndPoint","shadowOffset"]),Kinetic.Node.addRotationGettersSetters(Kinetic.Shape,["fillPatternRotation"])}(),function(){Kinetic.Stage=function(a){this._initStage(a)},Kinetic.Stage.prototype={_initStage:function(a){var b=Kinetic.DD;this.setDefaultAttrs({width:400,height:200}),Kinetic.Container.call(this,a),this._setStageDefaultProperties(),this._id=Kinetic.Global.idCounter++,this._buildDOM(),this._bindContentEvents(),Kinetic.Global.stages.push(this),b&&b._initDragLayer(this)},setContainer:function(a){typeof a=="string"&&(a=document.getElementById(a)),this.setAttr("container",a)},setHeight:function(a){Kinetic.Node.prototype.setHeight.call(this,a),this._resizeDOM()},setWidth:function(a){Kinetic.Node.prototype.setWidth.call(this,a),this._resizeDOM()},clear:function(){var a=this.children;for(var b=0;b<a.length;b++)a[b].clear()},remove:function(){var a=this.content;Kinetic.Node.prototype.remove.call(this),a&&Kinetic.Type._isInDocument(a)&&this.attrs.container.removeChild(a)},reset:function(){this.removeChildren(),this._setStageDefaultProperties(),this.setAttrs(this.defaultNodeAttrs)},getMousePosition:function(){return this.mousePos},getTouchPosition:function(){return this.touchPos},getUserPosition:function(){return this.getTouchPosition()||this.getMousePosition()},getStage:function(){return this},getContent:function(){return this.content},toDataURL:function(a){function i(d){var e=h[d],j=e.toDataURL(),k=new Image;k.onload=function(){g.drawImage(k,0,0),d<h.length-1?i(d+1):a.callback(f.toDataURL(b,c))},k.src=j}a=a||{};var b=a.mimeType||null,c=a.quality||null,d=a.x||0,e=a.y||0,f=new Kinetic.SceneCanvas(a.width||this.getWidth(),a.height||this.getHeight()),g=f.getContext(),h=this.children;(d||e)&&g.translate(-1*d,-1*e),i(0)},toImage:function(a){var b=a.callback;a.callback=function(a){Kinetic.Type._getImage(a,function(a){b(a)})},this.toDataURL(a)},getIntersection:function(a){var b,c=this.getChildren();for(var d=c.length-1;d>=0;d--){var e=c[d];if(e.isVisible()&&e.isListening()){var f=e.hitCanvas.context.getImageData(Math.round(a.x),Math.round(a.y),1,1).data;if(f[3]===255){var g=Kinetic.Type._rgbToHex(f[0],f[1],f[2]);return b=Kinetic.Global.shapes[g],{shape:b,pixel:f}}if(f[0]>0||f[1]>0||f[2]>0||f[3]>0)return{pixel:f}}}return null},_resizeDOM:function(){if(this.content){var a=this.attrs.width,b=this.attrs.height;this.content.style.width=a+"px",this.content.style.height=b+"px",this.bufferCanvas.setSize(a,b,1),this.hitCanvas.setSize(a,b);var c=this.children;for(var d=0;d<c.length;d++){var e=c[d];e.getCanvas().setSize(a,b),e.hitCanvas.setSize(a,b),e.draw()}}},add:function(a){return Kinetic.Container.prototype.add.call(this,a),a.canvas.setSize(this.attrs.width,this.attrs.height),a.hitCanvas.setSize(this.attrs.width,this.attrs.height),a.draw(),this.content.appendChild(a.canvas.element),this},getDragLayer:function(){return this.dragLayer},_setUserPosition:function(a){a||(a=window.event),this._setMousePosition(a),this._setTouchPosition(a)},_bindContentEvents:function(){var a=Kinetic.Global,b=this,c=["mousedown","mousemove","mouseup","mouseout","touchstart","touchmove","touchend"];for(var d=0;d<c.length;d++){var e=c[d];(function(){var a=e;b.content.addEventListener(a,function(c){b["_"+a](c)},!1)})()}},_mouseout:function(a){this._setUserPosition(a);var b=Kinetic.DD,c=this.targetShape;c&&(!b||!b.moving)&&(c._handleEvent("mouseout",a),c._handleEvent("mouseleave",a),this.targetShape=null),this.mousePos=undefined},_mousemove:function(a){this._setUserPosition(a);var b=Kinetic.DD,c=this.getIntersection(this.getUserPosition());if(c){var d=c.shape;d&&(!!b&&!!b.moving||c.pixel[3]!==255||!!this.targetShape&&this.targetShape._id===d._id?d._handleEvent("mousemove",a):(this.targetShape&&(this.targetShape._handleEvent("mouseout",a,d),this.targetShape._handleEvent("mouseleave",a,d)),d._handleEvent("mouseover",a,this.targetShape),d._handleEvent("mouseenter",a,this.targetShape),this.targetShape=d))}else this.targetShape&&(!b||!b.moving)&&(this.targetShape._handleEvent("mouseout",a),this.targetShape._handleEvent("mouseleave",a),this.targetShape=null);b&&b._drag(a)},_mousedown:function(a){var b,c=Kinetic.DD;this._setUserPosition(a),b=this.getIntersection(this.getUserPosition());if(b&&b.shape){var d=b.shape;this.clickStart=!0,d._handleEvent("mousedown",a)}c&&this.attrs.draggable&&!c.node&&this._startDrag(a)},_mouseup:function(a){this._setUserPosition(a);var b=this,c=Kinetic.DD,d=this.getIntersection(this.getUserPosition());if(d&&d.shape){var e=d.shape;e._handleEvent("mouseup",a),this.clickStart&&(!c||!c.moving||!c.node)&&(e._handleEvent("click",a),this.inDoubleClickWindow&&e._handleEvent("dblclick",a),this.inDoubleClickWindow=!0,setTimeout(function(){b.inDoubleClickWindow=!1},this.dblClickWindow))}this.clickStart=!1},_touchstart:function(a){var b,c=Kinetic.DD;this._setUserPosition(a),a.preventDefault(),b=this.getIntersection(this.getUserPosition());if(b&&b.shape){var d=b.shape;this.tapStart=!0,d._handleEvent("touchstart",a)}c&&this.attrs.draggable&&!c.node&&this._startDrag(a)},_touchend:function(a){this._setUserPosition(a);var b=this,c=Kinetic.DD,d=this.getIntersection(this.getUserPosition());if(d&&d.shape){var e=d.shape;e._handleEvent("touchend",a),this.tapStart&&(!c||!c.moving||!c.node)&&(e._handleEvent("tap",a),this.inDoubleClickWindow&&e._handleEvent("dbltap",a),this.inDoubleClickWindow=!0,setTimeout(function(){b.inDoubleClickWindow=!1},this.dblClickWindow))}this.tapStart=!1},_touchmove:function(a){this._setUserPosition(a);var b=Kinetic.DD;a.preventDefault();var c=this.getIntersection(this.getUserPosition());if(c&&c.shape){var d=c.shape;d._handleEvent("touchmove",a)}b&&b._drag(a)},_setMousePosition:function(a){var b=a.clientX-this._getContentPosition().left,c=a.clientY-this._getContentPosition().top;this.mousePos={x:b,y:c}},_setTouchPosition:function(a){if(a.touches!==undefined&&a.touches.length===1){var b=a.touches[0],c=b.clientX-this._getContentPosition().left,d=b.clientY-this._getContentPosition().top;this.touchPos={x:c,y:d}}},_getContentPosition:function(){var a=this.content.getBoundingClientRect();return{top:a.top,left:a.left}},_buildDOM:function(){this.content=document.createElement("div"),this.content.style.position="relative",this.content.style.display="inline-block",this.content.className="kineticjs-content",this.attrs.container.appendChild(this.content),this.bufferCanvas=new Kinetic.SceneCanvas,this.hitCanvas=new Kinetic.HitCanvas,this._resizeDOM()},_onContent:function(a,b){var c=a.split(" ");for(var d=0;d<c.length;d++){var e=c[d];this.content.addEventListener(e,b,!1)}},_setStageDefaultProperties:function(){this.nodeType="Stage",this.dblClickWindow=400,this.targetShape=null,this.mousePos=undefined,this.clickStart=!1,this.touchPos=undefined,this.tapStart=!1}},Kinetic.Global.extend(Kinetic.Stage,Kinetic.Container),Kinetic.Node.addGetters(Kinetic.Stage,["container"])}(),function(){Kinetic.Layer=function(a){this._initLayer(a)},Kinetic.Layer.prototype={_initLayer:function(a){this.setDefaultAttrs({clearBeforeDraw:!0}),this.nodeType="Layer",this.beforeDrawFunc=undefined,this.afterDrawFunc=undefined,this.canvas=new Kinetic.SceneCanvas,this.canvas.getElement().style.position="absolute",this.hitCanvas=new Kinetic.HitCanvas,Kinetic.Container.call(this,a)},draw:function(){var a=this.getContext();this.beforeDrawFunc!==undefined&&this.beforeDrawFunc.call(this),Kinetic.Container.prototype.draw.call(this),this.afterDrawFunc!==undefined&&this.afterDrawFunc.call(this)},drawHit:function(){this.hitCanvas.clear(),Kinetic.Container.prototype.drawHit.call(this)},drawScene:function(a){a=a||this.getCanvas(),this.attrs.clearBeforeDraw&&a.clear(),Kinetic.Container.prototype.drawScene.call(this,a)},toDataURL:function(a){a=a||{};var b=a.mimeType||null,c=a.quality||null,d,e,f=a.x||0,g=a.y||0;return a.width||a.height||a.x||a.y?Kinetic.Node.prototype.toDataURL.call(this,a):this.getCanvas().toDataURL(b,c)},beforeDraw:function(a){this.beforeDrawFunc=a},afterDraw:function(a){this.afterDrawFunc=a},getCanvas:function(){return this.canvas},getContext:function(){return this.canvas.context},clear:function(){this.getCanvas().clear()},setVisible:function(a){Kinetic.Node.prototype.setVisible.call(this,a),a?(this.canvas.element.style.display="block",this.hitCanvas.element.style.display="block"):(this.canvas.element.style.display="none",this.hitCanvas.element.style.display="none")},setZIndex:function(a){Kinetic.Node.prototype.setZIndex.call(this,a);var b=this.getStage();b&&(b.content.removeChild(this.canvas.element),a<b.getChildren().length-1?b.content.insertBefore(this.canvas.element,b.getChildren()[a+1].canvas.element):b.content.appendChild(this.canvas.element))},moveToTop:function(){Kinetic.Node.prototype.moveToTop.call(this);var a=this.getStage();a&&(a.content.removeChild(this.canvas.element),a.content.appendChild(this.canvas.element))},moveUp:function(){if(Kinetic.Node.prototype.moveUp.call(this)){var a=this.getStage();a&&(a.content.removeChild(this.canvas.element),this.index<a.getChildren().length-1?a.content.insertBefore(this.canvas.element,a.getChildren()[this.index+1].canvas.element):a.content.appendChild(this.canvas.element))}},moveDown:function(){if(Kinetic.Node.prototype.moveDown.call(this)){var a=this.getStage();if(a){var b=a.getChildren();a.content.removeChild(this.canvas.element),a.content.insertBefore(this.canvas.element,b[this.index+1].canvas.element)}}},moveToBottom:function(){if(Kinetic.Node.prototype.moveToBottom.call(this)){var a=this.getStage();if(a){var b=a.getChildren();a.content.removeChild(this.canvas.element),a.content.insertBefore(this.canvas.element,b[1].canvas.element)}}},getLayer:function(){return this},remove:function(){var a=this.getStage(),b=this.canvas,c=b.element;Kinetic.Node.prototype.remove.call(this),a&&b&&Kinetic.Type._isInDocument(c)&&a.content.removeChild(c)}},Kinetic.Global.extend(Kinetic.Layer,Kinetic.Container),Kinetic.Node.addGettersSetters(Kinetic.Layer,["clearBeforeDraw"])}(),function(){Kinetic.Group=function(a){this._initGroup(a)},Kinetic.Group.prototype={_initGroup:function(a){this.nodeType="Group",Kinetic.Container.call(this,a)}},Kinetic.Global.extend(Kinetic.Group,Kinetic.Container)}(),function(){Kinetic.Rect=function(a){this._initRect(a)},Kinetic.Rect.prototype={_initRect:function(a){this.setDefaultAttrs({width:0,height:0,cornerRadius:0}),Kinetic.Shape.call(this,a),this.shapeType="Rect",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext();b.beginPath();var c=this.getCornerRadius(),d=this.getWidth(),e=this.getHeight();c===0?b.rect(0,0,d,e):(b.moveTo(c,0),b.lineTo(d-c,0),b.arc(d-c,c,c,Math.PI*3/2,0,!1),b.lineTo(d,e-c),b.arc(d-c,e-c,c,0,Math.PI/2,!1),b.lineTo(c,e),b.arc(c,e-c,c,Math.PI/2,Math.PI,!1),b.lineTo(0,c),b.arc(c,c,c,Math.PI,Math.PI*3/2,!1)),b.closePath(),a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.Rect,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Rect,["cornerRadius"])}(),function(){Kinetic.Circle=function(a){this._initCircle(a)},Kinetic.Circle.prototype={_initCircle:function(a){this.setDefaultAttrs({radius:0}),Kinetic.Shape.call(this,a),this.shapeType="Circle",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext();b.beginPath(),b.arc(0,0,this.getRadius(),0,Math.PI*2,!0),b.closePath(),a.fillStroke(this)},getWidth:function(){return this.getRadius()*2},getHeight:function(){return this.getRadius()*2},setWidth:function(a){Kinetic.Node.prototype.setWidth.call(this,a),this.setRadius(a/2)},setHeight:function(a){Kinetic.Node.prototype.setHeight.call(this,a),this.setRadius(a/2)}},Kinetic.Global.extend(Kinetic.Circle,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Circle,["radius"])}(),function(){Kinetic.Wedge=function(a){this._initWedge(a)},Kinetic.Wedge.prototype={_initWedge:function(a){this.setDefaultAttrs({radius:0,angle:0,clockwise:!1}),Kinetic.Shape.call(this,a),this.shapeType="Wedge",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext();b.beginPath(),b.arc(0,0,this.getRadius(),0,this.getAngle(),this.getClockwise()),b.lineTo(0,0),b.closePath(),a.fillStroke(this)},setAngleDeg:function(a){this.setAngle(Kinetic.Type._degToRad(a))},getAngleDeg:function(){return Kinetic.Type._radToDeg(this.getAngle())}},Kinetic.Global.extend(Kinetic.Wedge,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Wedge,["radius","angle","clockwise"])}(),function(){Kinetic.Ellipse=function(a){this._initEllipse(a)},Kinetic.Ellipse.prototype={_initEllipse:function(a){this.setDefaultAttrs({radius:{x:0,y:0}}),Kinetic.Shape.call(this,a),this.shapeType="Ellipse",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.getRadius();b.beginPath(),b.save(),c.x!==c.y&&b.scale(1,c.y/c.x),b.arc(0,0,c.x,0,Math.PI*2,!0),b.restore(),b.closePath(),a.fillStroke(this)},getWidth:function(){return this.getRadius().x*2},getHeight:function(){return this.getRadius().y*2},setWidth:function(a){Kinetic.Node.prototype.setWidth.call(this,a),this.setRadius({x:a/2})},setHeight:function(a){Kinetic.Node.prototype.setHeight.call(this,a),this.setRadius({y:a/2})}},Kinetic.Global.extend(Kinetic.Ellipse,Kinetic.Shape),Kinetic.Node.addPointGettersSetters(Kinetic.Ellipse,["radius"])}(),function(){Kinetic.Image=function(a){this._initImage(a)},Kinetic.Image.prototype={_initImage:function(a){Kinetic.Shape.call(this,a),this.shapeType="Image",this._setDrawFuncs();var b=this;this.on("imageChange",function(a){b._syncSize()}),this._syncSize()},drawFunc:function(a){var b=this.getWidth(),c=this.getHeight(),d,e=this,f=a.getContext();f.beginPath(),f.rect(0,0,b,c),f.closePath(),a.fillStroke(this);if(this.attrs.image){if(this.attrs.crop&&this.attrs.crop.width&&this.attrs.crop.height){var g=this.attrs.crop.x||0,h=this.attrs.crop.y||0,i=this.attrs.crop.width,j=this.attrs.crop.height;d=[this.attrs.image,g,h,i,j,0,0,b,c]}else d=[this.attrs.image,0,0,b,c];this.hasShadow()?a.applyShadow(this,function(){e._drawImage(f,d)}):this._drawImage(f,d)}},drawHitFunc:function(a){var b=this.getWidth(),c=this.getHeight(),d=this.imageHitRegion,e=!1,f=a.getContext();d?(f.drawImage(d,0,0,b,c),f.beginPath(),f.rect(0,0,b,c),f.closePath(),a.stroke(this)):(f.beginPath(),f.rect(0,0,b,c),f.closePath(),a.fillStroke(this))},applyFilter:function(a,b,c){var d=new Kinetic.Canvas(this.attrs.image.width,this.attrs.image.height),e=d.getContext();e.drawImage(this.attrs.image,0,0);try{var f=e.getImageData(0,0,d.getWidth(),d.getHeight());a(f,b);var g=this;Kinetic.Type._getImage(f,function(a){g.setImage(a),c&&c()})}catch(h){Kinetic.Global.warn("Unable to apply filter. "+h.message)}},setCrop:function(){var a=[].slice.call(arguments),b=Kinetic.Type._getXY(a),c=Kinetic.Type._getSize(a),d=Kinetic.Type._merge(b,c);this.setAttr("crop",Kinetic.Type._merge(d,this.getCrop()))},createImageHitRegion:function(a){var b=new Kinetic.Canvas(this.attrs.width,this.attrs.height),c=b.getContext();c.drawImage(this.attrs.image,0,0);try{var d=c.getImageData(0,0,b.getWidth(),b.getHeight()),e=d.data,f=Kinetic.Type._hexToRgb(this.colorKey);for(var g=0,h=e.length;g<h;g+=4)e[g]=f.r,e[g+1]=f.g,e[g+2]=f.b;var i=this;Kinetic.Type._getImage(d,function(b){i.imageHitRegion=b,a&&a()})}catch(j){Kinetic.Global.warn("Unable to create image hit region. "+j.message)}},clearImageHitRegion:function(){delete this.imageHitRegion},_syncSize:function(){this.attrs.image&&(this.attrs.width||this.setWidth(this.attrs.image.width),this.attrs.height||this.setHeight(this.attrs.image.height))},_drawImage:function(a,b){b.length===5?a.drawImage(b[0],b[1],b[2],b[3],b[4]):b.length===9&&a.drawImage(b[0],b[1],b[2],b[3],b[4],b[5],b[6],b[7],b[8])}},Kinetic.Global.extend(Kinetic.Image,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Image,["image"]),Kinetic.Node.addGetters(Kinetic.Image,["crop"])}(),function(){Kinetic.Polygon=function(a){this._initPolygon(a)},Kinetic.Polygon.prototype={_initPolygon:function(a){this.setDefaultAttrs({points:[]}),Kinetic.Shape.call(this,a),this.shapeType="Polygon",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.getPoints(),d=c.length;b.beginPath(),b.moveTo(c[0].x,c[0].y);for(var e=1;e<d;e++)b.lineTo(c[e].x,c[e].y);b.closePath(),a.fillStroke(this)},setPoints:function(a){this.setAttr("points",Kinetic.Type._getPoints(a))}},Kinetic.Global.extend(Kinetic.Polygon,Kinetic.Shape),Kinetic.Node.addGetters(Kinetic.Polygon,["points"])}(),function(){function v(a){a.fillText(this.partialText,0,0)}function w(a){a.strokeText(this.partialText,0,0)}var a="auto",b="Calibri",c="canvas",d="center",e="Change.kinetic",f="2d",g="\n",h="",i="left",j="\n",k="text",l="Text",m="top",o="middle",p="normal",q="px ",r=" ",s="right",t=["fontFamily","fontSize","fontStyle","padding","align","lineHeight","text","width","height"],u=t.length;Kinetic.Text=function(a){this._initText(a)},Kinetic.Text.prototype={_initText:function(d){var f=this;this.setDefaultAttrs({fontFamily:b,text:h,fontSize:12,align:i,verticalAlign:m,fontStyle:p,padding:0,width:a,height:a,lineHeight:1}),this.dummyCanvas=document.createElement(c),Kinetic.Shape.call(this,d),this._fillFunc=v,this._strokeFunc=w,this.shapeType=l,this._setDrawFuncs();for(var g=0;g<u;g++)this.on(t[g]+e,f._setTextData);this._setTextData()},drawFunc:function(a){var b=a.getContext(),c=this.getPadding(),e=this.getFontStyle(),f=this.getFontSize(),g=this.getFontFamily(),h=this.getTextHeight(),j=this.getLineHeight()*h,k=this.textArr,l=k.length,m=this.getWidth();b.font=e+r+f+q+g,b.textBaseline=o,b.textAlign=i,b.save(),b.translate(c,0),b.translate(0,c+h/2);for(var n=0;n<l;n++){var p=k[n],t=p.text,u=p.width;b.save(),this.getAlign()===s?b.translate(m-u-c*2,0):this.getAlign()===d&&b.translate((m-u-c*2)/2,0),this.partialText=t,a.fillStroke(this),b.restore(),b.translate(0,j)}b.restore()},drawHitFunc:function(a){var b=a.getContext(),c=this.getWidth(),d=this.getHeight();b.beginPath(),b.rect(0,0,c,d),b.closePath(),a.fillStroke(this)},setText:function(a){var b=Kinetic.Type._isString(a)?a:a.toString();this.setAttr(k,b)},getWidth:function(){return this.attrs.width===a?this.getTextWidth()+this.getPadding()*2:this.attrs.width},getHeight:function(){return this.attrs.height===a?this.getTextHeight()*this.textArr.length*this.attrs.lineHeight+this.attrs.padding*2:this.attrs.height},getTextWidth:function(){return this.textWidth},getTextHeight:function(){return this.textHeight},_getTextSize:function(a){var b=this.dummyCanvas,c=b.getContext(f),d=this.getFontSize(),e;return c.save(),c.font=this.getFontStyle()+r+d+q+this.getFontFamily(),e=c.measureText(a),c.restore(),{width:e.width,height:parseInt(d,10)}},_expandTextData:function(a){var b=a.length;n=0,text=h,newArr=[];for(n=0;n<b;n++)text=a[n],newArr.push({text:text,width:this._getTextSize(text).width});return newArr},_setTextData:function(){var b=this.getText().split(h),c=[],d=0;addLine=!0,lineHeightPx=0,padding=this.getPadding(),this.textWidth=0,this.textHeight=this._getTextSize(this.getText()).height,lineHeightPx=this.getLineHeight()*this.textHeight;while(b.length>0&&addLine&&(this.attrs.height===a||lineHeightPx*(d+1)<this.attrs.height-padding*2)){var e=0,f=undefined;addLine=!1;while(e<b.length){if(b.indexOf(j)===e){b.splice(e,1),f=b.splice(0,e).join(h);break}var i=b.slice(0,e);if(this.attrs.width!==a&&this._getTextSize(i.join(h)).width>this.attrs.width-padding*2){if(e==0)break;var k=i.lastIndexOf(r),l=i.lastIndexOf(g),m=Math.max(k,l);if(m>=0){f=b.splice(0,1+m).join(h);break}f=b.splice(0,e).join(h);break}e++,e===b.length&&(f=b.splice(0,e).join(h))}this.textWidth=Math.max(this.textWidth,this._getTextSize(f).width),f!==undefined&&(c.push(f),addLine=!0),d++}this.textArr=this._expandTextData(c)}},Kinetic.Global.extend(Kinetic.Text,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Text,["fontFamily","fontSize","fontStyle","padding","align","lineHeight"]),Kinetic.Node.addGetters(Kinetic.Text,[k])}(),function(){Kinetic.Line=function(a){this._initLine(a)},Kinetic.Line.prototype={_initLine:function(a){this.setDefaultAttrs({points:[],lineCap:"butt"}),Kinetic.Shape.call(this,a),this.shapeType="Line",this._setDrawFuncs()},drawFunc:function(a){var b=this.getPoints(),c=b.length,d=a.getContext();d.beginPath(),d.moveTo(b[0].x,b[0].y);for(var e=1;e<c;e++){var f=b[e];d.lineTo(f.x,f.y)}a.stroke(this)},setPoints:function(a){this.setAttr("points",Kinetic.Type._getPoints(a))}},Kinetic.Global.extend(Kinetic.Line,Kinetic.Shape),Kinetic.Node.addGetters(Kinetic.Line,["points"])}(),function(){Kinetic.Spline=function(a){this._initSpline(a)},Kinetic.Spline._getControlPoints=function(a,b,c,d){var e=a.x,f=a.y,g=b.x,h=b.y,i=c.x,j=c.y,k=Math.sqrt(Math.pow(g-e,2)+Math.pow(h-f,2)),l=Math.sqrt(Math.pow(i-g,2)+Math.pow(j-h,2)),m=d*k/(k+l),n=d*l/(k+l),o=g-m*(i-e),p=h-m*(j-f),q=g+n*(i-e),r=h+n*(j-f);return[{x:o,y:p},{x:q,y:r}]},Kinetic.Spline.prototype={_initSpline:function(a){this.setDefaultAttrs({tension:1}),Kinetic.Line.call(this,a),this.shapeType="Spline"},drawFunc:function(a){var b=this.getPoints(),c=b.length,d=a.getContext(),e=this.getTension();d.beginPath(),d.moveTo(b[0].x,b[0].y);if(e!==0&&c>2){var f=this.allPoints,g=f.length;d.quadraticCurveTo(f[0].x,f[0].y,f[1].x,f[1].y);var h=2;while(h<g-1)d.bezierCurveTo(f[h].x,f[h++].y,f[h].x,f[h++].y,f[h].x,f[h++].y);d.quadraticCurveTo(f[g-1].x,f[g-1].y,b[c-1].x,b[c-1].y)}else for(var h=1;h<c;h++){var i=b[h];d.lineTo(i.x,i.y)}a.stroke(this)},setPoints:function(a){Kinetic.Line.prototype.setPoints.call(this,a),this._setAllPoints()},setTension:function(a){this.setAttr("tension",a),this._setAllPoints()},_setAllPoints:function(){var a=this.getPoints(),b=a.length,c=this.getTension(),d=[];for(var e=1;e<b-1;e++){var f=Kinetic.Spline._getControlPoints(a[e-1],a[e],a[e+1],c);d.push(f[0]),d.push(a[e]),d.push(f[1])}this.allPoints=d}},Kinetic.Global.extend(Kinetic.Spline,Kinetic.Line),Kinetic.Node.addGetters(Kinetic.Spline,["tension"])}(),function(){Kinetic.Blob=function(a){this._initBlob(a)},Kinetic.Blob.prototype={_initBlob:function(a){Kinetic.Spline.call(this,a),this.shapeType="Blob"},drawFunc:function(a){var b=this.getPoints(),c=b.length,d=a.getContext(),e=this.getTension();d.beginPath(),d.moveTo(b[0].x,b[0].y);if(e!==0&&c>2){var f=this.allPoints,g=f.length,h=0;while(h<g-1)d.bezierCurveTo(f[h].x,f[h++].y,f[h].x,f[h++].y,f[h].x,f[h++].y)}else for(var h=1;h<c;h++){var i=b[h];d.lineTo(i.x,i.y)}d.closePath(),a.fillStroke(this)},_setAllPoints:function(){var a=this.getPoints(),b=a.length,c=this.getTension(),d=Kinetic.Spline._getControlPoints(a[b-1],a[0],a[1],c),e=Kinetic.Spline._getControlPoints(a[b-2],a[b-1],a[0],c);Kinetic.Spline.prototype._setAllPoints.call(this),this.allPoints.unshift(d[1]),this.allPoints.push(e[0]),this.allPoints.push(a[b-1]),this.allPoints.push(e[1]),this.allPoints.push(d[0]),this.allPoints.push(a[0])}},Kinetic.Global.extend(Kinetic.Blob,Kinetic.Spline)}(),function(){Kinetic.Sprite=function(a){this._initSprite(a)},Kinetic.Sprite.prototype={_initSprite:function(a){this.setDefaultAttrs({index:0,frameRate:17}),Kinetic.Shape.call(this,a),this.shapeType="Sprite",this._setDrawFuncs(),this.anim=new Kinetic.Animation;var b=this;this.on("animationChange",function(){b.setIndex(0)})},drawFunc:function(a){var b=this.attrs.animation,c=this.attrs.index,d=this.attrs.animations[b][c],e=a.getContext(),f=this.attrs.image;f&&e.drawImage(f,d.x,d.y,d.width,d.height,0,0,d.width,d.height)},drawHitFunc:function(a){var b=this.attrs.animation,c=this.attrs.index,d=this.attrs.animations[b][c],e=a.getContext();e.beginPath(),e.rect(0,0,d.width,d.height),e.closePath(),a.fill(this)},start:function(){var a=this,b=this.getLayer();this.anim.node=b,this.interval=setInterval(function(){var b=a.attrs.index;a._updateIndex(),a.afterFrameFunc&&b===a.afterFrameIndex&&(a.afterFrameFunc(),delete a.afterFrameFunc,delete a.afterFrameIndex)},1e3/this.attrs.frameRate),this.anim.start()},stop:function(){this.anim.stop(),clearInterval(this.interval)},afterFrame:function(a,b){this.afterFrameIndex=a,this.afterFrameFunc=b},_updateIndex:function(){var a=this.attrs.index,b=this.attrs.animation;a<this.attrs.animations[b].length-1?this.attrs.index++:this.attrs.index=0}},Kinetic.Global.extend(Kinetic.Sprite,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Sprite,["animation","animations","index"])}(),function(){Kinetic.Star=function(a){this._initStar(a)},Kinetic.Star.prototype={_initStar:function(a){this.setDefaultAttrs({numPoints:0,innerRadius:0,outerRadius:0}),Kinetic.Shape.call(this,a),this.shapeType="Star",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.attrs.innerRadius,d=this.attrs.outerRadius,e=this.attrs.numPoints;b.beginPath(),b.moveTo(0,0-this.attrs.outerRadius);for(var f=1;f<e*2;f++){var g=f%2===0?d:c,h=g*Math.sin(f*Math.PI/e),i=-1*g*Math.cos(f*Math.PI/e);b.lineTo(h,i)}b.closePath(),a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.Star,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Star,["numPoints","innerRadius","outerRadius"])}(),function(){Kinetic.RegularPolygon=function(a){this._initRegularPolygon(a)},Kinetic.RegularPolygon.prototype={_initRegularPolygon:function(
 a){this.setDefaultAttrs({radius:0,sides:0}),Kinetic.Shape.call(this,a),this.shapeType="RegularPolygon",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.attrs.sides,d=this.attrs.radius;b.beginPath(),b.moveTo(0,0-d);for(var e=1;e<c;e++){var f=d*Math.sin(e*2*Math.PI/c),g=-1*d*Math.cos(e*2*Math.PI/c);b.lineTo(f,g)}b.closePath(),a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.RegularPolygon,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.RegularPolygon,["radius","sides"])}(),function(){Kinetic.Path=function(a){this._initPath(a)},Kinetic.Path.prototype={_initPath:function(a){this.dataArray=[];var b=this;Kinetic.Shape.call(this,a),this.shapeType="Path",this._setDrawFuncs(),this.dataArray=Kinetic.Path.parsePathData(this.attrs.data),this.on("dataChange",function(){b.dataArray=Kinetic.Path.parsePathData(b.attrs.data)})},drawFunc:function(a){var b=this.dataArray,c=a.getContext();c.beginPath();for(var d=0;d<b.length;d++){var e=b[d].command,f=b[d].points;switch(e){case"L":c.lineTo(f[0],f[1]);break;case"M":c.moveTo(f[0],f[1]);break;case"C":c.bezierCurveTo(f[0],f[1],f[2],f[3],f[4],f[5]);break;case"Q":c.quadraticCurveTo(f[0],f[1],f[2],f[3]);break;case"A":var g=f[0],h=f[1],i=f[2],j=f[3],k=f[4],l=f[5],m=f[6],n=f[7],o=i>j?i:j,p=i>j?1:i/j,q=i>j?j/i:1;c.translate(g,h),c.rotate(m),c.scale(p,q),c.arc(0,0,o,k,k+l,1-n),c.scale(1/p,1/q),c.rotate(-m),c.translate(-g,-h);break;case"z":c.closePath()}}a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.Path,Kinetic.Shape),Kinetic.Path.getLineLength=function(a,b,c,d){return Math.sqrt((c-a)*(c-a)+(d-b)*(d-b))},Kinetic.Path.getPointOnLine=function(a,b,c,d,e,f,g){f===undefined&&(f=b),g===undefined&&(g=c);var h=(e-c)/(d-b+1e-8),i=Math.sqrt(a*a/(1+h*h));d<b&&(i*=-1);var j=h*i,k;if((g-c)/(f-b+1e-8)===h)k={x:f+i,y:g+j};else{var l,m,n=this.getLineLength(b,c,d,e);if(n<1e-8)return undefined;var o=(f-b)*(d-b)+(g-c)*(e-c);o/=n*n,l=b+o*(d-b),m=c+o*(e-c);var p=this.getLineLength(f,g,l,m),q=Math.sqrt(a*a-p*p);i=Math.sqrt(q*q/(1+h*h)),d<b&&(i*=-1),j=h*i,k={x:l+i,y:m+j}}return k},Kinetic.Path.getPointOnCubicBezier=function(a,b,c,d,e,f,g,h,i){function j(a){return a*a*a}function k(a){return 3*a*a*(1-a)}function l(a){return 3*a*(1-a)*(1-a)}function m(a){return(1-a)*(1-a)*(1-a)}var n=h*j(a)+f*k(a)+d*l(a)+b*m(a),o=i*j(a)+g*k(a)+e*l(a)+c*m(a);return{x:n,y:o}},Kinetic.Path.getPointOnQuadraticBezier=function(a,b,c,d,e,f,g){function h(a){return a*a}function i(a){return 2*a*(1-a)}function j(a){return(1-a)*(1-a)}var k=f*h(a)+d*i(a)+b*j(a),l=g*h(a)+e*i(a)+c*j(a);return{x:k,y:l}},Kinetic.Path.getPointOnEllipticalArc=function(a,b,c,d,e,f){var g=Math.cos(f),h=Math.sin(f),i={x:c*Math.cos(e),y:d*Math.sin(e)};return{x:a+(i.x*g-i.y*h),y:b+(i.x*h+i.y*g)}},Kinetic.Path.parsePathData=function(a){if(!a)return[];var b=a,c=["m","M","l","L","v","V","h","H","z","Z","c","C","q","Q","t","T","s","S","a","A"];b=b.replace(new RegExp(" ","g"),",");for(var d=0;d<c.length;d++)b=b.replace(new RegExp(c[d],"g"),"|"+c[d]);var e=b.split("|"),f=[],g=0,h=0;for(var d=1;d<e.length;d++){var i=e[d],j=i.charAt(0);i=i.slice(1),i=i.replace(new RegExp(",-","g"),"-"),i=i.replace(new RegExp("-","g"),",-"),i=i.replace(new RegExp("e,-","g"),"e-");var k=i.split(",");k.length>0&&k[0]===""&&k.shift();for(var l=0;l<k.length;l++)k[l]=parseFloat(k[l]);while(k.length>0){if(isNaN(k[0]))break;var m=null,n=[],o=g,p=h;switch(j){case"l":g+=k.shift(),h+=k.shift(),m="L",n.push(g,h);break;case"L":g=k.shift(),h=k.shift(),n.push(g,h);break;case"m":g+=k.shift(),h+=k.shift(),m="M",n.push(g,h),j="l";break;case"M":g=k.shift(),h=k.shift(),m="M",n.push(g,h),j="L";break;case"h":g+=k.shift(),m="L",n.push(g,h);break;case"H":g=k.shift(),m="L",n.push(g,h);break;case"v":h+=k.shift(),m="L",n.push(g,h);break;case"V":h=k.shift(),m="L",n.push(g,h);break;case"C":n.push(k.shift(),k.shift(),k.shift(),k.shift()),g=k.shift(),h=k.shift(),n.push(g,h);break;case"c":n.push(g+k.shift(),h+k.shift(),g+k.shift(),h+k.shift()),g+=k.shift(),h+=k.shift(),m="C",n.push(g,h);break;case"S":var q=g,r=h,s=f[f.length-1];s.command==="C"&&(q=g+(g-s.points[2]),r=h+(h-s.points[3])),n.push(q,r,k.shift(),k.shift()),g=k.shift(),h=k.shift(),m="C",n.push(g,h);break;case"s":var q=g,r=h,s=f[f.length-1];s.command==="C"&&(q=g+(g-s.points[2]),r=h+(h-s.points[3])),n.push(q,r,g+k.shift(),h+k.shift()),g+=k.shift(),h+=k.shift(),m="C",n.push(g,h);break;case"Q":n.push(k.shift(),k.shift()),g=k.shift(),h=k.shift(),n.push(g,h);break;case"q":n.push(g+k.shift(),h+k.shift()),g+=k.shift(),h+=k.shift(),m="Q",n.push(g,h);break;case"T":var q=g,r=h,s=f[f.length-1];s.command==="Q"&&(q=g+(g-s.points[0]),r=h+(h-s.points[1])),g=k.shift(),h=k.shift(),m="Q",n.push(q,r,g,h);break;case"t":var q=g,r=h,s=f[f.length-1];s.command==="Q"&&(q=g+(g-s.points[0]),r=h+(h-s.points[1])),g+=k.shift(),h+=k.shift(),m="Q",n.push(q,r,g,h);break;case"A":var t=k.shift(),u=k.shift(),v=k.shift(),w=k.shift(),x=k.shift(),y=g,z=h;g=k.shift(),h=k.shift(),m="A",n=this.convertEndpointToCenterParameterization(y,z,g,h,w,x,t,u,v);break;case"a":var t=k.shift(),u=k.shift(),v=k.shift(),w=k.shift(),x=k.shift(),y=g,z=h;g+=k.shift(),h+=k.shift(),m="A",n=this.convertEndpointToCenterParameterization(y,z,g,h,w,x,t,u,v)}f.push({command:m||j,points:n,start:{x:o,y:p},pathLength:this.calcLength(o,p,m||j,n)})}(j==="z"||j==="Z")&&f.push({command:"z",points:[],start:undefined,pathLength:0})}return f},Kinetic.Path.calcLength=function(a,b,c,d){var e,f,g,h=Kinetic.Path;switch(c){case"L":return h.getLineLength(a,b,d[0],d[1]);case"C":e=0,f=h.getPointOnCubicBezier(0,a,b,d[0],d[1],d[2],d[3],d[4],d[5]);for(t=.01;t<=1;t+=.01)g=h.getPointOnCubicBezier(t,a,b,d[0],d[1],d[2],d[3],d[4],d[5]),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;return e;case"Q":e=0,f=h.getPointOnQuadraticBezier(0,a,b,d[0],d[1],d[2],d[3]);for(t=.01;t<=1;t+=.01)g=h.getPointOnQuadraticBezier(t,a,b,d[0],d[1],d[2],d[3]),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;return e;case"A":e=0;var i=d[4],j=d[5],k=d[4]+j,l=Math.PI/180;Math.abs(i-k)<l&&(l=Math.abs(i-k)),f=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],i,0);if(j<0)for(t=i-l;t>k;t-=l)g=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],t,0),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;else for(t=i+l;t<k;t+=l)g=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],t,0),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;return g=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],k,0),e+=h.getLineLength(f.x,f.y,g.x,g.y),e}return 0},Kinetic.Path.convertEndpointToCenterParameterization=function(a,b,c,d,e,f,g,h,i){var j=i*(Math.PI/180),k=Math.cos(j)*(a-c)/2+Math.sin(j)*(b-d)/2,l=-1*Math.sin(j)*(a-c)/2+Math.cos(j)*(b-d)/2,m=k*k/(g*g)+l*l/(h*h);m>1&&(g*=Math.sqrt(m),h*=Math.sqrt(m));var n=Math.sqrt((g*g*h*h-g*g*l*l-h*h*k*k)/(g*g*l*l+h*h*k*k));e==f&&(n*=-1),isNaN(n)&&(n=0);var o=n*g*l/h,p=n*-h*k/g,q=(a+c)/2+Math.cos(j)*o-Math.sin(j)*p,r=(b+d)/2+Math.sin(j)*o+Math.cos(j)*p,s=function(a){return Math.sqrt(a[0]*a[0]+a[1]*a[1])},t=function(a,b){return(a[0]*b[0]+a[1]*b[1])/(s(a)*s(b))},u=function(a,b){return(a[0]*b[1]<a[1]*b[0]?-1:1)*Math.acos(t(a,b))},v=u([1,0],[(k-o)/g,(l-p)/h]),w=[(k-o)/g,(l-p)/h],x=[(-1*k-o)/g,(-1*l-p)/h],y=u(w,x);return t(w,x)<=-1&&(y=Math.PI),t(w,x)>=1&&(y=0),f===0&&y>0&&(y-=2*Math.PI),f==1&&y<0&&(y+=2*Math.PI),[q,r,g,h,v,y,j,f]},Kinetic.Node.addGettersSetters(Kinetic.Path,["data"])}(),function(){function a(a){a.fillText(this.partialText,0,0)}function b(a){a.strokeText(this.partialText,0,0)}Kinetic.TextPath=function(a){this._initTextPath(a)},Kinetic.TextPath.prototype={_initTextPath:function(c){this.setDefaultAttrs({fontFamily:"Calibri",fontSize:12,fontStyle:"normal",text:""}),this.dummyCanvas=document.createElement("canvas"),this.dataArray=[];var d=this;Kinetic.Shape.call(this,c),this._fillFunc=a,this._strokeFunc=b,this.shapeType="TextPath",this._setDrawFuncs(),this.dataArray=Kinetic.Path.parsePathData(this.attrs.data),this.on("dataChange",function(){d.dataArray=Kinetic.Path.parsePathData(this.attrs.data)});var e=["text","textStroke","textStrokeWidth"];for(var f=0;f<e.length;f++){var g=e[f];this.on(g+"Change",d._setTextData)}d._setTextData()},drawFunc:function(a){var b=this.charArr,c=a.getContext();c.font=this.attrs.fontStyle+" "+this.attrs.fontSize+"pt "+this.attrs.fontFamily,c.textBaseline="middle",c.textAlign="left",c.save();var d=this.glyphInfo;for(var e=0;e<d.length;e++){c.save();var f=d[e].p0,g=d[e].p1,h=parseFloat(this.attrs.fontSize);c.translate(f.x,f.y),c.rotate(d[e].rotation),this.partialText=d[e].text,a.fillStroke(this),c.restore()}c.restore()},getTextWidth:function(){return this.textWidth},getTextHeight:function(){return this.textHeight},setText:function(a){Kinetic.Text.prototype.setText.call(this,a)},_getTextSize:function(a){var b=this.dummyCanvas,c=b.getContext("2d");c.save(),c.font=this.attrs.fontStyle+" "+this.attrs.fontSize+"pt "+this.attrs.fontFamily;var d=c.measureText(a);return c.restore(),{width:d.width,height:parseInt(this.attrs.fontSize,10)}},_setTextData:function(){var a=this,b=this._getTextSize(this.attrs.text);this.textWidth=b.width,this.textHeight=b.height,this.glyphInfo=[];var c=this.attrs.text.split(""),d,e,f,g=-1,h=0,i=function(){h=0;var b=a.dataArray;for(var c=g+1;c<b.length;c++){if(b[c].pathLength>0)return g=c,b[c];b[c].command=="M"&&(d={x:b[c].points[0],y:b[c].points[1]})}return{}},j=function(b,c){var g=a._getTextSize(b).width,j=0,k=0,l=!1;e=undefined;while(Math.abs(g-j)/g>.01&&k<25){k++;var m=j;while(f===undefined)f=i(),f&&m+f.pathLength<g&&(m+=f.pathLength,f=undefined);if(f==={}||d===undefined)return undefined;var n=!1;switch(f.command){case"L":Kinetic.Path.getLineLength(d.x,d.y,f.points[0],f.points[1])>g?e=Kinetic.Path.getPointOnLine(g,d.x,d.y,f.points[0],f.points[1],d.x,d.y):f=undefined;break;case"A":var o=f.points[4],p=f.points[5],q=f.points[4]+p;h===0?h=o+1e-8:g>j?h+=Math.PI/180*p/Math.abs(p):h-=Math.PI/360*p/Math.abs(p),Math.abs(h)>Math.abs(q)&&(h=q,n=!0),e=Kinetic.Path.getPointOnEllipticalArc(f.points[0],f.points[1],f.points[2],f.points[3],h,f.points[6]);break;case"C":h===0?g>f.pathLength?h=1e-8:h=g/f.pathLength:g>j?h+=(g-j)/f.pathLength:h-=(j-g)/f.pathLength,h>1&&(h=1,n=!0),e=Kinetic.Path.getPointOnCubicBezier(h,f.start.x,f.start.y,f.points[0],f.points[1],f.points[2],f.points[3],f.points[4],f.points[5]);break;case"Q":h===0?h=g/f.pathLength:g>j?h+=(g-j)/f.pathLength:h-=(j-g)/f.pathLength,h>1&&(h=1,n=!0),e=Kinetic.Path.getPointOnQuadraticBezier(h,f.start.x,f.start.y,f.points[0],f.points[1],f.points[2],f.points[3])}e!==undefined&&(j=Kinetic.Path.getLineLength(d.x,d.y,e.x,e.y)),n&&(n=!1,f=undefined)}};for(var k=0;k<c.length;k++){j(c[k]);if(d===undefined||e===undefined)break;var l=Kinetic.Path.getLineLength(d.x,d.y,e.x,e.y),m=0,n=Kinetic.Path.getPointOnLine(m+l/2,d.x,d.y,e.x,e.y),o=Math.atan2(e.y-d.y,e.x-d.x);this.glyphInfo.push({transposeX:n.x,transposeY:n.y,text:c[k],rotation:o,p0:d,p1:e}),d=e}}},Kinetic.Global.extend(Kinetic.TextPath,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.TextPath,["fontFamily","fontSize","fontStyle"]),Kinetic.Node.addGetters(Kinetic.TextPath,["text"])}();
 
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function ActionStack ($, params) {
     var self = {
@@ -296,11 +297,11 @@ function ActionStack ($, params) {
     ////////////////////////////////////////
     function init (params) {
         // Initialization function
-        if (svw.ui && svw.ui.actionStack) {
+        if (svl.ui && svl.ui.actionStack) {
           // $buttonRedo = $(params.domIds.redoButton);
           // $buttonUndo = $(params.domIds.undoButton);
-          $buttonRedo = svw.ui.actionStack.redo;
-          $buttonUndo = svw.ui.actionStack.undo;
+          $buttonRedo = svl.ui.actionStack.redo;
+          $buttonUndo = svl.ui.actionStack.undo;
           $buttonRedo.css('opacity', 0.5);
           $buttonUndo.css('opacity', 0.5);
 
@@ -313,8 +314,8 @@ function ActionStack ($, params) {
 
     function buttonRedoClick () {
         if (!status.disableRedo) {
-          if ('tracker' in svw) {
-            svw.tracker.push('Click_Redo');
+          if ('tracker' in svl) {
+            svl.tracker.push('Click_Redo');
           }
             self.redo();
         }
@@ -323,8 +324,8 @@ function ActionStack ($, params) {
 
     function buttonUndoClick () {
         if (!status.disableUndo) {
-          if ('tracker' in svw) {
-            svw.tracker.push('Click_Undo');
+          if ('tracker' in svl) {
+            svl.tracker.push('Click_Undo');
           }
             self.undo();
         }
@@ -336,7 +337,7 @@ function ActionStack ($, params) {
     self.disableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = true;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonRedo.css('opacity', 0.5);
             }
             return this;
@@ -349,7 +350,7 @@ function ActionStack ($, params) {
     self.disableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = true;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonUndo.css('opacity', 0.5);
             }
             return this;
@@ -362,7 +363,7 @@ function ActionStack ($, params) {
     self.enableRedo = function () {
         if (!lock.disableRedo) {
             status.disableRedo = false;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonRedo.css('opacity', 1);
             }
             return this;
@@ -375,7 +376,7 @@ function ActionStack ($, params) {
     self.enableUndo = function () {
         if (!lock.disableUndo) {
             status.disableUndo = false;
-            if (svw.ui && svw.ui.actionStack) {
+            if (svl.ui && svl.ui.actionStack) {
               $buttonUndo.css('opacity', 1);
             }
             return this;
@@ -441,21 +442,21 @@ function ActionStack ($, params) {
             if (actionStack.length > status.actionStackCursor) {
                 var actionItem = actionStack[status.actionStackCursor];
                 if (actionItem.action === 'addLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Redo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Redo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', false);
                 } else if (actionItem.action === 'deleteLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Redo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Redo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', true);
                     actionItem.label.setVisibility('hidden');
                 }
                 status.actionStackCursor += 1;
             }
-            if ('canvas' in svw) {
-              svw.canvas.clear().render2();
+            if ('canvas' in svl) {
+              svl.canvas.clear().render2();
             }
         }
     };
@@ -473,13 +474,13 @@ function ActionStack ($, params) {
             if(status.actionStackCursor >= 0) {
                 var actionItem = actionStack[status.actionStackCursor];
                 if (actionItem.action === 'addLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Undo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Undo_AddLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', true);
                 } else if (actionItem.action === 'deleteLabel') {
-                  if ('tracker' in svw) {
-                    svw.tracker.push('Undo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
+                  if ('tracker' in svl) {
+                    svl.tracker.push('Undo_RemoveLabel', {labelId: actionItem.label.getProperty('labelId')});
                   }
                     actionItem.label.setStatus('deleted', false);
                     actionItem.label.setVisibility('visible');
@@ -488,8 +489,8 @@ function ActionStack ($, params) {
                 status.actionStackCursor = 0;
             }
 
-            if ('canvas' in svw) {
-              svw.canvas.clear().render2();
+            if ('canvas' in svl) {
+              svl.canvas.clear().render2();
             }
         }
     };
@@ -515,7 +516,7 @@ function ActionStack ($, params) {
 
     self.updateOpacity = function () {
         // Change opacity
-        if (svw.ui && svw.ui.actionStack) {
+        if (svl.ui && svl.ui.actionStack) {
           if (status.actionStackCursor < actionStack.length) {
               $buttonRedo.css('opacity', 1);
           } else {
@@ -1125,23 +1126,26 @@ function colorScheme6 () {
 // It seems like these constants do not depend on browsers... (tested on Chrome, Firefox, and Safari.)
 // Distortion coefficient for a window size 640x360: var alpha_x = 5.2, alpha_y = -5.25;
 // Distortion coefficient for a window size 720x480:
-var svw = svw || {}; // Street View Walker namespace.
-svw.canvasWidth = 720;
-svw.canvasHeight = 480;
-svw.svImageHeight = 6656;
-svw.svImageWidth = 13312;
-svw.alpha_x = 4.6;
-svw.alpha_y = -4.65;
-svw._labelCounter = 0;
-svw.getLabelCounter = function () {
-    return svw._labelCounter++;
+
+var svl = svl || {};
+svl.canvasWidth = 720;
+svl.canvasHeight = 480;
+svl.svImageHeight = 6656;
+svl.svImageWidth = 13312;
+svl.alpha_x = 4.6;
+svl.alpha_y = -4.65;
+svl._labelCounter = 0;
+svl.getLabelCounter = function () {
+    return svl._labelCounter++;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// Canvas Class Constructor
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * A Canvas module
+ * @memberof svl
+ * @class
+ */
 function Canvas ($, param) {
-    var oPublic = {
+    var self = {
             className : 'Canvas',
             testCases: {}};
 
@@ -1197,7 +1201,6 @@ function Canvas ($, param) {
         showLabelTag: false
     };
 
-
     // Canvas context
     var canvasProperties = {'height':0, 'width':0};
     var ctx;
@@ -1244,10 +1247,10 @@ function Canvas ($, param) {
     }
 
     function closeLabelPath() {
-        svw.tracker.push('LabelingCanvas_FinishLabeling');
-        var labelType = svw.ribbon.getStatus('selectedLabelType');
+        svl.tracker.push('LabelingCanvas_FinishLabeling');
+        var labelType = svl.ribbon.getStatus('selectedLabelType');
         var labelColor = getLabelColors()[labelType];
-        var labelDescription = getLabelDescriptions()[svw.ribbon.getStatus('selectedLabelType')];
+        var labelDescription = getLabelDescriptions()[svl.ribbon.getStatus('selectedLabelType')];
         var iconImagePath = getLabelIconImagePath()[labelDescription.id].iconImagePath;
 
         pointParameters.fillStyleInnerCircle = labelColor.fillStyle;
@@ -1255,7 +1258,7 @@ function Canvas ($, param) {
 
         var pathLen = tempPath.length;
         var points = [];
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
         var i;
 
         for (i = 0; i < pathLen; i++) {
@@ -1264,11 +1267,11 @@ function Canvas ($, param) {
         var path = new Path(points, {});
         var latlng = getPosition();
         var param = {
-            canvasWidth: svw.canvasWidth,
-            canvasHeight: svw.canvasHeight,
-            canvasDistortionAlphaX: svw.alpha_x,
-            canvasDistortionAlphaY: svw.alpha_y,
-            labelId: svw.getLabelCounter(),
+            canvasWidth: svl.canvasWidth,
+            canvasHeight: svl.canvasHeight,
+            canvasDistortionAlphaX: svl.alpha_x,
+            canvasDistortionAlphaY: svl.alpha_y,
+            labelId: svl.getLabelCounter(),
             labelType: labelDescription.id,
             labelDescription: labelDescription.text,
             labelFillStyle: labelColor.fillStyle,
@@ -1278,12 +1281,12 @@ function Canvas ($, param) {
             panoramaHeading: pov.heading,
             panoramaPitch: pov.pitch,
             panoramaZoom: pov.zoom,
-            svImageWidth: svw.svImageWidth,
-            svImageHeight: svw.svImageHeight,
+            svImageWidth: svl.svImageWidth,
+            svImageHeight: svl.svImageHeight,
             svMode: 'html4'
         };
-        if (("panorama" in svw) && ("getPhotographerPov" in svw.panorama)) {
-            var photographerPov = svw.panorama.getPhotographerPov();
+        if (("panorama" in svl) && ("getPhotographerPov" in svl.panorama)) {
+            var photographerPov = svl.panorama.getPhotographerPov();
             param.photographerHeading = photographerPov.heading;
             param.photographerPitch = photographerPov.pitch;
         }
@@ -1292,21 +1295,21 @@ function Canvas ($, param) {
         if (label) {
             status.currentLabel = new Label(path, param)
             labels.push(status.currentLabel);
-            svw.actionStack.push('addLabel', status.currentLabel);
+            svl.actionStack.push('addLabel', status.currentLabel);
         } else {
             throw "Failed to add a new label.";
         }
 
         // Initialize the tempPath
         tempPath = [];
-        svw.ribbon.backToWalk();
+        svl.ribbon.backToWalk();
 
         //
         // Review label correctness if this is a ground truth insertion task.
-        if (("goldenInsertion" in svw) &&
-            svw.goldenInsertion &&
-            svw.goldenInsertion.isRevisingLabels()) {
-            svw.goldenInsertion.reviewLabels();
+        if (("goldenInsertion" in svl) &&
+            svl.goldenInsertion &&
+            svl.goldenInsertion.isRevisingLabels()) {
+            svl.goldenInsertion.reviewLabels();
         }
     }
 
@@ -1317,12 +1320,14 @@ function Canvas ($, param) {
         mouseStatus.leftDownY = mouseposition(e, this).y;
 
         if (!properties.evaluationMode) {
-            svw.tracker.push('LabelingCanvas_MouseDown', {x: mouseStatus.leftDownX, y: mouseStatus.leftDownY});
+            svl.tracker.push('LabelingCanvas_MouseDown', {x: mouseStatus.leftDownX, y: mouseStatus.leftDownY});
         }
 
         mouseStatus.prevMouseDownTime = new Date().getTime();
     }
 
+    /**
+     */
     function drawingLayerMouseUp (e) {
         // This function is fired when at the time of mouse-up
         var currTime;
@@ -1346,9 +1351,9 @@ function Canvas ($, param) {
                 var labelColor;
                 var labelDescription;
 
-                if (svw.ribbon) {
-                    // labelColor = getLabelColors()[svw.ribbon.getStatus('selectedLabelType')];
-                    var labelType = svw.ribbon.getStatus('selectedLabelType');
+                if (svl.ribbon) {
+                    // labelColor = getLabelColors()[svl.ribbon.getStatus('selectedLabelType')];
+                    var labelType = svl.ribbon.getStatus('selectedLabelType');
                     var labelDescriptions = getLabelDescriptions();
                     labelDescription = labelDescriptions[labelType];
                     // iconImagePath = getLabelIconImagePath()[labelDescription.id].iconImagePath;
@@ -1358,8 +1363,8 @@ function Canvas ($, param) {
                     if (!status.drawing) {
                         // Start drawing a path if a user hasn't started to do so.
                         status.drawing = true;
-                        if ('tracker' in svw && svw.tracker) {
-                            svw.tracker.push('LabelingCanvas_StartLabeling');
+                        if ('tracker' in svl && svl.tracker) {
+                            svl.tracker.push('LabelingCanvas_StartLabeling');
                         }
 
                         var point = {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY};
@@ -1386,12 +1391,12 @@ function Canvas ($, param) {
                         }
                     }
                 } else {
-                    throw oPublic.className + ' drawingLayerMouseUp(): ribbon not defined.';
+                    throw self.className + ' drawingLayerMouseUp(): ribbon not defined.';
                 }
 
-                oPublic.clear();
-                oPublic.setVisibilityBasedOnLocation('visible', getPanoId());
-                oPublic.render2();
+                self.clear();
+                self.setVisibilityBasedOnLocation('visible', getPanoId());
+                self.render2();
             } else if (currTime - mouseStatus.prevMouseUpTime < 400) {
                 // This part is executed for a double click event
                 // If the current status.drawing = true, then close the current path.
@@ -1400,20 +1405,22 @@ function Canvas ($, param) {
                     status.drawing = false;
 
                     closeLabelPath();
-                    oPublic.clear();
-                    oPublic.setVisibilityBasedOnLocation('visible', getPanoId());
-                    oPublic.render2();
+                    self.clear();
+                    self.setVisibilityBasedOnLocation('visible', getPanoId());
+                    self.render2();
                 }
             }
         } else {
             // If it is an evaluation mode, do... (nothing)
         }
 
-        svw.tracker.push('LabelingCanvas_MouseUp', {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
+        svl.tracker.push('LabelingCanvas_MouseUp', {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
         mouseStatus.prevMouseUpTime = new Date().getTime();
         mouseStatus.prevMouseDownTime = 0;
     }
 
+    /**
+     */
     function drawingLayerMouseMove (e) {
         // This function is fired when mouse cursor moves
         // over the drawing layer.
@@ -1423,9 +1430,9 @@ function Canvas ($, param) {
 
         // Change a cursor according to the label type.
         // $(this).css('cursor', )
-        if ('ribbon' in svw) {
-            var cursorImagePaths = svw.misc.getLabelCursorImagePath();
-            var labelType = svw.ribbon.getStatus('mode');
+        if ('ribbon' in svl) {
+            var cursorImagePaths = svl.misc.getLabelCursorImagePath();
+            var labelType = svl.ribbon.getStatus('mode');
             if (labelType) {
                 var cursorImagePath = cursorImagePaths[labelType].cursorImagePath;
                 var cursorUrl = "url(" + cursorImagePath + ") 6 25, auto";
@@ -1437,31 +1444,33 @@ function Canvas ($, param) {
                 $(this).css('cursor', cursorUrl);
             }
         } else {
-            throw oPublic.className + ': Import the RibbonMenu.js and instantiate it!';
+            throw self.className + ': Import the RibbonMenu.js and instantiate it!';
         }
 
 
         if (!status.drawing) {
             var ret = isOn(mouseStatus.currX, mouseStatus.currY);
             if (ret && ret.className === 'Path') {
-                oPublic.showLabelTag(status.currentLabel);
+                self.showLabelTag(status.currentLabel);
                 ret.renderBoundingBox(ctx);
             } else {
-                oPublic.showLabelTag(undefined);
+                self.showLabelTag(undefined);
             }
         }
-        oPublic.clear();
-        oPublic.render2();
+        self.clear();
+        self.render2();
         mouseStatus.prevX = mouseposition(e, this).x;
         mouseStatus.prevY = mouseposition(e, this).y;
     }
 
+    /**
+     */
     function imageCoordinates2String (coordinates) {
         if (!(coordinates instanceof Array)) {
-            throw oPublic.className + '.imageCoordinates2String() expects Array as an input';
+            throw self.className + '.imageCoordinates2String() expects Array as an input';
         }
         if (coordinates.length === 0) {
-            throw oPublic.className + '.imageCoordinates2String(): Empty array';
+            throw self.className + '.imageCoordinates2String(): Empty array';
         }
         var ret = '';
         var i ;
@@ -1474,31 +1483,14 @@ function Canvas ($, param) {
         return ret;
     }
 
-    function isOn (x, y) {
-        // This function takes cursor coordinates x and y on the canvas.
-        // Then returns an object right below the cursor.
-        // If a cursor is not on anything, return false.
-        var i, lenLabels, ret;
-        lenLabels = labels.length;
-
-        ret = false;
-        for (i = 0; i < lenLabels; i += 1) {
-            // Check labels, paths, and points to see if they are
-            // under a mouse cursor
-            ret = labels[i].isOn(x, y);
-            if (ret) {
-                status.currentLabel = labels[i];
-                return ret;
-            }
-        }
-        return false;
-    }
-
+    /**
+      *
+      */
     function labelDeleteIconClick () {
         // Deletes the current label
         if (!status.disableLabelDelete) {
-            svw.tracker.push('Click_LabelDelete');
-            var currLabel = oPublic.getCurrentLabel();
+            svl.tracker.push('Click_LabelDelete');
+            var currLabel = self.getCurrentLabel();
             if (!currLabel) {
                 //
                 // Sometimes (especially during ground truth insertion if you force a delete icon to show up all the time),
@@ -1521,8 +1513,8 @@ function Canvas ($, param) {
             }
 
             if (currLabel) {
-                oPublic.removeLabel(currLabel);
-                svw.actionStack.push('deleteLabel', oPublic.getCurrentLabel());
+                self.removeLabel(currLabel);
+                svl.actionStack.push('deleteLabel', self.getCurrentLabel());
                 $divHolderLabelDeleteIcon.css('visibility', 'hidden');
                 // $divHolderLabelEditIcon.css('visibility', 'hidden');
 
@@ -1531,26 +1523,29 @@ function Canvas ($, param) {
                 // If showLabelTag is blocked by GoldenInsertion (or by any other object), unlock it as soon as
                 // a label is deleted.
                 if (lock.showLabelTag) {
-                    oPublic.unlockShowLabelTag();
+                    self.unlockShowLabelTag();
                 }
             }
         }
     }
 
+    /**
+     *
+     */
     function renderTempPath() {
         // This method renders a line from the last point in tempPath to current mouse point.
 
-        if (!svw.ribbon) {
+        if (!svl.ribbon) {
             // return if the ribbon menu is not correctly loaded.
             return false;
         }
 
         var i = 0;
         var pathLen = tempPath.length;
-        var labelColor = getLabelColors()[svw.ribbon.getStatus('selectedLabelType')];
+        var labelColor = getLabelColors()[svl.ribbon.getStatus('selectedLabelType')];
 
         var pointFill = labelColor.fillStyle;
-        pointFill = svw.util.color.changeAlphaRGBA(pointFill, 0.5);
+        pointFill = svl.util.color.changeAlphaRGBA(pointFill, 0.5);
 
 
         // Draw the first line.
@@ -1563,9 +1558,9 @@ function Canvas ($, param) {
 
             // Change the circle radius of the first point depending on the distance between a mouse cursor and the point coordinate.
             if (r < properties.radiusThresh && pathLen > 2) {
-                svw.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 2 * properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+                svl.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 2 * properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
             } else {
-                svw.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+                svl.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
             }
         }
 
@@ -1573,33 +1568,41 @@ function Canvas ($, param) {
         for (i = 2; i < pathLen; i++) {
             var curr = tempPath[i];
             var prev = tempPath[i-1];
-            svw.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 5, curr.x, curr.y, 5, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+            svl.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 5, curr.x, curr.y, 5, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
         }
 
         if (r < properties.radiusThresh && pathLen > 2) {
-            svw.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, tempPath[0].x, tempPath[0].y, 2 * properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+            svl.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, tempPath[0].x, tempPath[0].y, 2 * properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
         } else {
-            svw.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, mouseStatus.currX, mouseStatus.currY, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'stroke', 'rgba(255,255,255,1)', pointFill);
+            svl.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, mouseStatus.currX, mouseStatus.currY, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'stroke', 'rgba(255,255,255,1)', pointFill);
         }
         return;
     }
 
     ////////////////////////////////////////
-    // Public Functions
+    // Public methods
     ////////////////////////////////////////
-    oPublic.cancelDrawing = function () {
+    /**
+     * Cancel drawing while use is drawing a label
+     * @method
+     */
+    function cancelDrawing () {
         // This method clears a tempPath and cancels drawing. This method is called by Keyboard when esc is pressed.
-        if ('tracker' in svw && svw.tracker) {
-            svw.tracker.push("LabelingCanvas_CancelLabeling");
+        if ('tracker' in svl && svl.tracker) {
+            svl.tracker.push("LabelingCanvas_CancelLabeling");
         }
 
         tempPath = [];
         status.drawing = false;
-        oPublic.clear().render2();
+        self.clear().render2();
         return this;
-    };
+    }
 
-    oPublic.clear = function () {
+    /**
+     * Clear what's on the canvas.
+     * @method
+     */
+    function clear () {
         // Clears the canvas
         if (ctx) {
           ctx.clearRect(0, 0, canvasProperties.width, canvasProperties.height);
@@ -1607,25 +1610,36 @@ function Canvas ($, param) {
           console.warn('The ctx is not set.')
         }
         return this;
-    };
+    }
 
-    oPublic.disableLabelDelete = function () {
+    /**
+     *
+     * @method
+     */
+    function disableLabelDelete () {
         if (!status.lockDisableLabelDelete) {
             status.disableLabelDelete = true;
             return this;
         }
         return false;
-    };
+    }
 
-    oPublic.disableLabelEdit = function () {
+    /**
+     * @method
+     * @return {boolean}
+     */
+    function disableLabelEdit () {
        if (!status.lockDisableLabelEdit) {
            status.disableLabelEdit = true;
            return this;
        }
        return false;
-    };
+    }
 
-    oPublic.disableLabeling = function () {
+    /**
+     * @method
+     */
+    function disableLabeling () {
         // Check right-click-menu visibility
         // If any of menu is visible, disable labeling
         if (!status.lockDisableLabeling) {
@@ -1641,39 +1655,34 @@ function Canvas ($, param) {
             return this;
         }
         return false;
-    };
+    }
 
-    // oPublic.disableMenuClose = function () {
-    //     if (rightClickMenu) {
-    //         rightClickMenu.disableMenuClose();
-    //     }
-    //     return this;
-    // };
-    //
-    // oPublic.disableMenuSelect = function ()  {
-    //     if (rightClickMenu) {
-    //         rightClickMenu.disableMenuSelect();
-    //     }
-    //     return this;
-    // };
-
-    oPublic.enableLabelDelete = function () {
+    /**
+     * @method
+     */
+    function enableLabelDelete () {
         if (!status.lockDisableLabelDelete) {
             status.disableLabelDelete = false;
             return this;
         }
         return false;
-    };
+    }
 
-    oPublic.enableLabelEdit = function () {
+    /**
+     * @method
+     */
+    function enableLabelEdit () {
         if (!status.lockDisableLabelEdit) {
             status.disableLabelEdit = false;
             return this;
         }
         return false;
-    };
+    }
 
-    oPublic.enableLabeling = function () {
+    /**
+     * @method
+     */
+    function enableLabeling () {
         // Check right-click-menu visiibliey
         // If all of the right click menu are hidden,
         // enable labeling
@@ -1682,32 +1691,44 @@ function Canvas ($, param) {
             return this;
         }
         return false;
-    };
+    }
 
-    oPublic.getCurrentLabel = function () {
+    /**
+     * @method
+     */
+    function getCurrentLabel () {
         return status.currentLabel;
-    };
+    }
 
-    oPublic.getLabels = function (target) {
+    /**
+     * @method
+     */
+    function getLabels (target) {
         // This method returns a deepcopy of labels stored in this canvas.
         if (!target) {
             target = 'user';
         }
 
         if (target === 'system') {
-            return oPublic.getSystemLabels(false);
+            return self.getSystemLabels(false);
             // return $.extend(true, [], systemLabels);
         } else {
-            return oPublic.getUserLabels(false);
+            return self.getUserLabels(false);
             // $.extend(true, [], labels);
         }
-    };
+    }
 
-    oPublic.getLock = function (key) {
+    /**
+     * @method
+     */
+    function getLock (key) {
       return lock[key];
-    };
+    }
 
-    oPublic.getNumLabels = function () {
+    /**
+     * @method
+     */
+    function getNumLabels () {
         var len = labels.length;
         var i;
         var total = 0;
@@ -1717,20 +1738,29 @@ function Canvas ($, param) {
             }
         }
         return total;
-    };
+    }
 
-    // oPublic.getRightClickMenu = function () {
-    //     return rightClickMenu;
-    // };
+    /**
+     * @method
+     */
+    function getRightClickMenu () {
+        return rightClickMenu;
+    }
 
-    oPublic.getStatus = function (key) {
+    /**
+     * @method
+     */
+    function getStatus (key) {
       if (!(key in status)) {
         console.warn("You have passed an invalid key for status.")
       }
         return status[key];
-    };
+    }
 
-    oPublic.getSystemLabels = function (reference) {
+    /**
+     * @method
+     */
+    function getSystemLabels (reference) {
         // This method returns system labels. If refrence is true, then it returns reference to the labels.
         // Otherwise it returns deepcopy of labels.
         if (!reference) {
@@ -1742,17 +1772,23 @@ function Canvas ($, param) {
         } else {
             return $.extend(true, [], systemLabels);
         }
-    };
+    }
 
-    oPublic.getUserLabelCount = function () {
-        var labels = oPublic.getUserLabels();
+    /**
+     * @method
+     */
+    function getUserLabelCount () {
+        var labels = self.getUserLabels();
         labels = labels.filter(function (label) {
             return !label.isDeleted() && label.isVisible();
         })
         return labels.length;
-    };
+    }
 
-    oPublic.getUserLabels = function (reference) {
+    /**
+     * @method
+     */
+    function getUserLabels (reference) {
         // This method returns user labels. If reference is true, then it returns reference to the labels.
         // Otherwise it returns deepcopy of labels.
         if (!reference) {
@@ -1764,20 +1800,26 @@ function Canvas ($, param) {
         } else {
             return $.extend(true, [], labels);
         }
-    };
+    }
 
-    oPublic.hideDeleteLabel = function (x, y) {
+    /**
+     * @method
+     */
+    function hideDeleteLabel (x, y) {
         rightClickMenu.hideDeleteLabel();
         return this;
-    };
+    }
 
-    // oPublic.hideRightClickMenu = function () {
-    //     rightClickMenu.hideBusStopType();
-    //     rightClickMenu.hideBusStopPosition();
-    //     return this;
-    // };
+    function hideRightClickMenu () {
+        rightClickMenu.hideBusStopType();
+        rightClickMenu.hideBusStopPosition();
+        return this;
+    }
 
-    oPublic.insertLabel = function (labelPoints, target) {
+    /**
+     * @method
+     */
+    function insertLabel (labelPoints, target) {
         // This method takes a label data (i.e., a set of point coordinates, label types, etc) and
         // and insert it into the labels array so the Canvas will render it
         if (!target) {
@@ -1785,8 +1827,8 @@ function Canvas ($, param) {
         }
 
         var i;
-        var labelColors = svw.misc.getLabelColors();
-        var iconImagePaths = svw.misc.getIconImagePaths();
+        var labelColors = svl.misc.getLabelColors();
+        var iconImagePaths = svl.misc.getIconImagePaths();
         var length = labelPoints.length;
         var pointData;
         var pov;
@@ -1831,14 +1873,14 @@ function Canvas ($, param) {
 
         var param = {};
         var path;
-        var labelDescriptions = svw.misc.getLabelDescriptions();
+        var labelDescriptions = svl.misc.getLabelDescriptions();
 
         path = new Path(points);
 
-        param.canvasWidth = svw.canvasWidth;
-        param.canvasHeight = svw.canvasHeight;
-        param.canvasDistortionAlphaX = svw.alpha_x;
-        param.canvasDistortionAlphaY = svw.alpha_y;
+        param.canvasWidth = svl.canvasWidth;
+        param.canvasHeight = svl.canvasHeight;
+        param.canvasDistortionAlphaX = svl.alpha_x;
+        param.canvasDistortionAlphaY = svl.alpha_y;
         param.labelId = labelPoints[0].LabelId;
         param.labelerId = labelPoints[0].AmazonTurkerId
         param.labelType = labelPoints[0].LabelType;
@@ -1851,8 +1893,8 @@ function Canvas ($, param) {
         param.panoramaPitch = labelPoints[0].pitch;
         param.panoramaZoom = labelPoints[0].zoom;
 
-        param.svImageWidth = svw.svImageWidth;
-        param.svImageHeight = svw.svImageHeight;
+        param.svImageWidth = svl.svImageWidth;
+        param.svImageHeight = svl.svImageHeight;
         param.svMode = 'html4';
 
         if (("PhotographerPitch" in labelPoints[0]) && ("PhotographerHeading" in labelPoints[0])) {
@@ -1867,113 +1909,118 @@ function Canvas ($, param) {
         } else {
             labels.push(newLabel);
         }
-    };
+    }
 
-    // oPublic.isBusStopLabeled = function () {
-    //     var i;
-    //     var isBusStopSignLabeled = false;
-    //     var label;
-    //     var lenLabels;
-    //     lenLabels = labels.length;
-    //
-    //     for (i = 0; i < lenLabels; i += 1) {
-    //         // Check if the label comes from current SV panorama
-    //         label = labels[i];
-    //         // if (!label.isDeleted() && label.getLabelType() ==="StopSign") {
-    //         if (label.isVisible() && label.getLabelType() ==="StopSign") {
-    //             isBusStopSignLabeled = true;
-    //         }
-    //     }
-    //     return isBusStopSignLabeled;
-    // };
-    //
-    // oPublic.isBusStopShelterLabeled = function () {
-    //     var i;
-    //     var isBusStopShelterLabeled = false;
-    //     var label;
-    //     var lenLabels;
-    //     lenLabels = labels.length;
-    //
-    //     for (i = 0; i < lenLabels; i += 1) {
-    //         // Check if the label comes from current SV panorama
-    //         label = labels[i];
-    //         // if (!label.isDeleted() && label.getLabelType() ==="StopSign") {
-    //         if (label.isVisible() && label.getLabelType() ==="Landmark_Shelter") {
-    //             isBusStopShelterLabeled = true;
-    //         }
-    //     }
-    //     return isBusStopShelterLabeled;
-    // };
 
-    oPublic.isDrawing = function () {
+    /**
+     * @method
+     * @return {boolean}
+     */
+    function isDrawing () {
         // This method returns the current status drawing.
         return status.drawing;
-    };
+    }
 
-    // oPublic.isEvaluationMode = function () {
-    //     return properties.evaluationMode;
-    // };
+    /**
+    *
+    * @method
+    */
+    function isOn (x, y) {
+        // This function takes cursor coordinates x and y on the canvas.
+        // Then returns an object right below the cursor.
+        // If a cursor is not on anything, return false.
+        var i, lenLabels, ret;
+        lenLabels = labels.length;
 
-    oPublic.isOn = function (x, y) {
-        // Get an object right below (x,y)
-        return isOn(x, y);
-    };
+        ret = false;
+        for (i = 0; i < lenLabels; i += 1) {
+            // Check labels, paths, and points to see if they are
+            // under a mouse cursor
+            ret = labels[i].isOn(x, y);
+            if (ret) {
+                status.currentLabel = labels[i];
+                return ret;
+            }
+        }
+        return false;
+    }
 
-    oPublic.lockCurrentLabel = function () {
+    /**
+     * @method
+     */
+    function lockCurrentLabel () {
         status.lockCurrentLabel = true;;
         return this;
-    };
+    }
 
-    oPublic.lockDisableLabelDelete = function () {
+    /**
+     * @method
+     */
+    function lockDisableLabelDelete () {
         status.lockDisableLabelDelete = true;;
         return this;
     };
 
-    oPublic.lockDisableLabelEdit = function () {
+    /**
+     * @method
+     */
+    function lockDisableLabelEdit () {
         status.lockDisableLabelEdit = true;
         return this;
-    };
+    }
 
-    oPublic.lockDisableLabeling = function () {
+    /**
+     * @method
+     */
+    function lockDisableLabeling () {
         status.lockDisableLabeling = true;
         return this;
-    };
+    }
 
-    // oPublic.lockDisableMenuSelect = function () {
-    //     rightClickMenu.lockDisableMenuSelect();
-    //     return this;
-    // };
-
-    oPublic.lockShowLabelTag = function () {
+    /**
+     * @method
+     */
+    function lockShowLabelTag () {
         // This method locks showLabelTag
         lock.showLabelTag = true;
         return this;
-    };
+    }
 
-    oPublic.pushLabel = function (label) {
+    /**
+     * @method
+     */
+    function pushLabel (label) {
         status.currentLabel = label;
         labels.push(label);
-        if (svw.actionStack) {
-            svw.actionStack.push('addLabel', label);
+        if (svl.actionStack) {
+            svl.actionStack.push('addLabel', label);
         }
         return this;
-    };
+    }
 
-    oPublic.removeAllLabels = function () {
+    /**
+     * This method removes all the labels stored in the labels array.
+     * @method
+     */
+    function removeAllLabels () {
         // This method removes all the labels.
         // This method is mainly for testing.
         labels = [];
         return this;
-    };
+    }
 
-    oPublic.removeLabel = function (label) {
+    /**
+     *
+     * @method
+     */
+    function removeLabel (label) {
         // This function removes a passed label and its child path and points
         // var labelIndex = labels.indexOf(label);
 
         if (!label) {
             return false;
         }
-        svw.tracker.push('RemoveLabel', {labelId: label.getProperty('labelId')});
+        svl.tracker.push('RemoveLabel', {labelId: label.getProperty('labelId')});
 
         label.setStatus('deleted', true);
         label.setStatus('visibility', 'hidden');
@@ -1984,26 +2031,32 @@ function Canvas ($, param) {
 
         //
         // Review label correctness if this is a ground truth insertion task.
-        if (("goldenInsertion" in svw) &&
-            svw.goldenInsertion &&
-            svw.goldenInsertion.isRevisingLabels()) {
-            svw.goldenInsertion.reviewLabels();
+        if (("goldenInsertion" in svl) &&
+            svl.goldenInsertion &&
+            svl.goldenInsertion.isRevisingLabels()) {
+            svl.goldenInsertion.reviewLabels();
         }
 
-        oPublic.clear();
-        oPublic.render2();
+        self.clear();
+        self.render2();
         return this;
-    };
+    }
 
-    oPublic.render = function () {
+    /**
+     * @method
+     */
+    function render () {
         // KH. Deprecated.
         // Renders labels and pathes (as well as points in each path.)
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
         // renderLabels(pov, ctx);
         return this;
-    };
+    }
 
-    oPublic.render2 = function () {
+    /**
+     * @method
+     */
+    function render2 () {
       if (!ctx) {
         // JavaScript warning
         // http://stackoverflow.com/questions/5188224/throw-new-warning-in-javascript
@@ -2024,7 +2077,7 @@ function Canvas ($, param) {
             NoCurbRamp: 0
         };
         status.totalLabelCount = 0;
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 
 
         //
@@ -2032,7 +2085,7 @@ function Canvas ($, param) {
         // you can get from Street View API change. So adjust the image coordinate
         // Note that this adjustment happens only once
         if (!status.svImageCoordinatesAdjusted) {
-            var currentPhotographerPov = svw.panorama.getPhotographerPov();
+            var currentPhotographerPov = svl.panorama.getPhotographerPov();
             if (currentPhotographerPov && 'heading' in currentPhotographerPov && 'pitch' in currentPhotographerPov) {
                 var j;
                 //
@@ -2050,8 +2103,8 @@ function Canvas ($, param) {
                         if ('photographerHeading' in pointData && pointData.photographerHeading) {
                             var deltaHeading = currentPhotographerPov.heading - pointData.photographerHeading;
                             var deltaPitch = currentPhotographerPov.pitch - pointData.photographerPitch;
-                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svw.svImageWidth + svw.svImageWidth) % svw.svImageWidth;
-                            var y = svImageCoordinate.y + (deltaPitch / 90) * svw.svImageHeight;
+                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svl.svImageWidth + svl.svImageWidth) % svl.svImageWidth;
+                            var y = svImageCoordinate.y + (deltaPitch / 90) * svl.svImageHeight;
                             points[j].resetSVImageCoordinate({x: x, y: y})
                         }
                     }
@@ -2072,8 +2125,8 @@ function Canvas ($, param) {
                         if ('photographerHeading' in pointData && pointData.photographerHeading) {
                             var deltaHeading = currentPhotographerPov.heading - pointData.photographerHeading;
                             var deltaPitch = currentPhotographerPov.pitch - pointData.photographerPitch;
-                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svw.svImageWidth + svw.svImageWidth) % svw.svImageWidth;
-                            var y = svImageCoordinate.y + (deltaPitch / 180) * svw.svImageHeight;
+                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svl.svImageWidth + svl.svImageWidth) % svl.svImageWidth;
+                            var y = svImageCoordinate.y + (deltaPitch / 180) * svl.svImageHeight;
                             points[j].resetSVImageCoordinate({x: x, y: y})
                         }
                     }
@@ -2125,63 +2178,72 @@ function Canvas ($, param) {
 
         //
         // Check if the user audited all the angles or not.
-        if ('form' in svw) {
-            svw.form.checkSubmittable();
+        if ('form' in svl) {
+            svl.form.checkSubmittable();
         }
 
-        if ('progressPov' in svw) {
-            svw.progressPov.updateCompletionRate();
+        if ('progressPov' in svl) {
+            svl.progressPov.updateCompletionRate();
         }
 
         //
         // Update the landmark counts on the right side of the interface.
-        if (svw.labeledLandmarkFeedback) {
-            svw.labeledLandmarkFeedback.setLabelCount(labelCount);
+        if (svl.labeledLandmarkFeedback) {
+            svl.labeledLandmarkFeedback.setLabelCount(labelCount);
         }
 
         //
         // Update the opacity of undo and redo buttons.
-        if (svw.actionStack) {
-            svw.actionStack.updateOpacity();
+        if (svl.actionStack) {
+            svl.actionStack.updateOpacity();
         }
 
         //
         // Update the opacity of Zoom In and Zoom Out buttons.
-        if (svw.zoomControl) {
-            svw.zoomControl.updateOpacity();
+        if (svl.zoomControl) {
+            svl.zoomControl.updateOpacity();
         }
 
         //
         // This like of code checks if the golden insertion code is running or not.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            svw.goldenInsertion.renderMessage();
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+            svl.goldenInsertion.renderMessage();
         }
         return this;
-    };
+    }
 
-    oPublic.renderBoundingBox = function (path) {
+    /**
+     * @method
+     */
+    function renderBoundingBox (path) {
         path.renderBoundingBox(ctx);
         return this;
-    };
+    }
 
-    oPublic.setCurrentLabel = function (label) {
+    /**
+     * @method
+     */
+    function setCurrentLabel (label) {
         if (!status.lockCurrentLabel) {
             status.currentLabel = label;
             return this;
         }
         return false;
-    };
+    }
 
-    oPublic.setStatus = function (key, value) {
+    /**
+     * @method
+     */
+    function setStatus (key, value) {
         // This function is allows other objects to access status
         // of this object
         if (key in status) {
             if (key === 'disableLabeling') {
                 if (typeof value === 'boolean') {
                     if (value) {
-                        oPublic.disableLabeling();
+                        self.disableLabeling();
                     } else {
-                        oPublic.enableLabeling();
+                        self.enableLabeling();
                     }
                     return this;
                 } else {
@@ -2190,9 +2252,9 @@ function Canvas ($, param) {
             } else if (key === 'disableMenuClose') {
                 if (typeof value === 'boolean') {
                     if (value) {
-                        oPublic.disableMenuClose();
+                        self.disableMenuClose();
                     } else {
-                        oPublic.enableMenuClose();
+                        self.enableMenuClose();
                     }
                     return this;
                 } else {
@@ -2200,19 +2262,22 @@ function Canvas ($, param) {
                 }
             } else if (key === 'disableLabelDelete') {
                 if (value === true) {
-                    oPublic.disableLabelDelete();
+                    self.disableLabelDelete();
                 } else if (value === false) {
-                    oPublic.enableLabelDelete();
+                    self.enableLabelDelete();
                 }
             } else {
                 status[key] = value;
             }
         } else {
-            throw oPublic.className + ": Illegal status name.";
+            throw self.className + ": Illegal status name.";
         }
-    };
+    }
 
-    oPublic.showLabelTag = function (label) {
+    /**
+     * @method
+     */
+    function showLabelTag (label) {
         // This function sets the passed label's tagVisiblity to 'visible' and all the others to
         // 'hidden'.
         if (!lock.showLabelTag) {
@@ -2242,17 +2307,23 @@ function Canvas ($, param) {
             if (!isAnyVisible) {
                 $divHolderLabelDeleteIcon.css('visibility', 'hidden');
             }
-            oPublic.clear().render2();
+            self.clear().render2();
             return this;
         }
-    };
+    }
 
-    oPublic.setTagVisibility = function (labelIn) {
+    /**
+     * @method
+     */
+    function setTagVisibility (labelIn) {
         // Deprecated
-        return oPublic.showLabelTag(labelIn);
-    };
+        return self.showLabelTag(labelIn);
+    }
 
-    oPublic.setVisibility = function (visibility) {
+    /**
+     * @method
+     */
+    function setVisibility (visibility) {
         var i = 0;
         var labelLen = 0;
 
@@ -2261,9 +2332,12 @@ function Canvas ($, param) {
             labels[i].unlockVisibility().setVisibility('visible');
         }
         return this;
-    };
+    }
 
-    oPublic.setVisibilityBasedOnLocation = function (visibility) {
+    /**
+     * @method
+     */
+    function setVisibilityBasedOnLocation (visibility) {
         var i = 0;
         var labelLen = 0;
 
@@ -2272,9 +2346,12 @@ function Canvas ($, param) {
             labels[i].setVisibilityBasedOnLocation(visibility, getPanoId());
         }
         return this;
-    };
+    }
 
-    oPublic.setVisibilityBasedOnLabelerId = function (visibility, LabelerIds, included) {
+    /**
+     * @method
+     */
+    function setVisibilityBasedOnLabelerId (visibility, LabelerIds, included) {
         // This function should not be used in labeling interfaces, but only in evaluation interfaces.
         // Set labels that are not in LabelerIds hidden
         var i = 0;
@@ -2285,9 +2362,12 @@ function Canvas ($, param) {
             labels[i].setVisibilityBasedOnLabelerId(visibility, LabelerIds, included);
         }
         return this;
-    };
+    }
 
-    oPublic.setVisibilityBasedOnLabelerIdAndLabelTypes = function (visibility, table, included) {
+    /**
+     * @method
+     */
+    function setVisibilityBasedOnLabelerIdAndLabelTypes (visibility, table, included) {
         var i = 0;
         var labelLen = 0;
 
@@ -2296,51 +2376,115 @@ function Canvas ($, param) {
             labels[i].setVisibilityBasedOnLabelerIdAndLabelTypes(visibility, table, included);
         }
         return this;
-    };
+    }
 
-    oPublic.showDeleteLabel = function (x, y) {
+    /**
+     * @method
+     */
+    function showDeleteLabel (x, y) {
         rightClickMenu.showDeleteLabel(x, y);
-    };
+    }
 
-    oPublic.unlockCurrentLabel = function () {
+    /**
+     * @method
+     */
+    function unlockCurrentLabel () {
         status.lockCurrentLabel = false;
         return this;
-    };
+    }
 
-    oPublic.unlockDisableLabelDelete = function () {
+    /**
+     * @method
+     */
+    function unlockDisableLabelDelete () {
         status.lockDisableLabelDelete = false;
         return this;
-    };
+    }
 
-    oPublic.unlockDisableLabelEdit = function () {
+    /**
+     * @method
+     */
+    function unlockDisableLabelEdit () {
         status.lockDisableLabelEdit = false;
         return this;
-    };
+    }
 
-    oPublic.unlockDisableLabeling = function () {
+    /**
+     * @method
+     */
+    function unlockDisableLabeling () {
         status.lockDisableLabeling = false;
         return this;
-    };
+    }
 
-    // oPublic.unlockDisableMenuSelect = function () {
-    //     rightClickMenu.unlockDisableMenuSelect();
-    //     return this;
-    // };
-
-    oPublic.unlockShowLabelTag = function () {
+    /**
+     * @method
+     */
+    function unlockShowLabelTag () {
         // This method locks showLabelTag
         lock.showLabelTag = false;
         return this;
-    };
+    }
 
-    ////////////////////////////////////////
-    // Initialization.
-    ////////////////////////////////////////
+    // Initialization
     _init(param);
 
-    return oPublic;
+    // Put public methods to self and return them.
+    self.cancelDrawing = cancelDrawing;
+    self.clear = clear;
+    self.disableLabelDelete = disableLabelDelete;
+    self.disableLabelEdit = disableLabelEdit;
+    self.disableLabeling = disableLabeling;
+    self.enableLabelDelete = enableLabelDelete;
+    self.enableLabelEdit = enableLabelEdit;
+    self.enableLabeling = enableLabeling;
+    self.getCurrentLabel = getCurrentLabel
+    self.getLabels = getLabels;
+    self.getLock = getLock;
+    self.getNumLabels = getNumLabels;
+    self.getRightClickMenu = getRightClickMenu;
+    self.getStatus = getStatus;
+    self.getSystemLabels = getSystemLabels;
+    self.getUserLabelCount = getUserLabelCount;
+    self.getUserLabels = getUserLabels;
+    self.hideDeleteLabel = hideDeleteLabel;
+    self.hideRightClickMenu = hideRightClickMenu;
+    self.insertLabel = insertLabel;
+    self.isOn = isOn;
+    self.lockCurrentLabel = lockCurrentLabel;
+    self.lockDisableLabelDelete = lockDisableLabelDelete;
+    self.lockDisableLabelEdit = lockDisableLabelEdit;
+    self.lockDisableLabeling = lockDisableLabeling;
+    self.lockShowLabelTag = lockShowLabelTag;
+    self.pushLabel = pushLabel;
+    self.removeAllLabels = removeAllLabels;
+    self.removeLabel = removeLabel;
+    self.render2 = render2;
+    self.renderBoundingBox = renderBoundingBox;
+    self.setCurrentLabel = setCurrentLabel;
+    self.setStatus = setStatus;
+    self.showLabelTag = showLabelTag;
+    self.setTagVisibility = setTagVisibility;
+    self.setVisibility = setVisibility;
+    self.setVisibilityBasedOnLocation = setVisibilityBasedOnLocation;
+    self.setVisibilityBasedOnLabelerId = setVisibilityBasedOnLabelerId;
+    self.setVisibilityBasedOnLabelerIdAndLabelTypes = setVisibilityBasedOnLabelerIdAndLabelTypes;
+    self.showDeleteLabel = showDeleteLabel;
+    self.unlockCurrentLabel = unlockCurrentLabel;
+    self.unlockDisableLabelDelete = unlockDisableLabelDelete;
+    self.unlockDisableLabelEdit = unlockDisableLabelEdit;
+    self.unlockDisableLabeling = unlockDisableLabeling;
+    self.unlockShowLabelTag = unlockShowLabelTag;
+
+    return self;
 }
 
+var svl = svl || {};
+
+/**
+ * @memberof svl
+ * @constructor
+ */
 function ExampleWindow ($, params) {
     var api = {
             className : 'ExampleWindow'
@@ -2464,6 +2608,11 @@ function ExampleWindow ($, params) {
     return api;
 }
 
+var svl = svl || {};
+
+/**
+ * @memberof svl
+ */
 function Form ($, params) {
     var self = {
         'className' : 'Form'
@@ -2606,7 +2755,7 @@ function Form ($, params) {
             self.lockDisableSubmit();
         }
 
-        // if (!('onboarding' in svw && svw.onboarding)) {
+        // if (!('onboarding' in svl && svl.onboarding)) {
         //     messageCanvas = new Onboarding(params, $)
         // }
 
@@ -2646,7 +2795,7 @@ function Form ($, params) {
         var hitId;
         var assignmentId;
         var turkerId;
-        var taskGSVPanoId = svw.map.getInitialPanoId();
+        var taskGSVPanoId = svl.map.getInitialPanoId();
 
 
         hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
@@ -2694,10 +2843,10 @@ function Form ($, params) {
             operating_system: getOperatingSystem()
         };
 
-        data.userInteraction = svw.tracker.getActions();
+        data.userInteraction = svl.tracker.getActions();
 
         data.labels = [];
-        var labels = svw.canvas.getLabels();
+        var labels = svl.canvas.getLabels();
         for(var i = 0; i < labels.length; i += 1) {
             var label = labels[i];
             var prop = label.getProperties();
@@ -2797,8 +2946,8 @@ function Form ($, params) {
 
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            var numMistakes = svw.goldenInsertion.reviewLabels();
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+            var numMistakes = svl.goldenInsertion.reviewLabels();
             self.disableSubmit().lockDisableSubmit();
             self.disableSkip().lockDisableSkip();
             return false;
@@ -2825,7 +2974,7 @@ function Form ($, params) {
         //
         // Submit collected data if a user is not in onboarding mode.
         if (!properties.onboarding) {
-            svw.tracker.push('TaskSubmit');
+            svl.tracker.push('TaskSubmit');
 
             data = compileSubmissionData();
 
@@ -2877,11 +3026,11 @@ function Form ($, params) {
 
     function goldenInsertionSubmit () {
         // This method submits the labels that a user provided on golden insertion task and refreshes the page.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            svw.tracker.push('GoldenInsertion_Submit');
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+            svl.tracker.push('GoldenInsertion_Submit');
             var url = properties.dataStoreUrl;
             var data;
-            svw.goldenInsertion.disableOkButton();
+            svl.goldenInsertion.disableOkButton();
 
             data = compileSubmissionData();
             data.labelingTask.description = "GoldenInsertion";
@@ -2918,9 +3067,9 @@ function Form ($, params) {
     function showDisabledSubmitButtonMessage () {
         // This method is called from formSubmit method when a user clicks the submit button evne then have
         // not looked around and inspected the entire panorama.
-        var completionRate = parseInt(svw.progressPov.getCompletionRate() * 100, 10);
+        var completionRate = parseInt(svl.progressPov.getCompletionRate() * 100, 10);
 
-        if (!('onboarding' in svw && svw.onboarding) &&
+        if (!('onboarding' in svl && svl.onboarding) &&
             (completionRate < 100)) {
             var message = "You have inspected " + completionRate + "% of the scene. Let's inspect all the corners before you submit the task!";
             var $OkBtn;
@@ -2961,14 +3110,14 @@ function Form ($, params) {
         var data = {};
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
             self.disableSubmit().lockDisableSubmit();
             $btnSkip.attr('disabled', true);
             $btnConfirmSkip.attr('disabled', true);
             $divSkipOptions.css({
                 visibility: 'hidden'
             });
-            var numMistakes = svw.goldenInsertion.reviewLabels()
+            var numMistakes = svl.goldenInsertion.reviewLabels()
             return false;
         }
 
@@ -2997,7 +3146,7 @@ function Form ($, params) {
 
         // Submit collected data if a user is not in oboarding mode.
         if (!properties.onboarding) {
-            svw.tracker.push('TaskSubmitSkip');
+            svl.tracker.push('TaskSubmitSkip');
 
             //
             // Compile the submission data with compileSubmissionData method,
@@ -3062,7 +3211,7 @@ function Form ($, params) {
         if (status.disableSkip) {
             showDisabledSubmitButtonMessage();
         } else {
-            svw.tracker.push('Click_OpenSkipWindow');
+            svl.tracker.push('Click_OpenSkipWindow');
             $divSkipOptions.css({
                 visibility: 'visible'
             });
@@ -3075,7 +3224,7 @@ function Form ($, params) {
         // This method closes the skip menu.
         e.preventDefault(); // Do not submit the form!
 
-        svw.tracker.push('Click_CloseSkipWindow');
+        svl.tracker.push('Click_CloseSkipWindow');
 
         $divSkipOptions.css({
             visibility: 'hidden'
@@ -3089,7 +3238,7 @@ function Form ($, params) {
         // If the clicked radio button is 'Other', check if a user has entered a text.
         // If the text is entered, then enable submit. Otherwise disable submit.
         status.radioValue = $(this).attr('value');
-        svw.tracker.push('Click_SkipRadio', {RadioValue: status.radioValue});
+        svl.tracker.push('Click_SkipRadio', {RadioValue: status.radioValue});
 
         if (status.radioValue !== 'Other:') {
             status.skipReasonDescription = status.radioValue;
@@ -3141,13 +3290,13 @@ function Form ($, params) {
         // This method checks whether users can submit labels or skip this task by first checking if they
         // assessed all the angles of the street view.
         // Enable/disable form a submit button and a skip button
-        if ('progressPov' in svw && svw.progressPov) {
-            var completionRate = svw.progressPov.getCompletionRate();
+        if ('progressPov' in svl && svl.progressPov) {
+            var completionRate = svl.progressPov.getCompletionRate();
         } else {
             var completionRate = 0;
         }
 
-        var labelCount = svw.canvas.getNumLabels();
+        var labelCount = svl.canvas.getNumLabels();
 
         if (1 - completionRate < 0.01) {
             if (labelCount > 0) {
@@ -3275,15 +3424,11 @@ function Form ($, params) {
     return self;
 }
 
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 9/1/13
- * Time: 4:07 PM
- * To change this template use File | Settings | File Templates.
- */
-var svw = svw || {};
+var svl = svl || {};
 
+/**
+ * @memberof svl
+  */
 function GoldenInsertion (param, $) {
     var oPublic = {
         className: 'GoldenInsertion'
@@ -3329,8 +3474,8 @@ function GoldenInsertion (param, $) {
 
     function clickOK () {
         // This is a callback function that is invoked when a user clicked an OK button on the final message.
-        if ('form' in svw && svw.form) {
-            svw.form.goldenInsertionSubmit();
+        if ('form' in svl && svl.form) {
+            svl.form.goldenInsertionSubmit();
         } else {
             throw oPublic.className + ": Cannnot submit without a Form object.";
         }
@@ -3349,11 +3494,11 @@ function GoldenInsertion (param, $) {
 
     function reviseFalseNegative (label) {
         // This method sets the camera angle to a false negative label and asks a user to label it.
-        if (('canvas' in svw && svw.canvas) &&
-            ('map' in svw && svw.map)) {
-            svw.tracker.push('GoldenInsertion_ReviseFalseNegative');
+        if (('canvas' in svl && svl.canvas) &&
+            ('map' in svl && svl.map)) {
+            svl.tracker.push('GoldenInsertion_ReviseFalseNegative');
             var labelId = label.getLabelId();
-            var systemLabels = svw.canvas.getSystemLabels(true);
+            var systemLabels = svl.canvas.getSystemLabels(true);
             var systemLabelIndex;
             var systemLabelsLength = systemLabels.length;
 
@@ -3384,16 +3529,16 @@ function GoldenInsertion (param, $) {
                 status.boxMessage = "You did not label this <b>missing curb ramp</b>. Please draw an outline around it.";
             }
 
-            svw.messageBox.hide();
-            svw.map.setPov(pov, properties.cameraMovementDuration, function () {
+            svl.messageBox.hide();
+            svl.map.setPov(pov, properties.cameraMovementDuration, function () {
                 status.currentLabel = label;
                 showMessage();
                 //
                 // Automatically switch to the CurbRamp or NoCurbRamp labeling mode based on the given label type.
                 if (labelType === 'CurbRamp') {
-                    svw.ribbon.modeSwitch('CurbRamp');
+                    svl.ribbon.modeSwitch('CurbRamp');
                 } else if (labelType === 'NoCurbRamp') {
-                    svw.ribbon.modeSwitch('NoCurbRamp');
+                    svl.ribbon.modeSwitch('NoCurbRamp');
                 }
             });
             var blue = 'rgba(0,0,255, 0.5)';
@@ -3406,13 +3551,13 @@ function GoldenInsertion (param, $) {
         if (!overlap || typeof overlap !== "number") {
             overlap = 0;
         }
-        if (('canvas' in svw && svw.canvas) &&
-            ('map' in svw && svw.map)) {
-            svw.tracker.push('GoldenInsertion_ReviseFalsePositive');
+        if (('canvas' in svl && svl.canvas) &&
+            ('map' in svl && svl.map)) {
+            svl.tracker.push('GoldenInsertion_ReviseFalsePositive');
             var labelId = label.getLabelId();
-            var userLabels = svw.canvas.getUserLabels(true);
+            var userLabels = svl.canvas.getUserLabels(true);
             var userLabelIndex;
-            var userLabelsLength = svw.canvas.getUserLabelCount();
+            var userLabelsLength = svl.canvas.getUserLabelCount();
 
             //
             // Find a reference to the right user label
@@ -3468,8 +3613,8 @@ function GoldenInsertion (param, $) {
             // Ask an user to delete the label that is wrong.
             // Keep checking if the user deleted the label or not by counting the number of user labels.
             // Move on once the user have corrected the mistake.
-            svw.messageBox.hide();
-            svw.map.setPov(pov, properties.cameraMovementDuration, function () {
+            svl.messageBox.hide();
+            svl.map.setPov(pov, properties.cameraMovementDuration, function () {
                 status.currentLabel = label;
                 showMessage();
             });
@@ -3482,13 +3627,13 @@ function GoldenInsertion (param, $) {
     function reviewLabels () {
         // Deprecated. Use reviewLabels2
         // This method reviews if user provided labels align well with system provided (golden/ground truth) labels.
-        // This method extract system labels and user labels from svw.canvas, then compares overlap.
+        // This method extract system labels and user labels from svl.canvas, then compares overlap.
         // Finally it returns the number of mistakes identified.
-        if (('canvas' in svw && svw.canvas) &&
-            ('form' in svw && svw.form) &&
-            ('map' in svw && svw.map)) {
-            var userLabels = svw.canvas.getLabels('user');
-            var systemLabels = svw.canvas.getLabels('system');
+        if (('canvas' in svl && svl.canvas) &&
+            ('form' in svl && svl.form) &&
+            ('map' in svl && svl.map)) {
+            var userLabels = svl.canvas.getLabels('user');
+            var systemLabels = svl.canvas.getLabels('system');
             var userLabelIndex;
             var systemLabelIndex;
 
@@ -3502,7 +3647,7 @@ function GoldenInsertion (param, $) {
                 return !label.isDeleted() && label.isVisible();
             });
 
-            var userLabelsLength = svw.canvas.getUserLabelCount();
+            var userLabelsLength = svl.canvas.getUserLabelCount();
             var systemLabelsLength = systemLabels.length;
             var falseNegativeLabels = []; // This array stores ids of missed system labels.
             var falsePositiveLabels = []; // This array stores ids of false user labels.
@@ -3589,7 +3734,7 @@ function GoldenInsertion (param, $) {
                 var messageBoxY = 320;
                 var width = 720;
                 var height = null;
-                svw.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
+                svl.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
                 $("#GoldenInsertionOkButton").bind('click', clickOK);
                 return 0;
             }
@@ -3599,14 +3744,14 @@ function GoldenInsertion (param, $) {
 
     function reviewLabels2 () {
         // This method reviews if user provided labels align well with system provided (golden/ground truth) labels.
-        // This method extract system labels and user labels from svw.canvas, then compares overlap.
-        if (('canvas' in svw && svw.canvas) &&
-            ('form' in svw && svw.form) &&
-            ('map' in svw && svw.map) &&
-            ('panorama' in svw && svw.panorama)) {
-            svw.tracker.push('GoldenInsertion_ReviewLabels');
-            var userLabels = svw.canvas.getLabels('user');
-            var systemLabels = svw.canvas.getLabels('system');
+        // This method extract system labels and user labels from svl.canvas, then compares overlap.
+        if (('canvas' in svl && svl.canvas) &&
+            ('form' in svl && svl.form) &&
+            ('map' in svl && svl.map) &&
+            ('panorama' in svl && svl.panorama)) {
+            svl.tracker.push('GoldenInsertion_ReviewLabels');
+            var userLabels = svl.canvas.getLabels('user');
+            var systemLabels = svl.canvas.getLabels('system');
             var allLabels = [];
             var userLabelIndex;
             var systemLabelIndex;
@@ -3632,7 +3777,7 @@ function GoldenInsertion (param, $) {
             });
             var allLabels = _userLabels.concat(_systemLabels);
             allLabels = allLabels.map(function (label) {
-                var currentHeading = svw.panorama.getPov().heading;
+                var currentHeading = svl.panorama.getPov().heading;
                 var labelHeading = label.getLabelPov().heading; //label.//label.getProperty("panoramaHeading");
                 var weight = 10; // Add a weight to system labels so they tend to be corrected after correcting user labels.
                 label.relativeHeading = parseInt((labelHeading - currentHeading + 360) % 360);
@@ -3739,7 +3884,7 @@ function GoldenInsertion (param, $) {
             var messageBoxY = 320;
             var width = 700;
             var height = null;
-            svw.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
+            svl.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
             $("#GoldenInsertionOkButton").bind('click', clickOK);
             return;
         }
@@ -3757,7 +3902,7 @@ function GoldenInsertion (param, $) {
         var boundingbox = status.currentLabel.getBoundingBox();
         var messageBoxX = boundingbox.x + boundingbox.width + 50;
         var messageBoxY = boundingbox.y + boundingbox.height / 2 + 60;
-        svw.messageBox.setMessage(status.boxMessage).setPosition(messageBoxX, messageBoxY).show();
+        svl.messageBox.setMessage(status.boxMessage).setPosition(messageBoxX, messageBoxY).show();
 
         //
         // Show a "click here" message and bind events to mode switch buttons.
@@ -3785,9 +3930,9 @@ function GoldenInsertion (param, $) {
         var messageBoxY = 320;
         var width = 720;
         var height = null;
-        svw.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
+        svl.messageBox.setMessage(message).setPosition(messageBoxX, messageBoxY, width, height, true).show();
         $("#GoldenInsertionOkButton").bind('click', function () {
-            svw.messageBox.hide();
+            svl.messageBox.hide();
             if ("overlap" in params) {
                 callback(params.label, params.overlap);
             } else {
@@ -3834,7 +3979,7 @@ function GoldenInsertion (param, $) {
     return oPublic;
 }
 
-svw.formatRecordsToGoldenLabels = function (records) {
+svl.formatRecordsToGoldenLabels = function (records) {
     // This method takes records from database and format it into labels that the Canvas object can read.
     var i;
     var goldenLabels = {};
@@ -3915,16 +4060,14 @@ svw.formatRecordsToGoldenLabels = function (records) {
     return ret;
 };
 
-svw.formatRecordsToLabels = svw.formatRecordsToGoldenLabels;
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 3/15/13
- * Time: 9:08 PM
- * To change this template use File | Settings | File Templates.
- */
-var svw = svw || {};
+svl.formatRecordsToLabels = svl.formatRecordsToGoldenLabels;
 
+var svl = svl || {};
+
+/**
+ * @memberof svl
+ * @module
+ */
 function Keyboard ($) {
     var oPublic = {
             className : 'Keyboard'
@@ -3966,8 +4109,8 @@ function Keyboard ($) {
     function documentKeyDown(e) {
         // The callback method that is triggered with a keyUp event.
         if (!status.focusOnTextField) {
-          if ('tracker' in svw) {
-            svw.tracker.push('KeyDown', {'keyCode': e.keyCode});
+          if ('tracker' in svl) {
+            svl.tracker.push('KeyDown', {'keyCode': e.keyCode});
           }
             switch (e.keyCode) {
                 case 16:
@@ -3983,8 +4126,8 @@ function Keyboard ($) {
 
         // This is a callback method that is triggered when a keyDown event occurs.
         if (!status.focusOnTextField) {
-          if ('tracker' in svw) {
-            svw.tracker.push('KeyUp', {'keyCode': e.keyCode});
+          if ('tracker' in svl) {
+            svl.tracker.push('KeyUp', {'keyCode': e.keyCode});
           }
             switch (e.keyCode) {
                 case 16:
@@ -3993,31 +4136,31 @@ function Keyboard ($) {
                     break;
                 case 27:
                     // "Escape"
-                    svw.canvas.cancelDrawing();
+                    svl.canvas.cancelDrawing();
                     break;
                 case 67:
                     // "c" for CurbRamp. Switch the mode to the CurbRamp labeling mode.
-                    svw.ribbon.modeSwitchClick("CurbRamp");
+                    svl.ribbon.modeSwitchClick("CurbRamp");
                     break
                 case 69:
                     // "e" for Explore. Switch the mode to Walk (camera) mode.
-                    svw.ribbon.modeSwitchClick("Walk");
+                    svl.ribbon.modeSwitchClick("Walk");
                     break;
                 case 77:
                     // "m" for MissingCurbRamp. Switch the mode to the MissingCurbRamp labeling mode.
-                    svw.ribbon.modeSwitchClick("NoCurbRamp");
+                    svl.ribbon.modeSwitchClick("NoCurbRamp");
                     break;
                 case 90:
                     // "z" for zoom. By default, it will zoom in. If "shift" is down, it will zoom out.
                     if (status.shiftDown) {
                         // Zoom out
-                        if ("zoomControl" in svw) {
-                            svw.zoomControl.zoomOut();
+                        if ("zoomControl" in svl) {
+                            svl.zoomControl.zoomOut();
                         }
                     } else {
                         // Zoom in
-                        if ("zoomControl" in svw)
-                            svw.zoomControl.zoomIn();
+                        if ("zoomControl" in svl)
+                            svl.zoomControl.zoomIn();
                     }
             }
         }
@@ -4082,11 +4225,13 @@ function Keyboard ($) {
     return oPublic;
 }
 
-var svw = svw || {}; // Street View Walker namespace.
+var svl = svl || {};
 
-////////////////////////////////////////////////////////////////////////////////
-// Label class
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * Label class
+ * @constructor
+ * @memberof svl
+ */
 function Label (pathIn, params) {
     var oPublic = {
         className: 'Label'
@@ -4361,14 +4506,14 @@ function Label (pathIn, params) {
                     for (i = 0; i < len; i++) {
                         points[i].setFillStyle(fillStyle);
                     }
-                    svw.canvas.clear().render2();
+                    svl.canvas.clear().render2();
                 } else {
                     highlighted = true;
                     path.setFillStyle(fillStyleHighlight);
                     for (i = 0; i < len; i++) {
                         points[i].setFillStyle(fillStyleHighlight);
                     }
-                    svw.canvas.clear().render2();
+                    svl.canvas.clear().render2();
                     numberOfBlinks -= 1;
                 }
             } else {
@@ -4377,11 +4522,11 @@ function Label (pathIn, params) {
                     for (i = 0; i < len; i++) {
                         points[i].setFillStyle(fillStyle);
                     }
-                    svw.canvas.clear().render2();
+                    svl.canvas.clear().render2();
                 }
 
                 oPublic.setAlpha(0.05);
-                svw.canvas.clear().render2();
+                svl.canvas.clear().render2();
                 window.clearInterval(interval);
             }
         }, 500);
@@ -4405,8 +4550,8 @@ function Label (pathIn, params) {
             fillStyle = 'rgba(200,200,200,0.5)';
         } else {
             // fillStyle = path.getFillStyle();
-            // fillStyle = svw.util.color.changeDarknessRGBA(fillStyle, 0.9);
-            // fillStyle = svw.util.color.changeAlphaRGBA(fillStyle, 0.1);
+            // fillStyle = svl.util.color.changeDarknessRGBA(fillStyle, 0.9);
+            // fillStyle = svl.util.color.changeAlphaRGBA(fillStyle, 0.1);
             fillStyle = 'rgba(255,165,0,0.8)';
         }
         path.setFillStyle(fillStyle);
@@ -4496,18 +4641,18 @@ function Label (pathIn, params) {
         var points = oPublic.getPoints();
         var svImageXs = points.map(function(point) {return point.svImageCoordinate.x;});
 
-        if (svImageXs.max() - svImageXs.min() > (svw.svImageWidth / 2)) {
+        if (svImageXs.max() - svImageXs.min() > (svl.svImageWidth / 2)) {
             svImageXs = svImageXs.map(function (x) {
-                if (x < (svw.svImageWidth / 2)) {
-                    x += svw.svImageWidth;
+                if (x < (svl.svImageWidth / 2)) {
+                    x += svl.svImageWidth;
                 }
                 return x;
             })
-            var labelSvImageX = parseInt(svImageXs.mean(), 10) % svw.svImageWidth;
+            var labelSvImageX = parseInt(svImageXs.mean(), 10) % svl.svImageWidth;
         } else {
             var labelSvImageX = parseInt(svImageXs.mean(), 10);
         }
-        heading = parseInt((labelSvImageX / svw.svImageWidth) * 360, 10) % 360;
+        heading = parseInt((labelSvImageX / svl.svImageWidth) * 360, 10) % 360;
 
         return {
             heading: parseInt(heading, 10),
@@ -4690,7 +4835,7 @@ function Label (pathIn, params) {
         var len = points.length;
         var fill = path.getFillStyle();
 
-        fill = svw.util.color.changeAlphaRGBA(fill, 0.3);
+        fill = svl.util.color.changeAlphaRGBA(fill, 0.3);
 
         path.setFillStyle(fill);
         for (; i < len; i++) {
@@ -4866,6 +5011,13 @@ function Label (pathIn, params) {
     return oPublic;
 }
 
+var svl = svl || {};
+
+/**
+ * @memberof svl
+ * @constructor
+ */
+
 function LabeledLandmarkFeedback ($, params) {
     var self = { className : 'LabeledLandmarkFeedback' };
     var properties = {};
@@ -4882,10 +5034,10 @@ function LabeledLandmarkFeedback ($, params) {
     function _init (params) {
       //
       // Initialize the jQuery DOM elements
-      if (svw.ui && svw.ui.ribbonMenu) {
-        $labelCountCurbRamp = svw.ui.labeledLandmark.curbRamp;
-        $labelCountNoCurbRamp = svw.ui.labeledLandmark.noCurbRamp;
-        $submittedLabelMessage = svw.ui.labeledLandmark.submitted;
+      if (svl.ui && svl.ui.ribbonMenu) {
+        $labelCountCurbRamp = svl.ui.labeledLandmark.curbRamp;
+        $labelCountNoCurbRamp = svl.ui.labeledLandmark.noCurbRamp;
+        $submittedLabelMessage = svl.ui.labeledLandmark.submitted;
 
         $labelCountCurbRamp.html(0);
         $labelCountNoCurbRamp.html(0);
@@ -4900,7 +5052,7 @@ function LabeledLandmarkFeedback ($, params) {
         // This method takes labelCount object that holds label names with
         // corresponding label counts. This function sets the label counts
         // that appears in the feedback window.
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           $labelCountCurbRamp.html(labelCount['CurbRamp']);
           $labelCountNoCurbRamp.html(labelCount['NoCurbRamp']);
         }
@@ -4912,7 +5064,7 @@ function LabeledLandmarkFeedback ($, params) {
         if (!param) {
             return this;
         }
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           if ('message' in param) {
               $submittedLabelMessage.html(message);
           } else if ('numCurbRampLabels' in param && 'numMissingCurbRampLabels' in param) {
@@ -4931,9 +5083,8 @@ function LabeledLandmarkFeedback ($, params) {
     return self;
 }
 
-// Todo: Kotaro should move all the core constants to this file.
-
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 
 function Main ($, param) {
@@ -4947,33 +5098,33 @@ function Main ($, param) {
     function _init (param) {
       // Instantiate objects.
       param = param || {};
-      svw.ui = new UI($);
-      svw.tracker = new Tracker();
-      svw.keyboard = new Keyboard($);
-      svw.canvas = new Canvas($);
-      svw.form = new Form($, param.form);
-      svw.examples = undefined
-      svw.overlayMessageBox = new OverlayMessageBox($);
-      svw.missionDescription = new MissionDescription($, param.missionDescription);
-      svw.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
-      svw.qualificationBadges = undefined;
-      svw.progressFeedback = new ProgressFeedback($);
-      svw.actionStack = new ActionStack($);
-      svw.ribbon = new RibbonMenu($);
-      svw.messageBox = new MessageBox($);
-      svw.zoomControl = new ZoomControl($);
-      svw.tooltip = undefined;
-      svw.onboarding = undefined;
-      svw.progressPov = new ProgressPov($);
+      svl.ui = new UI($);
+      svl.tracker = new Tracker();
+      svl.keyboard = new Keyboard($);
+      svl.canvas = new Canvas($);
+      svl.form = new Form($, param.form);
+      svl.examples = undefined
+      svl.overlayMessageBox = new OverlayMessageBox($);
+      svl.missionDescription = new MissionDescription($, param.missionDescription);
+      svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
+      svl.qualificationBadges = undefined;
+      svl.progressFeedback = new ProgressFeedback($);
+      svl.actionStack = new ActionStack($);
+      svl.ribbon = new RibbonMenu($);
+      svl.messageBox = new MessageBox($);
+      svl.zoomControl = new ZoomControl($);
+      svl.tooltip = undefined;
+      svl.onboarding = undefined;
+      svl.progressPov = new ProgressPov($);
 
 
-      svw.form.disableSubmit();
-      svw.tracker.push('TaskStart');
+      svl.form.disableSubmit();
+      svl.tracker.push('TaskStart');
       //
       // Set map parameters and instantiate it.
       var mapParam = {};
-      mapParam.canvas = svw.canvas;
-      mapParam.overlayMessageBox = svw.overlayMessageBox;
+      mapParam.canvas = svl.canvas;
+      mapParam.overlayMessageBox = svl.overlayMessageBox;
 
       var SVLat;
       var SVLng;
@@ -4993,9 +5144,9 @@ function Main ($, param) {
       taskCompleted = totalTaskCount - taskRemaining;
       currentProgress = taskCompleted / totalTaskCount;
 
-      svw.form.setTaskRemaining(taskRemaining);
-      svw.form.setTaskDescription('TestTask');
-      svw.form.setTaskPanoramaId(panoId);
+      svl.form.setTaskRemaining(taskRemaining);
+      svl.form.setTaskDescription('TestTask');
+      svl.form.setTaskPanoramaId(panoId);
       SVLat = parseFloat(38.894799); // Todo
       SVLng = parseFloat(-77.021906); // Todo
       currentProgress = parseFloat(currentProgress);
@@ -5011,25 +5162,25 @@ function Main ($, param) {
       nearbyPanoIds = [mapParam.taskPanoId];
       mapParam.availablePanoIds = nearbyPanoIds;
 
-      svw.missionDescription.setCurrentStatusDescription('Your mission is to ' +
+      svl.missionDescription.setCurrentStatusDescription('Your mission is to ' +
           '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
-      svw.progressFeedback.setProgress(currentProgress);
-      svw.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
+      svl.progressFeedback.setProgress(currentProgress);
+      svl.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
           " out of " + totalTaskCount + ".");
 
       if (isFirstTask) {
-          svw.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
-          svw.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
+          svl.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
+          svl.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
               "Now the actual task begins. Click OK to start the task.");
-          svw.messageBox.appendOKButton();
-          svw.messageBox.show();
+          svl.messageBox.appendOKButton();
+          svl.messageBox.show();
       } else {
-          svw.messageBox.hide();
+          svl.messageBox.hide();
       }
 
       // Instantiation
-      svw.map = new Map(mapParam);
-      svw.map.setStatus('hideNonavailablePanoLinks', true);
+      svl.map = new Map(mapParam);
+      svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
 
     ////////////////////////////////////////
@@ -5040,6 +5191,9 @@ function Main ($, param) {
     return self;
 }
 
+var svl = svl || {};
+var panorama;
+svl.panorama = panorama;
 
 ////////////////////////////////////////
 // Street View Global functions that can
@@ -5047,27 +5201,25 @@ function Main ($, param) {
 ////////////////////////////////////////
 // Get the camera point-of-view (POV)
 // http://www.geocodezip.com/v3_Streetview_lookAt.html?lat=34.016673&lng=-118.501322&zoom=18&type=k
-var svw = svw || {};
-var panorama;
-svw.panorama = panorama;
+
 
 //
 // Helper functions
 //
 function getPanoId() {
-    if (svw.panorama) {
-        var panoId = svw.panorama.getPano();
+    if (svl.panorama) {
+        var panoId = svl.panorama.getPano();
         return panoId;
     } else {
         throw 'getPanoId() (in Map.js): panorama not defined.'
     }
 }
-svw.getPanoId = getPanoId;
+svl.getPanoId = getPanoId;
 
 
 function getPosition() {
-    if (svw.panorama) {
-        var pos = svw.panorama.getPosition();
+    if (svl.panorama) {
+        var pos = svl.panorama.getPosition();
         if (pos) {
             var ret = {
                 'lat' : pos.lat(),
@@ -5079,12 +5231,12 @@ function getPosition() {
         throw 'getPosition() (in Map.js): panorama not defined.';
     }
 }
-svw.getPosition = getPosition;
+svl.getPosition = getPosition;
 
 
 function getPOV() {
-    if (svw.panorama) {
-        var pov = svw.panorama.getPov();
+    if (svl.panorama) {
+        var pov = svl.panorama.getPov();
 
         // Pov can be less than 0. So adjust it.
         while (pov.heading < 0) {
@@ -5100,18 +5252,18 @@ function getPOV() {
         throw 'getPOV() (in Map.js): panoarama not defined.';
     }
 }
-svw.getPOV = getPOV;
+svl.getPOV = getPOV;
 
 
 function getLinks () {
-    if (svw.panorama) {
-        var links = svw.panorama.getLinks();
+    if (svl.panorama) {
+        var links = svl.panorama.getLinks();
         return links;
     } else {
         throw 'getLinks() (in Map.js): panorama not defined.';
     }
 }
-svw.getLinks = getLinks;
+svl.getLinks = getLinks;
 
 //
 // Fog related variables.
@@ -5123,16 +5275,16 @@ var previousPoints = [];
 var radius = .1;
 var isNotfirst = 0;
 var paths;
-svw.fog = undefined;;
+svl.fog = undefined;;
 var au = [];
 var pty = [];
 //au = adjustFog(fog, current.lat(), current.lng(), radius);
 var polys = [];
 
 
-//
-// Map Class Constructor
-//
+/**
+ * @memberof svl
+ */
 function Map (params) {
     var self = {className: 'Map'};
     var canvas;
@@ -5319,23 +5471,23 @@ function Map (params) {
         }
 
         var panoCanvas = document.getElementById('pano');
-        svw.panorama = new google.maps.StreetViewPanorama(panoCanvas,panoramaOptions);
-        svw.panorama.set('addressControl', false);
-        svw.panorama.set('clickToGo', false);
-        svw.panorama.set('disableDefaultUI', true);
-        svw.panorama.set('linksControl', true);
-        svw.panorama.set('navigationControl', false);
-        svw.panorama.set('panControl', false);
-        svw.panorama.set('zoomControl', false);
+        svl.panorama = new google.maps.StreetViewPanorama(panoCanvas,panoramaOptions);
+        svl.panorama.set('addressControl', false);
+        svl.panorama.set('clickToGo', false);
+        svl.panorama.set('disableDefaultUI', true);
+        svl.panorama.set('linksControl', true);
+        svl.panorama.set('navigationControl', false);
+        svl.panorama.set('panControl', false);
+        svl.panorama.set('zoomControl', false);
 
         properties.initialPanoId = params.taskPanoId;
-        $canvas = svw.ui.map.canvas;
-        $divLabelDrawingLayer = svw.ui.map.drawingLayer;
-        $divPano = svw.ui.map.pano;
-        $divStreetViewHolder = svw.ui.map.streetViewHolder;
-        $divViewControlLayer = svw.ui.map.viewControlLayer;
-        $spanModeSwitchWalk = svw.ui.map.modeSwitchWalk;
-        $spanModeSwitchDraw = svw.ui.map.modeSwitchDraw;
+        $canvas = svl.ui.map.canvas;
+        $divLabelDrawingLayer = svl.ui.map.drawingLayer;
+        $divPano = svl.ui.map.pano;
+        $divStreetViewHolder = svl.ui.map.streetViewHolder;
+        $divViewControlLayer = svl.ui.map.viewControlLayer;
+        $spanModeSwitchWalk = svl.ui.map.modeSwitchWalk;
+        $spanModeSwitchDraw = svl.ui.map.modeSwitchDraw;
 
         // Set so the links to panoaramas that are not listed on availablePanoIds will be removed
         status.availablePanoIds = params.availablePanoIds;
@@ -5349,24 +5501,24 @@ function Map (params) {
 
         // Add listeners to the SV panorama
         // https://developers.google.com/maps/documentation/javascript/streetview#StreetViewEvents
-        google.maps.event.addListener(svw.panorama, "pov_changed", povUpdated);
-        google.maps.event.addListener(svw.panorama, "position_changed", povUpdated);
-        google.maps.event.addListener(svw.panorama, "pano_changed", updateMap);
+        google.maps.event.addListener(svl.panorama, "pov_changed", povUpdated);
+        google.maps.event.addListener(svl.panorama, "position_changed", povUpdated);
+        google.maps.event.addListener(svl.panorama, "pano_changed", updateMap);
 
         // Connect the map view and panorama view
-        map.setStreetView(svw.panorama);
+        map.setStreetView(svl.panorama);
 
         // Set it to walking mode initially.
-        google.maps.event.addListenerOnce(svw.panorama, "pano_changed", self.modeSwitchWalkClick);
+        google.maps.event.addListenerOnce(svl.panorama, "pano_changed", self.modeSwitchWalkClick);
 
         streetViewInit = setInterval(initStreetView, 100);
 
         //
         // Set the fog parameters
         // Comment out to disable the fog feature.
-        if ("onboarding" in svw &&
-            svw.onboarding &&
-            svw.onboarding.className === "Onboarding_LabelingCurbRampsDifficultScene") { //"zoomViewAngles" in params) {
+        if ("onboarding" in svl &&
+            svl.onboarding &&
+            svl.onboarding.className === "Onboarding_LabelingCurbRampsDifficultScene") { //"zoomViewAngles" in params) {
             fogParam.zoomViewAngles = [Math.PI / 2, Math.PI / 4, Math.PI / 8];
         }
         fogParam.interval = setInterval(initFog, 250);
@@ -5419,12 +5571,12 @@ function Map (params) {
     }
 
     function fogUpdate () {
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 
         if (pov) {
             var heading = pov.heading;
             var dir = heading * (Math.PI / 180);
-            svw.fog.updateFromPOV(current, radius, dir, Math.PI/2);
+            svl.fog.updateFromPOV(current, radius, dir, Math.PI/2);
         }
         return;
     }
@@ -5471,8 +5623,8 @@ function Map (params) {
             fogParam.center = current;
             fogParam.radius = 200;
 
-            current = svw.panorama.getPosition();
-            svw.fog = new Fog(map, fogParam);
+            current = svl.panorama.getPosition();
+            svl.fog = new Fog(map, fogParam);
             fogSet = true;
             window.clearInterval(fogParam.interval);
             fogUpdate();
@@ -5494,29 +5646,29 @@ function Map (params) {
 
     function povUpdated () {
         // This is a callback function that is fired when pov is changed
-        if (svw.canvas) {
+        if (svl.canvas) {
             var latlng = getPosition();
-            var heading = svw.getPOV().heading;
+            var heading = svl.getPOV().heading;
 
-            svw.canvas.clear();
+            svl.canvas.clear();
 
-            if (status.currentPanoId !== svw
+            if (status.currentPanoId !== svl
               .getPanoId()) {
-            	svw.canvas.setVisibilityBasedOnLocation('visible', svw.getPanoId());
+            	svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
             }
-            status.currentPanoId = svw.getPanoId();
+            status.currentPanoId = svl.getPanoId();
 
 
             if (properties.mode === 'Evaluation') {
                 myTables.updateCanvas();
             }
-            svw.canvas.render2();
+            svl.canvas.render2();
         }
 
 
         // Sean & Vicki Fog code
-        if (fogMode && "fog" in svw) {
-            current = svw.panorama.getPosition();
+        if (fogMode && "fog" in svl) {
+            current = svl.panorama.getPosition();
             if (current) {
                 if (!fogSet) {
 
@@ -5610,17 +5762,17 @@ function Map (params) {
 
     function updateMap () {
         // This function updates the map pane.
-        if (svw.panorama) {
-            var panoramaPosition = svw.panorama.getPosition();
+        if (svl.panorama) {
+            var panoramaPosition = svl.panorama.getPosition();
             map.setCenter(panoramaPosition);
 
-            if (svw.canvas) {
-                svw.canvas.clear();
-                svw.canvas.setVisibilityBasedOnLocation('visible', svw.getPanoId());
+            if (svl.canvas) {
+                svl.canvas.clear();
+                svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
                 if (properties.mode === 'Evaluation') {
                     myTables.updateCanvas();
                 }
-                svw.canvas.render2();
+                svl.canvas.render2();
             }
 
             if (fogSet) {
@@ -5633,8 +5785,8 @@ function Map (params) {
 
     function updatePov (dx, dy) {
         // Update POV of Street View as a user drag a mouse cursor.
-        if (svw.panorama) {
-            var pov = svw.panorama.getPov(),
+        if (svl.panorama) {
+            var pov = svl.panorama.getPov(),
                 alpha = 0.25;
 
             pov.heading -= alpha * dx;
@@ -5672,7 +5824,7 @@ function Map (params) {
             //
             // Set the property this object. Then update the Street View image
             properties.panoramaPov = pov;
-            svw.panorama.setPov(pov);
+            svl.panorama.setPov(pov);
         } else {
             throw className + ' updatePov(): panorama not defined!';
         }
@@ -5689,7 +5841,7 @@ function Map (params) {
             // Setting a cursor
             // http://www.jaycodesign.co.nz/css/cross-browser-css-grab-cursors-for-dragging/
             try {
-                if (!svw.keyboard.isShiftDown()) {
+                if (!svl.keyboard.isShiftDown()) {
                     setViewControlLayerCursor('ClosedHand');
                     // $divViewControlLayer.css("cursor", "url(public/img/cursors/openhand.cur) 4 4, move");
                 } else {
@@ -5708,7 +5860,7 @@ function Map (params) {
                 $('svg')[0].addEventListener('click', function (e) {
                     var targetPanoId = e.target.getAttribute('pano');
                     if (targetPanoId) {
-                        svw.tracker.push('WalkTowards', {'TargetPanoId': targetPanoId});
+                        svl.tracker.push('WalkTowards', {'TargetPanoId': targetPanoId});
                     }
                 });
                 status.panoLinkListenerSet = true;
@@ -5717,7 +5869,7 @@ function Map (params) {
             }
         }
 
-        svw.tracker.push('ViewControl_MouseDown', {x: mouseStatus.leftDownX, y:mouseStatus.leftDownY});
+        svl.tracker.push('ViewControl_MouseDown', {x: mouseStatus.leftDownX, y:mouseStatus.leftDownY});
     }
 
     function viewControlLayerMouseUp (e) {
@@ -5728,13 +5880,13 @@ function Map (params) {
         mouseStatus.isLeftDown = false;
         mouseStatus.leftUpX = mouseposition(e, this).x;
         mouseStatus.leftUpY = mouseposition(e, this).y;
-        svw.tracker.push('ViewControl_MouseUp', {x:mouseStatus.leftUpX, y:mouseStatus.leftUpY});
+        svl.tracker.push('ViewControl_MouseUp', {x:mouseStatus.leftUpX, y:mouseStatus.leftUpY});
 
         if (!status.disableWalking) {
             // Setting a mouse cursor
             // http://www.jaycodesign.co.nz/css/cross-browser-css-grab-cursors-for-dragging/
             try {
-                if (!svw.keyboard.isShiftDown()) {
+                if (!svl.keyboard.isShiftDown()) {
                     setViewControlLayerCursor('OpenHand');
                     // $divViewControlLayer.css("cursor", "url(public/img/cursors/openhand.cur) 4 4, move");
                 } else {
@@ -5750,16 +5902,16 @@ function Map (params) {
         if (currTime - mouseStatus.prevMouseUpTime < 300) {
             // Double click
             // canvas.doubleClickOnCanvas(mouseStatus.leftUpX, mouseStatus.leftDownY);
-            svw.tracker.push('ViewControl_DoubleClick');
-            if (svw.keyboard.isShiftDown()) {
+            svl.tracker.push('ViewControl_DoubleClick');
+            if (svl.keyboard.isShiftDown()) {
                 // If Shift is down, then zoom out with double click.
-                svw.zoomControl.zoomOut();
-                svw.tracker.push('ViewControl_ZoomOut');
+                svl.zoomControl.zoomOut();
+                svl.tracker.push('ViewControl_ZoomOut');
             } else {
                 // If Shift is up, then zoom in wiht double click.
-                // svw.zoomControl.zoomIn();
-                svw.zoomControl.pointZoomIn(mouseStatus.leftUpX, mouseStatus.leftUpY);
-                svw.tracker.push('ViewControl_ZoomIn');
+                // svl.zoomControl.zoomIn();
+                svl.zoomControl.pointZoomIn(mouseStatus.leftUpX, mouseStatus.leftUpY);
+                svl.tracker.push('ViewControl_ZoomIn');
             }
         }
 
@@ -5780,7 +5932,7 @@ function Map (params) {
             showLinks(2000);
             if (!mouseStatus.isLeftDown) {
                 try {
-                    if (!svw.keyboard.isShiftDown()) {
+                    if (!svl.keyboard.isShiftDown()) {
                         setViewControlLayerCursor('OpenHand');
                         // $divViewControlLayer.css("cursor", "url(public/img/cursors/openhand.cur) 4 4, move");
                     } else {
@@ -5803,9 +5955,9 @@ function Map (params) {
             // If a mouse is being dragged on the control layer, move the sv image.
             var dx = mouseStatus.currX - mouseStatus.prevX;
             var dy = mouseStatus.currY - mouseStatus.prevY;
-            var pov = svw.getPOV();
+            var pov = svl.getPOV();
             var zoom = pov.zoom;
-            var zoomLevel = svw.zoomFactor[zoom];
+            var zoomLevel = svl.zoomFactor[zoom];
 
             dx = dx / (2 * zoomLevel);
             dy = dy / (2 * zoomLevel);
@@ -5820,30 +5972,30 @@ function Map (params) {
 
         //
         // Show label delete menu
-        if ('canvas' in svw && svw.canvas) {
-            var item = svw.canvas.isOn(mouseStatus.currX,  mouseStatus.currY);
+        if ('canvas' in svl && svl.canvas) {
+            var item = svl.canvas.isOn(mouseStatus.currX,  mouseStatus.currY);
             if (item && item.className === "Point") {
                 var path = item.belongsTo();
                 var selectedLabel = path.belongsTo();
 
-                svw.canvas.setCurrentLabel(selectedLabel);
-                svw.canvas.showLabelTag(selectedLabel);
-                svw.canvas.clear();
-                svw.canvas.render2();
+                svl.canvas.setCurrentLabel(selectedLabel);
+                svl.canvas.showLabelTag(selectedLabel);
+                svl.canvas.clear();
+                svl.canvas.render2();
             } else if (item && item.className === "Label") {
                 var selectedLabel = item;
-                svw.canvas.setCurrentLabel(selectedLabel);
-                svw.canvas.showLabelTag(selectedLabel);
+                svl.canvas.setCurrentLabel(selectedLabel);
+                svl.canvas.showLabelTag(selectedLabel);
             } else if (item && item.className === "Path") {
                 var label = item.belongsTo();
-                svw.canvas.clear();
-                svw.canvas.render2();
-                svw.canvas.showLabelTag(label);
+                svl.canvas.clear();
+                svl.canvas.render2();
+                svl.canvas.showLabelTag(label);
             }
             else {
                 // canvas.hideDeleteLabel();
-                svw.canvas.showLabelTag(undefined);
-                svw.canvas.setCurrentLabel(undefined);
+                svl.canvas.showLabelTag(undefined);
+                svl.canvas.setCurrentLabel(undefined);
             }
         }
 
@@ -6020,8 +6172,8 @@ function Map (params) {
     self.setPov = function (pov, duration, callback) {
         // Change the pov.
         // If a transition duration is set, smoothly change the pov over the time specified (milli-sec)
-        if (('panorama' in svw) && svw.panorama) {
-            var currentPov = svw.panorama.getPov();
+        if (('panorama' in svl) && svl.panorama) {
+            var currentPov = svl.panorama.getPov();
             var end = false;
             var interval;
 
@@ -6092,7 +6244,7 @@ function Map (params) {
                         currentPov.pitch += pitchIncrement;
                         currentPov.heading = (currentPov.heading + 360) % 360; //Math.ceil(currentPov.heading);
                         currentPov.pitch = currentPov.pitch; // Math.ceil(currentPov.pitch);
-                        svw.panorama.setPov(currentPov);
+                        svl.panorama.setPov(currentPov);
                     } else {
                         //
                         // Set the pov to adjust the zoom level. Then clear the interval.
@@ -6102,7 +6254,7 @@ function Map (params) {
                         }
                         //pov.heading = Math.ceil(pov.heading);
                         //pov.pitch = Math.ceil(pov.pitch);
-                        svw.panorama.setZoom(pov.zoom);
+                        svl.panorama.setZoom(pov.zoom);
                         window.clearInterval(interval);
                         if (callback) {
                             callback();
@@ -6112,7 +6264,7 @@ function Map (params) {
 
 
             } else {
-                svw.panorama.setPov(pov);
+                svl.panorama.setPov(pov);
             }
         }
 
@@ -6160,6 +6312,9 @@ function Map (params) {
     init(params);
     return self;
 }
+
+/** @namespace */
+var svl = svl || {};
 
 function MessageBox ($, param) {
     var self = {className: 'MessageBox'};
@@ -6245,11 +6400,11 @@ function MessageBox ($, param) {
         $divMessageBox.append(OKButton);
 
         $("#MessageBoxOkButton").on('click', function () {
-            if ('tracker' in svw && svw.tracker) {
+            if ('tracker' in svl && svl.tracker) {
                 if (message) {
-                    svw.tracker.push('MessageBox_ClickOk', {message: message});
+                    svl.tracker.push('MessageBox_ClickOk', {message: message});
                 } else {
-                    svw.tracker.push('MessageBox_ClickOk');
+                    svl.tracker.push('MessageBox_ClickOk');
                 }
             }
             $divMessageBoxHolder.css({
@@ -6287,6 +6442,9 @@ function MessageBox ($, param) {
     return self;
 }
 
+/** @namespace */
+var svl = svl || {};
+
 function MissionDescription ($, params) {
     var self = {
         className : 'MissionDescription'
@@ -6302,9 +6460,9 @@ function MissionDescription ($, params) {
     ////////////////////////////////////////////////////////////////////////////////
     function init (params) {
         // Initialize DOM elements
-        if (svw.ui && svw.ui.missinDescription) {
+        if (svl.ui && svl.ui.missinDescription) {
           // $currentStatusDescription = $(params.domIds.descriptionMessage);
-          $currentStatusDescription = svw.ui.missinDescription.description;
+          $currentStatusDescription = svl.ui.missinDescription.description;
           $currentStatusDescription.html(params.description);
         }
     }
@@ -6314,7 +6472,7 @@ function MissionDescription ($, params) {
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
     self.setCurrentStatusDescription = function (description) {
-      if (svw.ui && svw.ui.missinDescription) {
+      if (svl.ui && svl.ui.missinDescription) {
         $currentStatusDescription.html(description);
       }
       return this;
@@ -6324,8 +6482,11 @@ function MissionDescription ($, params) {
     return self;
 }
 
+/** @namespace */
+var svl = svl || {};
+
 function OverlayMessageBox ($, params) {
-    var oPublic = {
+    var self = {
             'className' : 'OverlayMessageBox'
         };
     var properties = {
@@ -6343,11 +6504,11 @@ function OverlayMessageBox ($, params) {
         // Initialization function.
         // $divOverlayMessage = $(params.domIds.OverlayMessage);
         // $divOverlayMessageBox = $(params.domIds.Holder_OverlayMessage);
-        if (svw.ui && svw.ui.overlayMessage) {
-          $divOverlayMessage = svw.ui.overlayMessage.message;
-          $divOverlayMessageBox = svw.ui.overlayMessage.box;
+        if (svl.ui && svl.ui.overlayMessage) {
+          $divOverlayMessage = svl.ui.overlayMessage.message;
+          $divOverlayMessageBox = svl.ui.overlayMessage.box;
 
-          oPublic.setMessage('Walk');
+          self.setMessage('Walk');
         }
 
     }
@@ -6355,9 +6516,9 @@ function OverlayMessageBox ($, params) {
     ////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////
-    oPublic.setMessage = function (mode, message) {
-        var instructions = svw.misc.getLabelInstructions(),
-            labelColors = svw.misc.getLabelColors();
+    self.setMessage = function (mode, message) {
+        var instructions = svl.misc.getLabelInstructions(),
+            labelColors = svl.misc.getLabelColors();
 
         if ((mode in instructions) &&
             (mode in labelColors)) {
@@ -6386,7 +6547,7 @@ function OverlayMessageBox ($, params) {
         }
     };
 
-    oPublic.setVisibility = function (val) {
+    self.setVisibility = function (val) {
         // Set the visibility to visible or hidden.
         if (val === 'visible' || val === 'hidden') {
             properties.visibility = val;
@@ -6399,10 +6560,11 @@ function OverlayMessageBox ($, params) {
     ////////////////////////////////////////
     init();
 
-    return oPublic;
+    return self;
 }
 
-var svw = svw || {}; // Street View Walker namespace.
+/** @namespace */
+var svl = svl || {};
 
 function Path (points, params) {
     // Path object constructor
@@ -6567,7 +6729,7 @@ function Path (points, params) {
         return {
           x: xMin,
           y: yMin,
-          width: (svw.svImageWidth - xMin) + xMax,
+          width: (svl.svImageWidth - xMin) + xMax,
           height: yMax - yMin,
           boundary: true
         }
@@ -6604,19 +6766,19 @@ function Path (points, params) {
         var canvasWidthInGSVImage = 3328;
         for (i = 0; i < len; i += 1) {
             if (pov.heading < 180) {
-                if (max > svw.svImageWidth - canvasWidthInGSVImage) {
+                if (max > svl.svImageWidth - canvasWidthInGSVImage) {
                     if (imCoords[i].x > canvasWidthInGSVImage) {
-                        imCoords[i].x -= svw.svImageWidth;
+                        imCoords[i].x -= svl.svImageWidth;
                     }
                 }
             } else {
                 if (min < canvasWidthInGSVImage) {
-                    if (imCoords[i].x < svw.svImageWidth - canvasWidthInGSVImage) {
-                        imCoords[i].x += svw.svImageWidth;
+                    if (imCoords[i].x < svl.svImageWidth - canvasWidthInGSVImage) {
+                        imCoords[i].x += svl.svImageWidth;
                     }
                 }
             }
-            canvasCoord = svw.gsvImageCoordinate2CanvasCoordinate(imCoords[i].x, imCoords[i].y, pov);
+            canvasCoord = svl.gsvImageCoordinate2CanvasCoordinate(imCoords[i].x, imCoords[i].y, pov);
             canvasCoords.push(canvasCoord);
         }
 
@@ -6780,14 +6942,14 @@ function Path (points, params) {
             // Check if a bounding box is on a boundary
             if (!(boundingbox1.boundary && boundingbox2.boundary)) {
                 if (boundingbox1.boundary) {
-                    boundingbox1.x = boundingbox1.x - svw.svImageWidth;
+                    boundingbox1.x = boundingbox1.x - svl.svImageWidth;
                     if (boundingbox2.x > 6000) {
-                        boundingbox2.x = boundingbox2.x - svw.svImageWidth;
+                        boundingbox2.x = boundingbox2.x - svl.svImageWidth;
                     }
                 } else if (boundingbox2.boundary) {
-                    boundingbox2.x = boundingbox2.x - svw.svImageWidth;
+                    boundingbox2.x = boundingbox2.x - svl.svImageWidth;
                     if (boundingbox1.x > 6000) {
-                        boundingbox1.x = boundingbox1.x - svw.svImageWidth;
+                        boundingbox1.x = boundingbox1.x - svl.svImageWidth;
                     }
                 }
             }
@@ -6911,7 +7073,7 @@ function Path (points, params) {
                 var r = point.getProperty('radiusInnerCircle');
                 ctx.save();
                 ctx.strokeStyle = properties.strokeStyle;
-                svw.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
+                svl.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
                 ctx.restore();
             }
         }
@@ -6985,7 +7147,9 @@ function Path (points, params) {
     return oPublic;
 }
 
-var svw = svw || {}; // Street View Walker namespace.
+/** @namespace */
+var svl = svl || {};
+
 function Point (x, y, pov, params) {
   'use strict';
     // Point object constructor.
@@ -7031,12 +7195,12 @@ function Point (x, y, pov, params) {
         //
         // Adjust the zoom level
         var zoom = pov.zoom;
-        var zoomFactor = svw.zoomFactor[zoom];
-        var svImageHeight = svw.svImageHeight;
-        var svImageWidth = svw.svImageWidth;
+        var zoomFactor = svl.zoomFactor[zoom];
+        var svImageHeight = svl.svImageHeight;
+        var svImageWidth = svl.svImageWidth;
         self.svImageCoordinate = {};
-        self.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svw.alpha_x * (x - (svw.canvasWidth / 2)) / zoomFactor);
-        self.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svw.alpha_y * (y - (svw.canvasHeight / 2)) / zoomFactor);
+        self.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svl.alpha_x * (x - (svl.canvasWidth / 2)) / zoomFactor);
+        self.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svl.alpha_y * (y - (svl.canvasHeight / 2)) / zoomFactor);
         // svImageCoordinate.x could be negative, so adjust it.
         if (self.svImageCoordinate.x < 0) {
             self.svImageCoordinate.x = self.svImageCoordinate.x + svImageWidth;
@@ -7132,8 +7296,8 @@ function Point (x, y, pov, params) {
 
         //
         // POV adjustment
-        self.canvasCoordinate = svw.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
-        return svw.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
+        self.canvasCoordinate = svl.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
+        return svl.gsvImageCoordinate2CanvasCoordinate(self.svImageCoordinate.x, self.svImageCoordinate.y, pov);
     };
 
     self.getCanvasX = getCanvasX;
@@ -7341,48 +7505,48 @@ function Point (x, y, pov, params) {
 }
 
 
-svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
+svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     // This function takes the current pov of the Street View as a parameter
     // and returns a canvas coordinate of a point (xIn, yIn).
     var x;
     var y;
     var zoom = pov.zoom;
-    var svImageWidth = svw.svImageWidth * svw.zoomFactor[zoom];
-    var svImageHeight = svw.svImageHeight * svw.zoomFactor[zoom];
+    var svImageWidth = svl.svImageWidth * svl.zoomFactor[zoom];
+    var svImageHeight = svl.svImageHeight * svl.zoomFactor[zoom];
 
-    xIn = xIn * svw.zoomFactor[zoom];
-    yIn = yIn * svw.zoomFactor[zoom];
+    xIn = xIn * svl.zoomFactor[zoom];
+    yIn = yIn * svl.zoomFactor[zoom];
 
     x = xIn - (svImageWidth * pov.heading) / 360;
-    x = x / svw.alpha_x + svw.canvasWidth / 2;
+    x = x / svl.alpha_x + svl.canvasWidth / 2;
 
     //
     // When POV is near 0 or near 360, points near the two vertical edges of
     // the SV image does not appear. Adjust accordingly.
-    var edgeOfSvImageThresh = 360 * svw.alpha_x * (svw.canvasWidth / 2) / (svImageWidth) + 10;
+    var edgeOfSvImageThresh = 360 * svl.alpha_x * (svl.canvasWidth / 2) / (svImageWidth) + 10;
 
     if (pov.heading < edgeOfSvImageThresh) {
         // Update the canvas coordinate of the point if
-        // its svImageCoordinate.x is larger than svImageWidth - alpha_x * (svw.canvasWidth / 2).
-        if (svImageWidth - svw.alpha_x * (svw.canvasWidth / 2) < xIn) {
+        // its svImageCoordinate.x is larger than svImageWidth - alpha_x * (svl.canvasWidth / 2).
+        if (svImageWidth - svl.alpha_x * (svl.canvasWidth / 2) < xIn) {
             x = (xIn - svImageWidth) - (svImageWidth * pov.heading) / 360;
-            x = x / svw.alpha_x + svw.canvasWidth / 2;
+            x = x / svl.alpha_x + svl.canvasWidth / 2;
         }
     } else if (pov.heading > 360 - edgeOfSvImageThresh) {
-        if (svw.alpha_x * (svw.canvasWidth / 2) > xIn) {
+        if (svl.alpha_x * (svl.canvasWidth / 2) > xIn) {
             x = (xIn + svImageWidth) - (svImageWidth * pov.heading) / 360;
-            x = x / svw.alpha_x + svw.canvasWidth / 2;
+            x = x / svl.alpha_x + svl.canvasWidth / 2;
         }
     }
 
     y = yIn - (svImageHeight / 2) * (pov.pitch / 90);
-    y = y / svw.alpha_y + svw.canvasHeight / 2;
+    y = y / svl.alpha_y + svl.canvasHeight / 2;
 
 
     //
     // Adjust the zoom level
     //
-    //var zoomFactor = svw.zoomFactor[zoom];
+    //var zoomFactor = svl.zoomFactor[zoom];
     //x = x * zoomFactor;
     //y = y * zoomFactor;
 
@@ -7390,13 +7554,16 @@ svw.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     return {x : x, y : y};
 }
 
-svw.zoomFactor = {
+svl.zoomFactor = {
     1: 1,
     2: 2.1,
     3: 4,
     4: 8,
     5: 16
 };
+
+/** @namespace */
+var svl = svl || {};
 
 function ProgressFeedback ($, params) {
     var self = {
@@ -7488,6 +7655,8 @@ function ProgressFeedback ($, params) {
     return self;
 }
 
+/** @namespace */
+var svl = svl || {};
 
 function ProgressPov ($, param) {
     var oPublic = {className: 'ProgressPov'};
@@ -7506,9 +7675,9 @@ function ProgressPov ($, param) {
     // Private functions
     ////////////////////////////////////////
     function _init(param) {
-        $divCurrentCompletionRate = svw.ui.progressPov.rate;
-        $divCurrentCompletionBar = svw.ui.progressPov.bar;
-        $divCurrentCompletionBarFiller = svw.ui.progressPov.filler;
+        $divCurrentCompletionRate = svl.ui.progressPov.rate;
+        $divCurrentCompletionBar = svl.ui.progressPov.bar;
+        $divCurrentCompletionBarFiller = svl.ui.progressPov.filler;
 
         //
         // Fill in the surveyed angles
@@ -7521,7 +7690,7 @@ function ProgressPov ($, param) {
             status.previousHeading = param.pov.heading;
         } else {
             try {
-                var pov = svw.getPov();
+                var pov = svl.getPov();
                 status.previousHeading = pov.heading;
             } catch (e) {
                 status.previousHeading = 0;
@@ -7631,7 +7800,7 @@ function ProgressPov ($, param) {
         try {
             if (status.currentCompletionRate < 1) {
                 var headingRange = 25;
-                var pov = svw.getPOV();
+                var pov = svl.getPOV();
                 var heading = pov.heading;
                 var headingMin = (heading - headingRange + 360) % 360;
                 var headingMax = (heading + headingRange) % 360;
@@ -7727,6 +7896,9 @@ function ProgressPov ($, param) {
     return oPublic;
 }
 
+/** @namespace */
+var svl = svl || {};
+
 function QualificationBadges ($, params) {
     var self = { className : 'QualificationBadges' };
     var properties = {
@@ -7775,7 +7947,8 @@ function QualificationBadges ($, params) {
     return self;
 }
 
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function RibbonMenu ($, params) {
     var self = {className: 'RibbonMenu'};
@@ -7814,20 +7987,20 @@ function RibbonMenu ($, params) {
         }
 
 
-        var labelColors = svw.misc.getLabelColors();
+        var labelColors = svl.misc.getLabelColors();
 
         //
         // Initialize the jQuery DOM elements
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           // $divStreetViewHolder = $("#Holder_StreetView");
 
-          $divStreetViewHolder = svw.ui.ribbonMenu.streetViewHolder;
+          $divStreetViewHolder = svl.ui.ribbonMenu.streetViewHolder;
           // $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
-          $ribbonButtonBottomLines = svw.ui.ribbonMenu.bottonBottomBorders;
+          $ribbonButtonBottomLines = svl.ui.ribbonMenu.bottonBottomBorders;
           // $ribbonConnector = $("#StreetViewLabelRibbonConnection");
-          $ribbonConnector = svw.ui.ribbonMenu.connector;
+          $ribbonConnector = svl.ui.ribbonMenu.connector;
           // $spansModeSwitches = $('span.modeSwitch');
-          $spansModeSwitches = svw.ui.ribbonMenu.buttons;
+          $spansModeSwitches = svl.ui.ribbonMenu.buttons;
 
           //
           // Initialize the color of the lines at the bottom of ribbon menu icons
@@ -7873,8 +8046,8 @@ function RibbonMenu ($, params) {
 
             //
             // Whenever the ribbon menu is clicked, cancel drawing.
-            if ('canvas' in svw && svw.canvas && svw.canvas.isDrawing()) {
-                svw.canvas.cancelDrawing();
+            if ('canvas' in svl && svl.canvas && svl.canvas.isDrawing()) {
+                svl.canvas.cancelDrawing();
             }
 
 
@@ -7882,26 +8055,26 @@ function RibbonMenu ($, params) {
             ribbonConnectorPositions = getRibbonConnectionPositions();
             borderColor = labelColors[labelType].fillStyle;
 
-            if ('map' in svw && svw.map) {
+            if ('map' in svl && svl.map) {
                 if (labelType === 'Walk') {
                     // Switch to walking mode.
                     self.setStatus('mode', 'Walk');
                     self.setStatus('selectedLabelType', undefined);
-                    if (svw.map) {
-                      svw.map.modeSwitchWalkClick();
+                    if (svl.map) {
+                      svl.map.modeSwitchWalkClick();
                     }
                 } else {
                     // Switch to labeling mode.
                     self.setStatus('mode', labelType);
                     self.setStatus('selectedLabelType', labelType);
-                    if (svw.map) {
-                      svw.map.modeSwitchLabelClick();
+                    if (svl.map) {
+                      svl.map.modeSwitchLabelClick();
                     }
                 }
             }
             // Set border color
 
-            if (svw.ui && svw.ui.ribbonMenu) {
+            if (svl.ui && svl.ui.ribbonMenu) {
               setModeSwitchBorderColors(labelType);
               setModeSwitchBackgroundColors(labelType);
               $ribbonConnector.css("left", ribbonConnectorPositions[labelType].labelRibbonConnection);
@@ -7910,8 +8083,8 @@ function RibbonMenu ($, params) {
             }
 
             // Set the instructional message
-            if (svw.overlayMessageBox) {
-                svw.overlayMessageBox.setMessage(labelType);
+            if (svl.overlayMessageBox) {
+                svl.overlayMessageBox.setMessage(labelType);
             }
         }
     }
@@ -7930,7 +8103,7 @@ function RibbonMenu ($, params) {
 
             //
             // Track the user action
-            svw.tracker.push('Click_ModeSwitch_' + labelType);
+            svl.tracker.push('Click_ModeSwitch_' + labelType);
             modeSwitch(labelType);
         }
     }
@@ -7962,7 +8135,7 @@ function RibbonMenu ($, params) {
     function setModeSwitchBackgroundColors (mode) {
         // background: -moz-linear-gradient(center top , #fff, #eee);
         // background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee));
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           var labelType;
           var labelColors;
           var borderColor;
@@ -7999,7 +8172,7 @@ function RibbonMenu ($, params) {
 
     function setModeSwitchBorderColors (mode) {
         // This method sets the border color of the ribbon menu buttons
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           var labelType, labelColors, borderColor;
           labelColors = getLabelColors();
           borderColor = labelColors[mode].fillStyle;
@@ -8041,7 +8214,7 @@ function RibbonMenu ($, params) {
     self.disableModeSwitch = function () {
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = true;
-            if (svw.ui && svw.ui.ribbonMenu) {
+            if (svl.ui && svl.ui.ribbonMenu) {
               $spansModeSwitches.css('opacity', 0.5);
             }
         }
@@ -8051,7 +8224,7 @@ function RibbonMenu ($, params) {
     self.disableLandmarkLabels = function () {
         // This function dims landmark labels and
         // also set status.disableLandmarkLabels to true
-        if (svw.ui && svw.ui.ribbonMenu) {
+        if (svl.ui && svl.ui.ribbonMenu) {
           $.each($spansModeSwitches, function (i, v) {
               var labelType = $(v).attr('val');
               if (!(labelType === 'Walk' ||
@@ -8070,7 +8243,7 @@ function RibbonMenu ($, params) {
         // This method enables mode switch.
         if (!status.lockDisableModeSwitch) {
             status.disableModeSwitch = false;
-            if (svw.ui && svw.ui.ribbonMenu) {
+            if (svl.ui && svl.ui.ribbonMenu) {
               $spansModeSwitches.css('opacity', 1);
             }
         }
@@ -8078,7 +8251,7 @@ function RibbonMenu ($, params) {
     };
 
     self.enableLandmarkLabels = function () {
-      if (svw.ui && svw.ui.ribbonMenu) {
+      if (svl.ui && svl.ui.ribbonMenu) {
         $.each($spansModeSwitches, function (i, v) {
             var labelType = $(v).attr('val');
             $(v).css('opacity', 1);
@@ -8161,13 +8334,8 @@ function RibbonMenu ($, params) {
     return self;
 }
 
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 2/25/13
- * Time: 3:28 AM
- * To change this template use File | Settings | File Templates.
- */
+/** @namespace */
+var svl = svl || {};
 
 function RightClickMenu (params) {
     var oPublic = {
@@ -8946,15 +9114,9 @@ function RightClickMenu (params) {
     init(params);
     return oPublic;
 }
-/**
- * Created with JetBrains PhpStorm.
- * User: kotaro
- * Date: 8/19/13
- * Time: 9:44 PM
- * To change this template use File | Settings | File Templates.
- */
 
-var svw = svw || {};
+/** @namespace */
+var svl = svl || {};
 
 function Tooltip ($, param) {
     var self = {className: 'Tooltip'};
@@ -8986,13 +9148,8 @@ function Tooltip ($, param) {
     return self;
 }
 
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 4/3/13
- * Time: 12:00 AM
- * To change this template use File | Settings | File Templates.
- */
+/** @namespace */
+var svl = svl || {};
 
 function Tracker () {
     var self = {className: 'Tracker'};
@@ -9164,7 +9321,7 @@ function Tracker () {
             // Initialize variables. Note you cannot get pov, panoid, or position
             // before the map and SV load.
             try {
-                pov = svw.getPOV();
+                pov = svl.getPOV();
             } catch (err) {
                 pov = {
                     heading: undefinedMsg,
@@ -9213,8 +9370,12 @@ function Tracker () {
     return self;
 }
 
-var svw = svw || {};
+var svl = svl || {};
 
+/**
+ * @memberof svl
+ * @constructor
+ */
 function UI ($, params) {
     var self = {moduleName: 'MainUI'};
     var properties = {};
@@ -9301,11 +9462,13 @@ function UI ($, params) {
     return self;
 }
 
-var svw = svw || {}; // Street View Walker namespace.
+var svl = svl || {};
 
-////////////////////////////////////////////////////////////////////////////////
-// Validator
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * Validator
+ * @memberof svl
+ * @constructor
+ */
 function Validator (param, $) {
     var oPublic = {
         'className' : 'Validator'
@@ -9439,19 +9602,19 @@ function Validator (param, $) {
         var canvasWidthInGSVImage = 3328;
         for (i = 0; i < len; i += 1) {
             if (pov.heading < 180) {
-                if (max > svw.svImageWidth - canvasWidthInGSVImage) {
+                if (max > svl.svImageWidth - canvasWidthInGSVImage) {
                     if (imCoords[i].x > canvasWidthInGSVImage) {
-                        imCoords[i].x -= svw.svImageWidth;
+                        imCoords[i].x -= svl.svImageWidth;
                     }
                 }
             } else {
                 if (min < canvasWidthInGSVImage) {
-                    if (imCoords[i].x < svw.svImageWidth - canvasWidthInGSVImage) {
-                        imCoords[i].x += svw.svImageWidth;
+                    if (imCoords[i].x < svl.svImageWidth - canvasWidthInGSVImage) {
+                        imCoords[i].x += svl.svImageWidth;
                     }
                 }
             }
-            canvasCoord = svw.gsvImageCoordinate2CanvasCoordinate(imCoords[i].x, imCoords[i].y, pov);
+            canvasCoord = svl.gsvImageCoordinate2CanvasCoordinate(imCoords[i].x, imCoords[i].y, pov);
             canvasCoords.push(canvasCoord);
         }
 
@@ -9463,7 +9626,7 @@ function Validator (param, $) {
         //
         var i;
         var len = label.points.length;
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 //        {
 //            heading: parseFloat(label.points[0].heading),
 //            pitch: parseFloat(label.points[0].pitch),
@@ -9586,9 +9749,9 @@ function Validator (param, $) {
         var pathPoints;
         var pathPointsLen;
 
-        if (svw.canvas) {
+        if (svl.canvas) {
             var showLabel = undefined;
-            canvasLabels = svw.canvas.getLabels();
+            canvasLabels = svl.canvas.getLabels();
             len = canvasLabels.length;
 
             // Decided whether currentLabel should be visible or not.
@@ -9646,8 +9809,8 @@ function Validator (param, $) {
                 }
 
             }
-            svw.canvas.clear();
-            svw.canvas.render2();
+            svl.canvas.clear();
+            svl.canvas.render2();
         } else {
             throw oPublic.className + ': highlightCurrentLabel(): canvas is not defined.';
         }
@@ -9777,7 +9940,7 @@ function Validator (param, $) {
         currentLabel.validationLabel = 'Agree';
 
 
-        // svw.validatorForm.submit(); // Debug
+        // svl.validatorForm.submit(); // Debug
 
         oPublic.validateNext();
         updateProgress();
@@ -9955,13 +10118,13 @@ function Validator (param, $) {
     oPublic.insertLabels = function (labelPoints) {
         // This method takes a label data (i.e., a set of point coordinates, label types, etc) and
         // and insert it into the labels array so the Canvas will render it
-        var labelDescriptions = svw.misc.getLabelDescriptions();
+        var labelDescriptions = svl.misc.getLabelDescriptions();
 
         var param = {};
-        param.canvasWidth = svw.canvasWidth;
-        param.canvasHeight = svw.canvasHeight;
-        param.canvasDistortionAlphaX = svw.alpha_x;
-        param.canvasDistortionAlphaY = svw.alpha_y;
+        param.canvasWidth = svl.canvasWidth;
+        param.canvasHeight = svl.canvasHeight;
+        param.canvasDistortionAlphaX = svl.alpha_x;
+        param.canvasDistortionAlphaY = svl.alpha_y;
         param.labelId = labelPoints[0].LabelId;
         param.labelType = labelPoints[0].LabelType;
         param.labelDescription = labelDescriptions[param.labelType].text;
@@ -9971,8 +10134,8 @@ function Validator (param, $) {
         param.panoramaHeading = labelPoints[0].heading;
         param.panoramaPitch = labelPoints[0].pitch;
         param.panoramaZoom = labelPoints[0].zoom;
-        param.svImageWidth = svw.svImageWidth;
-        param.svImageHeight = svw.svImageHeight;
+        param.svImageWidth = svl.svImageWidth;
+        param.svImageHeight = svl.svImageHeight;
         param.svMode = 'html4';
 
         var label = {
@@ -10027,14 +10190,14 @@ function Validator (param, $) {
         // This method changes the heading angle so the next unvalidated label will be centered
         // on the canvas.
         // 0. Wait and see whether panorama is ready
-        // 1. Check if svw.map and svw.canvas exist
+        // 1. Check if svl.map and svl.canvas exist
         // 2. Select the target label
         // 3. Adjust the SV heading angle and pitch angle so the target label will be centered.
 
-        if (!('map' in svw)) {
+        if (!('map' in svl)) {
             throw oPublic.className + ': Map is not defined.';
         }
-        if (!('canvas' in svw)) {
+        if (!('canvas' in svl)) {
             throw oPublic.className + ': Canvas is not defined.';
         }
 
@@ -10050,11 +10213,11 @@ function Validator (param, $) {
 
             if (typeof timelapse === "number" && timelapse >= 0) {
                 var changePOVDuration = 500;
-                svw.map.setPov(pov, changePOVDuration);
+                svl.map.setPov(pov, changePOVDuration);
                 highlightCurrentLabel();
                 showDialogWindow(changePOVDuration);
             } else {
-                svw.map.setPov(pov, 500);
+                svl.map.setPov(pov, 500);
                 highlightCurrentLabel();
                 showDialogWindow(500);
             }
@@ -10066,7 +10229,7 @@ function Validator (param, $) {
             if (properties.onboarding) {
                 return false;
             }
-            svw.validatorForm.submit();
+            svl.validatorForm.submit();
         }
 
         return this;
@@ -10084,15 +10247,12 @@ function Validator (param, $) {
     return oPublic;
 }
 
-/**
- * Created with JetBrains PhpStorm.
- * User: kotarohara
- * Date: 7/6/13
- * Time: 12:40 PM
- * To change this template use File | Settings | File Templates.
- */
-var svw = svw || {};
+var svl = svl || {};
 
+/** ValidationForm
+ * @memberof svl
+ * @constructor
+ */
 function ValidatorForm (param, $) {
     var oPublic = {className: 'ValidatorForm'};
     var properties = {
@@ -10120,7 +10280,7 @@ function ValidatorForm (param, $) {
     function submit () {
         // This method collects validation labels and submit the data to
         // the API specified by properties.submitURL.
-        if (!('validator' in svw) || !svw.validator) {
+        if (!('validator' in svl) || !svl.validator) {
             throw oPublic.className + ': Validator not defined.';
         }
         var taskGSVPanoId = properties.panoId;
@@ -10173,13 +10333,13 @@ function ValidatorForm (param, $) {
 
             //
             // Get interactions
-            svw.tracker.push('TaskSubmit');
-            data.userInteraction = svw.tracker.getActions();
+            svl.tracker.push('TaskSubmit');
+            data.userInteraction = svl.tracker.getActions();
 
             data.labels = [];
 
             // Format the validation labels
-            var validatorLabels = svw.validator.getLabels();
+            var validatorLabels = svl.validator.getLabels();
             len = validatorLabels.length;
             for (i = 0; i < len; i++) {
                 console.log(validatorLabels[i]);
@@ -10259,8 +10419,12 @@ function ValidatorForm (param, $) {
     init(param);
     return oPublic;
 }
-var svw = svw || {};
 
+var svl = svl || {};
+
+/**
+ * @memberof svl
+ */
 function ZoomControl ($, param) {
     var self = {
         'className' : 'ZoomControl'
@@ -10290,9 +10454,9 @@ function ZoomControl ($, param) {
         // Initialization function
 
         //if ('domIds' in param) {
-        if (svw.ui && svw.ui.zoomControl) {
-          $buttonZoomIn = svw.ui.zoomControl.zoomIn;
-          $buttonZoomOut = svw.ui.zoomControl.zoomOut;
+        if (svl.ui && svl.ui.zoomControl) {
+          $buttonZoomIn = svl.ui.zoomControl.zoomIn;
+          $buttonZoomOut = svl.ui.zoomControl.zoomOut;
           // $buttonZoomIn = ('zoomInButton' in param.domIds) ? $(param.domIds.zoomInButton) : undefined;
           // $buttonZoomOut = ('zoomOutButton' in param.domIds) ? $(param.domIds.zoomOutButton) : undefined;
         // }
@@ -10308,27 +10472,27 @@ function ZoomControl ($, param) {
 
     function buttonZoomInClick () {
         // This is a callback function for zoom-in button. This function increments a sv zoom level.
-        if ('tracker' in svw) {
-          svw.tracker.push('Click_ZoomIn');
+        if ('tracker' in svl) {
+          svl.tracker.push('Click_ZoomIn');
         }
 
         if (!status.disableZoomIn) {
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom + 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
         }
     }
 
     function buttonZoomOutClick () {
         // This is a callback function for zoom-out button. This function decrements a sv zoom level.
-        if ('traker' in svw) {
-          svw.tracker.push('Click_ZoomOut');
+        if ('traker' in svl) {
+          svl.tracker.push('Click_ZoomOut');
         }
 
         if (!status.disableZoomOut) {
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom - 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
         }
     }
 
@@ -10336,22 +10500,22 @@ function ZoomControl ($, param) {
         // This method takes a (x, y) canvas point and sets a zoom level.
         if (!status.disableZoomIn) {
             // Cancel drawing when zooming in or out.
-            if ('canvas' in svw) {
-              svw.canvas.cancelDrawing();
+            if ('canvas' in svl) {
+              svl.canvas.cancelDrawing();
             }
-            if ('panorama' in svw) {
+            if ('panorama' in svl) {
                 console.log("hi");
-                var currentPov = svw.panorama.getPov();
+                var currentPov = svl.panorama.getPov();
                 var currentZoomLevel = currentPov.zoom;
 
                 if (currentZoomLevel >= properties.maxZoomLevel) {
                     return false;
                 }
 
-                var width = svw.canvasWidth;
-                var height = svw.canvasHeight;
-                var minPitch = svw.map.getProperty('minPitch');
-                var maxPitch = svw.map.getProperty('maxPitch');
+                var width = svl.canvasWidth;
+                var height = svl.canvasHeight;
+                var minPitch = svl.map.getProperty('minPitch');
+                var maxPitch = svl.map.getProperty('maxPitch');
 
                 var zoomFactor = currentZoomLevel; // This needs to be fixed as it wouldn't work above level 3.
                 var deltaHeading = (x - (width / 2)) / width * (90 / zoomFactor); // Ugh. Hard coding.
@@ -10364,8 +10528,8 @@ function ZoomControl ($, param) {
 
                 //
                 // Adjust the pitch angle.
-                var maxPitch = svw.map.getMaxPitch();
-                var minPitch = svw.map.getMinPitch();
+                var maxPitch = svl.map.getMaxPitch();
+                var minPitch = svl.map.getMinPitch();
                 if (pov.pitch > maxPitch) {
                     pov.pitch = maxPitch;
                 } else if (pov.pitch < minPitch) {
@@ -10374,7 +10538,7 @@ function ZoomControl ($, param) {
 
                 //
                 // Adjust the pitch so it won't exceed max/min pitch.
-                svw.panorama.setPov(pov);
+                svl.panorama.setPov(pov);
                 return currentZoomLevel;
             } else {
                 return false;
@@ -10389,8 +10553,8 @@ function ZoomControl ($, param) {
         }
 
         // Cancel drawing when zooming in or out.
-        if ('canvas' in svw) {
-          svw.canvas.cancelDrawing();
+        if ('canvas' in svl) {
+          svl.canvas.cancelDrawing();
         }
 
         // Set the zoom level and change the panorama properties.
@@ -10403,7 +10567,7 @@ function ZoomControl ($, param) {
         } else {
             zoomLevel = zoomLevelIn;
         }
-        svw.panorama.setZoom(zoomLevel);
+        svl.panorama.setZoom(zoomLevel);
         return zoomLevel;
     }
 
@@ -10494,7 +10658,7 @@ function ZoomControl ($, param) {
     };
 
     self.updateOpacity = function () {
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 
         if (pov) {
             var zoom = pov.zoom;
@@ -10561,9 +10725,9 @@ function ZoomControl ($, param) {
     self.zoomIn = function () {
         // This method is called from outside this object to zoom in to a GSV image.
         if (!status.disableZoomIn) {
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom + 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
             return this;
         } else {
             return false;
@@ -10574,9 +10738,9 @@ function ZoomControl ($, param) {
         // This method is called from outside this class to zoom out from a GSV image.
         if (!status.disableZoomOut) {
             // ViewControl_ZoomOut
-            var pov = svw.panorama.getPov();
+            var pov = svl.panorama.getPov();
             setZoom(pov.zoom - 1);
-            svw.canvas.clear().render2();
+            svl.canvas.clear().render2();
             return this;
         } else {
             return false;
@@ -10590,3 +10754,1101 @@ function ZoomControl ($, param) {
 
     return self;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// General utility functions
+////////////////////////////////////////////////////////////////////////////////
+//
+// A cross-browser function to capture a mouse position
+//
+function mouseposition (e, dom) {
+    var mx, my;
+    //if(e.offsetX) {
+        // Chrome
+    //    mx = e.offsetX;
+    //    my = e.offsetY;
+    //} else {
+        // Firefox, Safari
+        mx = e.pageX - $(dom).offset().left;
+        my = e.pageY - $(dom).offset().top;
+    //}
+    return {'x': parseInt(mx, 10) , 'y': parseInt(my, 10) };
+}
+
+
+//
+// Object prototype
+// http://www.smipple.net/snippet/insin/jQuery.fn.disableTextSelection
+if (typeof Object.create !== 'function') {
+    Object.create = function (o) {
+        var F = function () {};
+        F.prototype = o;
+        return new F();
+    };
+}
+
+//
+// Trim function
+// Based on a code on: http://stackoverflow.com/questions/498970/how-do-i-trim-a-string-in-javascript
+if(typeof(String.prototype.trim) === "undefined")
+{
+    String.prototype.trim = function()
+    {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
+}
+
+//
+// Default Text
+function focusCallback() {
+    if ($(this).val() === $(this).attr('title')) {
+        /* if the current attribute is the default one, delete it. */
+        $(this).val("");
+    }
+    $(this).removeClass('defaultTextActive');
+}
+
+function blurCallback() {
+    if(!$(this).val()) {
+        /* do following if the field is empty */
+        var msg = $(this).attr('title');
+        $(this).val( msg );
+
+        $(this).addClass('defaultTextActive');
+    }
+}
+
+//
+// Based on a snipped posted by Eric Scheid ("ironclad") on November 17, 2000 at:
+// http://www.evolt.org/article/Javascript_to_Parse_URLs_in_the_Browser/17/14435/
+function getURLParameter(argName) {
+    // Get the value of one of the URL parameters.  For example, if this were called
+    // with the URL http://your.server.name/foo.html?bar=123 then getURLParameter("bar")
+    // would return the string "123".  If the parameter is not found, this will return
+    // an empty string, "".
+
+    var argString = location.search.slice(1).split('&');
+    var r = '';
+    for (var i = 0; i < argString.length; i++) {
+        if (argString[i].slice(0,argString[i].indexOf('=')) == argName) {
+            r = argString[i].slice(argString[i].indexOf('=')+1);
+            break;
+        }
+    }
+    r = (r.length > 0  ? unescape(r).split(',') : '');
+    r = (r.length == 1 ? r[0] : '')
+    return r;
+}
+
+// Array Remove - By John Resig (MIT Licensed)
+// http://stackoverflow.com/questions/500606/javascript-array-delete-elements
+Array.prototype.remove = function(from, to) {
+    // var rest = this.slice((to || from) + 1 || this.length);
+    var rest = this.slice(parseInt(to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
+
+// Array min/max
+// http://stackoverflow.com/questions/1669190/javascript-min-max-array-values
+Array.prototype.max = function() {
+    return Math.max.apply(null, this)
+};
+
+Array.prototype.min = function() {
+    return Math.min.apply(null, this)
+};
+
+Array.prototype.sum = function () {
+    return this.reduce(function(a, b) { return a + b;});
+};
+
+Array.prototype.mean = function () {
+    return this.sum() / this.length;
+};
+
+/*
+ json2.js
+ 2011-10-19
+
+ Public Domain.
+
+ NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+ See http://www.JSON.org/js.html
+ ...
+
+ Check Douglas Crockford's code for a more recent version of json2.js
+ https://github.com/douglascrockford/JSON-js/blob/master/json2.js
+ */
+if(typeof JSON!=="object"){JSON={}}(function(){"use strict";function f(e){return e<10?"0"+e:e}function quote(e){escapable.lastIndex=0;return escapable.test(e)?'"'+e.replace(escapable,function(e){var t=meta[e];return typeof t==="string"?t:"\\u"+("0000"+e.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+e+'"'}function str(e,t){var n,r,i,s,o=gap,u,a=t[e];if(a&&typeof a==="object"&&typeof a.toJSON==="function"){a=a.toJSON(e)}if(typeof rep==="function"){a=rep.call(t,e,a)}switch(typeof a){case"string":return quote(a);case"number":return isFinite(a)?String(a):"null";case"boolean":case"null":return String(a);case"object":if(!a){return"null"}gap+=indent;u=[];if(Object.prototype.toString.apply(a)==="[object Array]"){s=a.length;for(n=0;n<s;n+=1){u[n]=str(n,a)||"null"}i=u.length===0?"[]":gap?"[\n"+gap+u.join(",\n"+gap)+"\n"+o+"]":"["+u.join(",")+"]";gap=o;return i}if(rep&&typeof rep==="object"){s=rep.length;for(n=0;n<s;n+=1){if(typeof rep[n]==="string"){r=rep[n];i=str(r,a);if(i){u.push(quote(r)+(gap?": ":":")+i)}}}}else{for(r in a){if(Object.prototype.hasOwnProperty.call(a,r)){i=str(r,a);if(i){u.push(quote(r)+(gap?": ":":")+i)}}}}i=u.length===0?"{}":gap?"{\n"+gap+u.join(",\n"+gap)+"\n"+o+"}":"{"+u.join(",")+"}";gap=o;return i}}if(typeof Date.prototype.toJSON!=="function"){Date.prototype.toJSON=function(e){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(e){return this.valueOf()}}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={"\b":"\\b","	":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},rep;if(typeof JSON.stringify!=="function"){JSON.stringify=function(e,t,n){var r;gap="";indent="";if(typeof n==="number"){for(r=0;r<n;r+=1){indent+=" "}}else if(typeof n==="string"){indent=n}rep=t;if(t&&typeof t!=="function"&&(typeof t!=="object"||typeof t.length!=="number")){throw new Error("JSON.stringify")}return str("",{"":e})}}if(typeof JSON.parse!=="function"){JSON.parse=function(text,reviver){function walk(e,t){var n,r,i=e[t];if(i&&typeof i==="object"){for(n in i){if(Object.prototype.hasOwnProperty.call(i,n)){r=walk(i,n);if(r!==undefined){i[n]=r}else{delete i[n]}}}}return reviver.call(e,t,i)}var j;text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(e){return"\\u"+("0000"+e.charCodeAt(0).toString(16)).slice(-4)})}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,""))){j=eval("("+text+")");return typeof reviver==="function"?walk({"":j},""):j}throw new SyntaxError("JSON.parse")}}})()
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Browser related functions
+////////////////////////////////////////////////////////////////////////////////
+//
+// Get what browser the user is using.
+// This code was taken from an answer in the following SO page:
+// http://stackoverflow.com/questions/3303858/distinguish-chrome-from-safari-using-jquery-browser
+var userAgent = navigator.userAgent.toLowerCase();
+
+// Figure out what browser is being used
+jQuery.browser = {
+    version: (userAgent.match( /.+(?:rv|it|ra|ie|me)[\/: ]([\d.]+)/ ) || [])[1],
+    chrome: /chrome/.test( userAgent ),
+    safari: /webkit/.test( userAgent ) && !/chrome/.test( userAgent ),
+    opera: /opera/.test( userAgent ),
+    msie: /msie/.test( userAgent ) && !/opera/.test( userAgent ),
+    mozilla: /mozilla/.test( userAgent ) && !/(compatible|webkit)/.test( userAgent )
+};
+
+function getBrowser() {
+    // Return a browser name
+    var b;
+    for (b in $.browser) {
+        if($.browser[b] === true) {
+            return b;
+        };
+    }
+    return undefined;
+}
+
+function getBrowserVersion () {
+    // Return a browser version
+    return $.browser.version;
+}
+
+function getOperatingSystem () {
+    var OSName="Unknown OS";
+    if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
+    if (navigator.appVersion.indexOf("Mac")!=-1) OSName="MacOS";
+    if (navigator.appVersion.indexOf("X11")!=-1) OSName="UNIX";
+    if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
+    return OSName;
+}
+
+/** @namespace */
+var svl = svl || {};
+svl.util = svl.util || {};
+svl.util.color = {};
+
+svl.util.color.RGBToRGBA = function (rgb, alpha) {
+    if(!alpha){
+        alpha = '0.5';
+    }
+
+    var newRGBA;
+    if(rgb !== undefined) {
+         newRGBA = 'rgba(';
+         newRGBA+=rgb.substring(4,rgb.length-1)+','+alpha+')';
+    }
+    return newRGBA;
+};
+
+function changeAlphaRGBA(rgba, alpha) {
+    // This function updates alpha value of the given rgba value.
+    // Ex. if the input is rgba(200,200,200,0.5) and alpha 0.8,
+    // the out put will be rgba(200,200,200,0.8)
+    var rgbaList = rgba.replace('rgba(','').replace(')','').split(",");
+    if (rgbaList.length === 4 && !isNaN(parseInt(alpha))) {
+        var newRgba;
+        newRgba = 'rgba(' +
+            rgbaList[0].trim() + ',' +
+            rgbaList[1].trim() + ',' +
+            rgbaList[2].trim() + ',' +
+            alpha + ')';
+        return newRgba;
+    } else {
+        return rgba;
+    }
+}
+svl.util.color.changeAlphaRGBA = changeAlphaRGBA;
+
+function changeDarknessRGBA(rgba, value) {
+    // This function takes rgba and value as argumetns
+    // rgba: a string such as "rgba(10, 20, 30, 0.5)"
+    // value: a value between [0, 1]
+    var rgbaList = rgba.replace('rgba(','').replace(')','').split(",");
+
+    if (rgbaList.length === 4) {
+        var r;
+        var g;
+        var b;
+        var a;
+        var hsvList;
+        var newRgbList;
+        var newR;
+        var newG;
+        var newB;
+        var newRgba;
+        r = parseInt(rgbaList[0].trim());
+        g = parseInt(rgbaList[1].trim());
+        b = parseInt(rgbaList[2].trim());
+        a = rgbaList[3].trim();
+        hsvList = rgbToHsv(r,g,b);
+
+        newRgbList = hsvToRgb(hsvList[0],hsvList[1],value);
+        newR = parseInt(newRgbList[0]);
+        newG = parseInt(newRgbList[1]);
+        newB = parseInt(newRgbList[2]);
+        newRgba = 'rgba(' + newR + ',' +
+            newG + ',' +
+            newB + ',' +
+            a + ')';
+        return newRgba;
+    }
+    return rgba;
+}
+svl.util.color.changeDarknessRGBA = changeDarknessRGBA;
+
+/**
+ * Converts an RGB color value to HSL. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes r, g, and b are contained in the set [0, 255] and
+ * returns h, s, and l in the set [0, 1].
+ *
+ * @param   r       The red color value
+ * @param   g       The green color value
+ * @param   b       The blue color value
+ * @return  Array           The HSL representation
+ *
+ * http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+ */
+function rgbToHsl(r, g, b){
+    r /= 255, g /= 255, b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if(max == min){
+        h = s = 0; // achromatic
+    }else{
+        var d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    return [h, s, l];
+}
+svl.util.color.rgbToHsl = rgbToHsl;
+
+/**
+ * Converts an HSL color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes h, s, and l are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param     h       The hue
+ * @param     s       The saturation
+ * @param     l       The lightness
+ * @return  Array           The RGB representation
+ */
+function hslToRgb(h, s, l){
+    var r, g, b;
+
+    if(s == 0){
+        r = g = b = l; // achromatic
+    } else {
+        function hue2rgb(p, q, t){
+            if(t < 0) t += 1;
+            if(t > 1) t -= 1;
+            if(t < 1/6) return p + (q - p) * 6 * t;
+            if(t < 1/2) return q;
+            if(t < 2/3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        }
+
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return [r * 255, g * 255, b * 255];
+}
+svl.util.color.hslToRgb = hslToRgb;
+
+/**
+ * Converts an RGB color value to HSV. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+ * Assumes r, g, and b are contained in the set [0, 255] and
+ * returns h, s, and v in the set [0, 1].
+ *
+ * @param   Number  r       The red color value
+ * @param   Number  g       The green color value
+ * @param   Number  b       The blue color value
+ * @return  Array           The HSV representation
+ */
+function rgbToHsv(r, g, b){
+    r = r / 255;
+    g = g / 255;
+    b = b / 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, v = max;
+
+    var d = max - min;
+    s = max === 0 ? 0 : d / max;
+
+    if(max == min){
+        h = 0; // achromatic
+    }else{
+        switch(max){
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    return [h, s, v];
+}
+
+/**
+ * Converts an HSV color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+ * Assumes h, s, and v are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   Number  h       The hue
+ * @param   Number  s       The saturation
+ * @param   Number  v       The value
+ * @return  Array           The RGB representation
+ */
+function hsvToRgb(h, s, v){
+    var r, g, b;
+
+    var i = Math.floor(h * 6);
+    var f = h * 6 - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+
+    switch(i % 6){
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+
+    return [r * 255, g * 255, b * 255];
+}
+
+function toDegrees (angleInRadian) {
+    // This function converts the angle from radian to degree.
+    // http://stackoverflow.com/questions/9705123/how-can-i-get-sin-cos-and-tan-to-return-degrees-instead-of-radians
+    return angleInRadian * (180 / Math.PI);
+}
+
+
+function toRadians (angleInDegree) {
+    // This function converts the angle from degree to radian.
+    // http://stackoverflow.com/questions/9705123/how-can-i-get-sin-cos-and-tan-to-return-degrees-instead-of-radians
+    return angleInDegree * (Math.PI / 180);
+}
+
+
+function deltaLatLngToDegree (latLngOrigin, latLngCurr) {
+    // This function takes two points of latlon coordinates, origin and current.
+    // Returns which direction the current is relative to the origin, North begin 0 degree and the it
+    // will increase counter clockwise. For example, east is 90 degree (Wow, I need a better explanation.),
+    // south is 180 degree, west is 270 degree.
+    //
+    var deltaLat, deltaLng, theta;
+
+    deltaLat = latLngCurr.lat - latLngOrigin.lat;
+    deltaLng = latLngCurr.lng - latLngOrigin.lng;
+
+    // Math.atan()
+    // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/atan
+    if (deltaLat > 0) {
+        theta = toDegrees(Math.atan(deltaLng/deltaLat));
+    } else {
+        theta = toDegrees(Math.PI + Math.atan(deltaLng/deltaLat));
+    }
+
+    return (360 + theta) % 360;
+}
+
+
+// http://clauswitt.com/simple-statistics-in-javascript.html
+function Stats(arr) {
+    var self = this;
+    var theArray = arr || [];
+
+    //http://en.wikipedia.org/wiki/Mean#Arithmetic_mean_.28AM.29
+    self.getArithmeticMean = function() {
+        var sum = 0, length = theArray.length;
+        for(var i=0;i<length;i++) {
+            sum += theArray[i];
+        }
+        return sum/length;
+    }
+
+    //http://en.wikipedia.org/wiki/Mean#Geometric_mean_.28GM.29
+    self.getGeometricMean = function() {
+        var product = 1, length = theArray.length;
+        for(var i=0;i<length;i++) {
+            product = product * theArray[i];
+        }
+        return Math.pow(product,(1/length));
+    }
+
+    //http://en.wikipedia.org/wiki/Mean#Harmonic_mean_.28HM.29
+    self.getHarmonicMean = function() {
+        var sum = 0, length = theArray.length;
+        for(var i=0;i<length;i++) {
+            sum += (1/theArray[i]);
+        }
+        return length/sum;
+    }
+
+    //http://en.wikipedia.org/wiki/Standard_deviation
+    self.getStandardDeviation = function() {
+        var arithmeticMean = this.getArithmeticMean();
+        var sum = 0, length = theArray.length;
+        for(var i=0;i<length;i++) {
+            sum += Math.pow(theArray[i]-arithmeticMean, 2);
+        }
+        return Math.pow(sum/length, 0.5);
+    }
+
+    // Added by Kotaro
+    // http://en.wikipedia.org/wiki/Standard_error
+    self.getStandardError = function () {
+        var stdev = this.getStandardDeviation();
+        var len = theArray.length;
+        var stderr = stdev / Math.sqrt(len)
+        return stderr;
+    };
+
+
+    //http://en.wikipedia.org/wiki/Median
+    self.getMedian = function() {
+        var length = theArray.length;
+        var middleValueId = Math.floor(length/2);
+        var arr = theArray.sort(function(a, b){return a-b;});
+        return arr[middleValueId];
+    };
+
+
+    // Added by Kotaro
+    // http://stackoverflow.com/questions/1669190/javascript-min-max-array-values
+    self.getMin = function () {
+        return Math.min.apply(Math, theArray);
+    };
+
+
+    // Added by Kotaro
+    // http://stackoverflow.com/questions/1669190/javascript-min-max-array-values
+    self.getMax = function () {
+        return Math.max.apply(Math, theArray);
+    };
+
+
+    self.setArray = function(arr) {
+        theArray = arr;
+        return self;
+    }
+
+    self.getArray = function() {
+        return theArray;
+    }
+
+    return self;
+}
+
+function sleep(miliseconds) {
+    var end = false;
+}
+
+function shuffle(array) {
+    // This function returns a shuffled array.
+    // Code from http://bost.ocks.org/mike/shuffle/
+    var copy = [], n = array.length, i;
+
+    // While there remain elements to shuffle…
+    while (n) {
+
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * array.length);
+
+        // If not already shuffled, move it to the new array.
+        if (i in array) {
+            copy.push(array[i]);
+            delete array[i];
+            n--;
+        }
+    }
+
+    return copy;
+}
+
+/** @namespace */
+var svl = svl || {};
+svl.util = svl.util || {};
+svl.util.shape = {};
+
+
+function lineWithRoundHead (ctx, x1, y1, r1, x2, y2, r2, sourceFormIn, sourceStrokeStyleIn, sourceFillStyleIn, targetFormIn, targetStrokeStyleIn, targetFillStyleIn) {
+    // sourceStyle and targetStyle:
+    // - none: do not draw anything
+    // - fill: fill the circle
+    // - stroke: stroke the circle
+    // - both: stroke and fill
+    var sourceForm = 'none';
+    var targetForm = 'none';
+    var sourceStrokeStyle = sourceStrokeStyleIn ? sourceStrokeStyleIn : 'rgba(255,255,255,1)';
+    var sourceFillStyle = 'rgba(255,255,255,1)';
+    var targetStrokeStyle = 'rgba(255,255,255,1)';
+    var targetFillStyle = 'rgba(255,255,255,1)';
+    if (sourceFormIn) {
+        if (sourceFormIn !== 'none' &&
+            sourceFormIn !== 'stroke' &&
+            sourceFormIn !== 'fill' &&
+            sourceFormIn !== 'both') {
+            throw 'lineWithRoundHead(): ' + sourceFormIn + ' is not a valid input.';
+        }
+        sourceForm = sourceFormIn;
+    }
+    if (targetFormIn) {
+        if (targetFormIn !== 'none' &&
+            targetFormIn !== 'stroke' &&
+            targetFormIn !== 'fill' &&
+            targetFormIn !== 'both') {
+            throw 'lineWithRoundHead(): ' + targetFormIn + ' is not a valid input.';
+        }
+        targetForm = targetFormIn;
+    }
+    if (sourceStrokeStyleIn) {
+        sourceStrokeStyle = sourceStrokeStyleIn;
+    }
+    if (sourceFillStyleIn) {
+        sourceFillStyle = sourceFillStyleIn;
+    }
+    if (targetStrokeStyleIn) {
+        targetStrokeStyle = targetStrokeStyleIn;
+    }
+    if (targetFillStyleIn) {
+        targetFillStyle = targetFillStyleIn;
+    }
+
+    var theta = Math.atan2(y2 - y1, x2 - x1);
+    var lineXStart = x1 + r1 * Math.cos(theta);
+    var lineYStart = y1 + r1 * Math.sin(theta);
+    var lineXEnd =  x2 - r2 * Math.cos(theta);
+    var lineYEnd = y2 - r2 * Math.sin(theta);
+
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(lineXStart, lineYStart);
+    ctx.lineTo(lineXEnd, lineYEnd);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+
+    if (sourceForm !== 'none') {
+        ctx.save();
+        ctx.fillStyle = sourceFillStyle;
+        ctx.strokeStyle = sourceStrokeStyle;
+        ctx.beginPath();
+        ctx.arc(x1, y1, r1, 0, 2 * Math.PI, true);
+        if (sourceForm === 'stroke') {
+            ctx.stroke();
+        } else if (sourceForm === 'fill') {
+            ctx.fill();
+        } else if (sourceForm === 'both') {
+            ctx.fill();
+            ctx.stroke();
+        }
+        ctx.closePath();
+        ctx.restore();
+    }
+    if (targetForm !== 'none') {
+        ctx.save();
+        ctx.fillStyle = targetFillStyle;
+        ctx.strokeStyle = targetStrokeStyle;
+        ctx.beginPath();
+        ctx.arc(x2, y2, r2, 0, 2 * Math.PI, true);
+        if (targetForm === 'stroke') {
+            ctx.stroke();
+        } else if (targetForm === 'fill') {
+            ctx.fill();
+        } else if (targetForm === 'both') {
+            ctx.fill();
+            ctx.stroke();
+        }
+        ctx.closePath();
+        ctx.restore();
+    }
+    return;
+}
+svl.util.shape.lineWithRoundHead = lineWithRoundHead;
+
+/** @namespace */
+var svl = svl || {};
+svl.misc = {};
+
+
+function getHeadingEstimate(SourceLat, SourceLng, TargetLat, TargetLng) {
+    // This function takes a pair of lat/lng coordinates.
+    //
+    if (typeof SourceLat !== 'number') {
+        SourceLat = parseFloat(SourceLat);
+    }
+    if (typeof SourceLng !== 'number') {
+        SourceLng = parseFloat(SourceLng);
+    }
+    if (typeof TargetLng !== 'number') {
+        TargetLng = parseFloat(TargetLng);
+    }
+    if (typeof TargetLat !== 'number') {
+        TargetLat = parseFloat(TargetLat);
+    }
+
+    var dLng = TargetLng - SourceLng;
+    var dLat = TargetLat - SourceLat;
+
+    if (dLat === 0 || dLng === 0) {
+        return 0;
+    }
+
+    var angle = toDegrees(Math.atan(dLng / dLat));
+    //var angle = toDegrees(Math.atan(dLat / dLng));
+
+    return 90 - angle;
+}
+
+
+function getLabelCursorImagePath() {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'cursorImagePath' : undefined
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            cursorImagePath : 'img/cursors/pen.png'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            cursorImagePath : 'img/cursors/pen.png'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          cursorImagePath : 'img/cursors/pen.png'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          cursorImagePath : 'img/cursors/pen.png'
+        },
+    }
+}
+svl.misc.getLabelCursorImagePath = getLabelCursorImagePath;
+
+
+//
+// Returns image paths corresponding to each label type.
+//
+function getLabelIconImagePath(labelType) {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'iconImagePath' : undefined
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            iconImagePath : '../../img/Icon_CurbRamp.svg'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            iconImagePath : 'public/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          iconImagePath: null
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          iconImagePath: null
+        },
+        Void: {
+            id: 'Void',
+            iconImagePath : null
+        },
+        Unclear: {
+            id: 'Unclear',
+            iconImagePath : null
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_SingleLeg.png'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_TwoLegged.png'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_Column.png'
+        },
+        'StopSign_None' : {
+            'id' : 'StopSign_None',
+            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopShelter.png'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'iconImagePath' : 'public/img/icons/Icon_Bench.png'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'iconImagePath' : 'public/img/icons/Icon_TrashCan2.png'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'iconImagePath' : 'public/img/icons/Icon_Mailbox2.png'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'iconImagePath' : 'public/img/icons/Icon_OtherPoles.png'
+        }
+    }
+}
+svl.misc.getIconImagePaths = getLabelIconImagePath;
+
+
+//
+// This function is used in OverlayMessageBox.js.
+//
+function getLabelInstructions () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'instructionalText' : 'Explore mode: Find and label curb ramps at this intersection.',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            instructionalText: 'Label mode: Locate and draw an outline around the <span class="underline">curb ramp</span>',
+            textColor: 'rgba(255,255,255,1)'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            instructionalText: 'Label mode: Locate and draw an outline around where a <span class="underline">curb ramp is missing</span>',
+            textColor: 'rgba(255,255,255,1)'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          instructionalText: 'Label mode: Locate and draw an outline around a <span class="underline">obstacle in path</span>',
+          textColor: 'rgba(255,255,255,1)'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          instructionalText: 'Label mode: Locate and draw an outline around a <span class="underline">sidewalk surface problem</span>',
+          textColor: 'rgba(255,255,255,1)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">stop sign</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'instructionalText' :'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
+            'textColor' :'rgba(255,255,255,1)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus shelter</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bench</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">trash can</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">mailbox or news paper box</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of poles such as <span class="underline bold">traffic sign, traffic light, and light pole</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        }
+    }
+}
+svl.misc.getLabelInstructions = getLabelInstructions;
+
+function getRibbonConnectionPositions () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'text' : 'Walk',
+            'labelRibbonConnection' : '25px'
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            labelRibbonConnection: '112px'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            labelRibbonConnection: '188px'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          labelRibbonConnection: '264px'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          labelRibbonConnection: '340px'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'text' : 'Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'text' : 'One-leg Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'text' : 'Two-leg Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'text' : 'Column Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'text' : 'Bus Shelter',
+            'labelRibbonConnection' : '188px'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'text' : 'Bench',
+            'labelRibbonConnection' : '265px'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'text' : 'Trash Can',
+            'labelRibbonConnection' : '338px'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'labelRibbonConnection' : '411px'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'labelRibbonConnection' : '484px'
+        }
+    }
+}
+
+// Todo. Get rid of this global function.
+function getLabelDescriptions () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'text' : 'Walk'
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            text: 'Curb Ramp'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            text: 'Missing Curb Ramp'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          text: 'Obstacle in a Path'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          text: 'Surface Problem'
+        },
+        Void: {
+            id: 'Void',
+            text: 'Void'
+        },
+        Unclear: {
+            id: 'Unclear',
+            text: 'Unclear'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'text' : 'Bus Stop Sign'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'text' : 'One-leg Stop Sign'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'text' : 'Two-leg Stop Sign'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'text' : 'Column Stop Sign'
+        },
+        'StopSign_None' : {
+            'id' : 'StopSign_None',
+            'text' : 'Not provided'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'text' : 'Bus Stop Shelter'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'text' : 'Bench'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'text' : 'Trash Can / Recycle Can'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'text' : 'Mailbox / News Paper Box'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'text' : 'Traffic Sign / Pole'
+        }
+    }
+}
+svl.misc.getLabelDescriptions = getLabelDescriptions;
+
+// Todo. Get rid of this global function.
+function getLabelColors () {
+    return SidewalkColorScheme();
+}
+svl.misc.getLabelColors = getLabelColors;
+
+
+function SidewalkColorScheme () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            fillStyle: 'rgba(0, 244, 38, 0.9)'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            fillStyle: 'rgba(255, 39, 113, 0.9)'
+        },
+        Obstacle: {
+          id: 'Obstacle',
+          fillStyle: 'rgba(0, 161, 203, 0.9)'
+        },
+        SurfaceProblem: {
+          id: 'SurfaceProblem',
+          fillStyle: 'rgba(215, 0, 96, 0.9)'
+        },
+        Void: {
+            id: 'Void',
+            fillStyle: 'rgba(255, 255, 255, 0)'
+        },
+        Unclear: {
+            id: 'Unclear',
+            fillStyle: 'rgba(128, 128, 128, 0.5)'
+        }
+    }
+}
+
+//
+// http://www.colourlovers.com/business/trends/branding/7880/Papeterie_Haute-Ville_Logo
+function colorScheme2 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        CurbRamp: {
+            id: 'CurbRamp',
+            fillStyle: 'rgba(106, 230, 36, 0.9)'
+        },
+        NoCurbRamp: {
+            id: 'NoCurbRamp',
+            fillStyle: 'rgba(215, 0, 96, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(215, 0, 96, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            // 'fillStyle' : 'rgba(229, 64, 40, 0.9)' // Kind of hard to distinguish from pink
+            // 'fillStyle' : 'rgba(209, 209, 2, 0.9)' // Puke-y
+            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(97, 174, 36, 0.9)'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'fillStyle' : 'rgba(67, 113, 190, 0.9)'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'fillStyle' : 'rgba(249, 79, 101, 0.9)'
+        }
+    }
+}

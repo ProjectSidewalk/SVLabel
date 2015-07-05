@@ -8,7 +8,8 @@ module.exports = function(grunt) {
             dist: {
                 src: [
                     'lib/*.js',
-                    'src/SVLabel/*.js'
+                    'src/SVLabel/*.js',
+                    'src/SVLabel/Util/*.js'
                 ],
                 dest: 'build/SVLabel.js'
             }
