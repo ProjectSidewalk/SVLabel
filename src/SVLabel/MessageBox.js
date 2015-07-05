@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ * A MessageBox module
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function MessageBox ($, param) {
     var self = {className: 'MessageBox'};
     var OKButton = '<button id="MessageBoxOkButton" class="button" style="position: absolute; bottom: 10px; left: 10px;">OK</button>';

@@ -1,6 +1,11 @@
 var svl = svl || {};
 
 /**
+ * A form module
+ * @param $ {object} jQuery object
+ * @param params {object} Other parameters
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
  */
 function Form ($, params) {

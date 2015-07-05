@@ -1,8 +1,12 @@
 var svl = svl || {};
 
 /**
- * @memberof svl
+ *
+ * @param $
+ * @param params
+ * @returns {{moduleName: string}}
  * @constructor
+ * @memberof svl
  */
 function UI ($, params) {
     var self = {moduleName: 'MainUI'};

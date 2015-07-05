@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param points
+ * @param params
+ * @returns {{className: string, points: undefined}}
+ * @constructor
+ * @memberof svl
+ */
 function Path (points, params) {
     // Path object constructor
     // This class object holds an array of Point objects.

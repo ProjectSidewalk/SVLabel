@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function Tooltip ($, param) {
     var self = {className: 'Tooltip'};
     var properties = {};

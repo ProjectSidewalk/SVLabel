@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $ {object} jQuery object
+ * @param params {object} other parameters
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function OverlayMessageBox ($, params) {
     var self = {
             'className' : 'OverlayMessageBox'

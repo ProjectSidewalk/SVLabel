@@ -24,9 +24,12 @@ svl.getLabelCounter = function () {
 };
 
 /**
- * A Canvas module
+ * A canvas module
+ * @param $ {object} jQuery object
+ * @param param {object} Other parameters
+ * @returns {{className: string, testCases: {}}}
+ * @constructor
  * @memberof svl
- * @class
  */
 function Canvas ($, param) {
     var self = {

@@ -1,8 +1,12 @@
 var svl = svl || {};
 
 /**
- * @memberof svl
-  */
+ *
+ * @param param {object}
+ * @param $ {object} jQuery object
+ * @returns {{className: string}}
+ * @constructor
+ */
 function GoldenInsertion (param, $) {
     var oPublic = {
         className: 'GoldenInsertion'

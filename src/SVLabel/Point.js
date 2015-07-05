@@ -1,6 +1,15 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param x
+ * @param y
+ * @param pov
+ * @param params
+ * @returns {{className: string, svImageCoordinate: undefined, canvasCoordinate: undefined, originalCanvasCoordinate: undefined, pov: undefined, originalPov: undefined}}
+ * @constructor
+ * @memberof svl
+ */
 function Point (x, y, pov, params) {
   'use strict';
     // Point object constructor.
@@ -122,7 +131,7 @@ function Point (x, y, pov, params) {
     }
     function getPOV () {
         return pov;
-    };
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
@@ -194,9 +203,14 @@ function Point (x, y, pov, params) {
         } else {
             return false;
         }
-    }
+    };
 
 
+    /**
+     *
+     * @param pov
+     * @param ctx
+     */
     self.render = function (pov, ctx) {
         // Render points
         if (status.visibility === 'visible') {
@@ -271,7 +285,7 @@ function Point (x, y, pov, params) {
 
     self.setProperties = function (params) {
         // This function resets all the properties specified in params.
-        for (key in params) {
+        for (var key in params) {
             if (key in properties) {
                 properties[key] = params[key];
             }
@@ -403,7 +417,7 @@ svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
 
 
     return {x : x, y : y};
-}
+};
 
 svl.zoomFactor = {
     1: 1,

@@ -1,8 +1,11 @@
 var svl = svl || {};
 
 /**
+ * A Keyboard module
+ * @param $
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
- * @module
  */
 function Keyboard ($) {
     var oPublic = {

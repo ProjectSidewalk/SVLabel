@@ -1,7 +1,10 @@
 var svl = svl || {};
 
 /**
- * Label class
+ * A Label module.
+ * @param pathIn
+ * @param params
+ * @returns {*}
  * @constructor
  * @memberof svl
  */

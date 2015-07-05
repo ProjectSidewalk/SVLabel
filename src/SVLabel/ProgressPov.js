@@ -1,6 +1,12 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ */
 function ProgressPov ($, param) {
     var oPublic = {className: 'ProgressPov'};
     var status = {

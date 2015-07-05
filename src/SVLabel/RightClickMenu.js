@@ -1,6 +1,12 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function RightClickMenu (params) {
     var oPublic = {
         'className' : 'RightClickMenu'

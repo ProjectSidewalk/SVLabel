@@ -1,7 +1,14 @@
 /** @namespace */
 var svl = svl || {};
 
-
+/**
+ * The main module of SVLabel
+ * @param $: jQuery object
+ * @param param: other parameters
+ * @returns {{moduleName: string}}
+ * @constructor
+ * @memberof svl
+ */
 function Main ($, param) {
     var self = {moduleName: 'MainUI'};
     var properties = {};

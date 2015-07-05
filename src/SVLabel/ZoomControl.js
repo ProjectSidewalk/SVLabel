@@ -1,6 +1,11 @@
 var svl = svl || {};
 
 /**
+ *
+ * @param $ jQuery object
+ * @param param Other parameters
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
  */
 function ZoomControl ($, param) {
@@ -152,6 +157,11 @@ function ZoomControl ($, param) {
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
+    /**
+     * Disables zooming in
+     * @method
+     * @returns {self}
+     */
     self.disableZoomIn = function () {
         // Enable zoom in.
         if (!lock.disableZoomIn) {
@@ -161,7 +171,7 @@ function ZoomControl ($, param) {
             }
         }
         return this;
-    }
+    };
 
     self.disableZoomOut = function () {
         // Enable zoom out.

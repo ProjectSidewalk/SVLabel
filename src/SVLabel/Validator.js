@@ -2,8 +2,11 @@ var svl = svl || {};
 
 /**
  * Validator
- * @memberof svl
+ * @param param
+ * @param $
+ * @returns {{className: string}}
  * @constructor
+ * @memberof svl
  */
 function Validator (param, $) {
     var oPublic = {

@@ -1,6 +1,12 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ */
 function ProgressFeedback ($, params) {
     var self = {
         className : 'ProgressFeedback'

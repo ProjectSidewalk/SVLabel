@@ -1,10 +1,13 @@
 var svl = svl || {};
 
 /**
- * @memberof svl
+ * A LabelLandmarkFeedback module
+ * @param $ {object} jQuery object
+ * @param params {object} Other parameters
+ * @returns {{className: string}}
  * @constructor
+ * @memberof svl
  */
-
 function LabeledLandmarkFeedback ($, params) {
     var self = { className : 'LabeledLandmarkFeedback' };
     var properties = {};

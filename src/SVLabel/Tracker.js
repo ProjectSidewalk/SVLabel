@@ -1,6 +1,11 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function Tracker () {
     var self = {className: 'Tracker'};
     var actions = [];

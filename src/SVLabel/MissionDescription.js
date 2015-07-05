@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ * A MissionDescription module
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function MissionDescription ($, params) {
     var self = {
         className : 'MissionDescription'
@@ -27,13 +34,19 @@ function MissionDescription ($, params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    self.setCurrentStatusDescription = function (description) {
+    /**
+     * The method sets what's shown in the current status pane in the interface
+     * @param description {string} A string (or html) to put.
+     * @returns {self}
+     */
+    function setCurrentStatusDescription (description) {
       if (svl.ui && svl.ui.missinDescription) {
         $currentStatusDescription.html(description);
       }
       return this;
-    };
+    }
 
+    self.setCurrentStatusDescription = setCurrentStatusDescription;
     init(params);
     return self;
 }

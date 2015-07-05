@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ * ActionStack keeps track of user's actions.
+ * @param {object} $ jQuery ojbect
+ * @param {object} params Other parameters
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function ActionStack ($, params) {
     var self = {
         'className' : 'ActionStack'

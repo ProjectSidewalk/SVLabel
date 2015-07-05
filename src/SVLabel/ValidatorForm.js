@@ -1,8 +1,12 @@
 var svl = svl || {};
 
-/** ValidationForm
- * @memberof svl
+/**
+ *
+ * @param param
+ * @param $
+ * @returns {{className: string}}
  * @constructor
+ * @memberof svl
  */
 function ValidatorForm (param, $) {
     var oPublic = {className: 'ValidatorForm'};

@@ -1,6 +1,13 @@
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function QualificationBadges ($, params) {
     var self = { className : 'QualificationBadges' };
     var properties = {

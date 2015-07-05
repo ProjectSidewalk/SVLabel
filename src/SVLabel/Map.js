@@ -90,6 +90,10 @@ var polys = [];
 
 
 /**
+ * The Map module.
+ * @param params {object} Other parameters
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
  */
 function Map (params) {
