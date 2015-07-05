@@ -1,8 +1,9 @@
-/**
- * @namespace
- */
 var svl = svl || {};
 
+/**
+ * @memberof svl
+ * @module
+ */
 function Keyboard ($) {
     var oPublic = {
             className : 'Keyboard'

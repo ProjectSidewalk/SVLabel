@@ -1,8 +1,8 @@
-/**
- *  @namespace
- */
 var svl = svl || {};
 
+/**
+ * @memberof svl
+  */
 function GoldenInsertion (param, $) {
     var oPublic = {
         className: 'GoldenInsertion'

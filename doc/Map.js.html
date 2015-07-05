@@ -1,4 +1,32 @@
-var svl = svl || {};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Map.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Map.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var svl = svl || {};
 var panorama;
 svl.panorama = panorama;
 
@@ -7,7 +35,7 @@ svl.panorama = panorama;
 // be accessed from anywhere
 ////////////////////////////////////////
 // Get the camera point-of-view (POV)
-// http://www.geocodezip.com/v3_Streetview_lookAt.html?lat=34.016673&lng=-118.501322&zoom=18&type=k
+// http://www.geocodezip.com/v3_Streetview_lookAt.html?lat=34.016673&amp;lng=-118.501322&amp;zoom=18&amp;type=k
 
 
 //
@@ -46,7 +74,7 @@ function getPOV() {
         var pov = svl.panorama.getPov();
 
         // Pov can be less than 0. So adjust it.
-        while (pov.heading < 0) {
+        while (pov.heading &lt; 0) {
             pov.heading += 360;
         }
 
@@ -189,7 +217,7 @@ function Map (params) {
     }
     if (params.latlng) {
         properties.latlng = params.latlng;
-    } else if (('Lat' in params) && ('Lng' in params)) {
+    } else if (('Lat' in params) &amp;&amp; ('Lng' in params)) {
         properties.latlng = {'lat': params.Lat, 'lng': params.Lng};
     } else {
         throw self.className + ': latlng not defined.';
@@ -264,7 +292,7 @@ function Map (params) {
                 pov: properties.panoramaPov,
                 pano: params.taskPanoId
             };
-        } else if (params.Lat && params.Lng) {
+        } else if (params.Lat &amp;&amp; params.Lng) {
             fenway = new google.maps.LatLng(params.Lat, params.Lng);
             panoramaOptions = {
                 mode : 'html4',
@@ -323,8 +351,8 @@ function Map (params) {
         //
         // Set the fog parameters
         // Comment out to disable the fog feature.
-        if ("onboarding" in svl &&
-            svl.onboarding &&
+        if ("onboarding" in svl &amp;&amp;
+            svl.onboarding &amp;&amp;
             svl.onboarding.className === "Onboarding_LabelingCurbRampsDifficultScene") { //"zoomViewAngles" in params) {
             fogParam.zoomViewAngles = [Math.PI / 2, Math.PI / 4, Math.PI / 8];
         }
@@ -337,7 +365,7 @@ function Map (params) {
         // For Internet Explore, append an extra canvas in viewControlLayer.
         properties.isInternetExplore = $.browser['msie'];
         if (properties.isInternetExplore) {
-            $divViewControlLayer.append('<canvas width="720px" height="480px"  class="Window_StreetView" style=""></canvas>');
+            $divViewControlLayer.append('&lt;canvas width="720px" height="480px"  class="Window_StreetView" style="">&lt;/canvas>');
         }
     }
 
@@ -473,8 +501,8 @@ function Map (params) {
         }
 
 
-        // Sean & Vicki Fog code
-        if (fogMode && "fog" in svl) {
+        // Sean &amp; Vicki Fog code
+        if (fogMode &amp;&amp; "fog" in svl) {
             current = svl.panorama.getPosition();
             if (current) {
                 if (!fogSet) {
@@ -529,7 +557,7 @@ function Map (params) {
             }
         }
 
-        if (status.hideNonavailablePanoLinks &&
+        if (status.hideNonavailablePanoLinks &amp;&amp;
             status.availablePanoIds) {
             $.each($('path'), function (i, v) {
                 if ($(v).attr('pano')) {
@@ -605,21 +633,21 @@ function Map (params) {
             // If specified, do not allow users to turn around too much by restricting the heading angle.
             if (pov.pitch > properties.maxPitch) {
                 pov.pitch = properties.maxPitch;
-            } else if (pov.pitch < properties.minPitch) {
+            } else if (pov.pitch &lt; properties.minPitch) {
                 pov.pitch = properties.minPitch;
             }
 
-            if (properties.minHeading && properties.maxHeading) {
-                if (properties.minHeading <= properties.maxHeading) {
+            if (properties.minHeading &amp;&amp; properties.maxHeading) {
+                if (properties.minHeading &lt;= properties.maxHeading) {
                     if (pov.heading > properties.maxHeading) {
                         pov.heading = properties.maxHeading;
-                    } else if (pov.heading < properties.minHeading) {
+                    } else if (pov.heading &lt; properties.minHeading) {
                         pov.heading = properties.minHeading;
                     }
                 } else {
-                    if (pov.heading < properties.minHeading &&
+                    if (pov.heading &lt; properties.minHeading &amp;&amp;
                         pov.heading > properties.maxHeading) {
-                        if (Math.abs(pov.heading - properties.maxHeading) < Math.abs(pov.heading - properties.minHeading)) {
+                        if (Math.abs(pov.heading - properties.maxHeading) &lt; Math.abs(pov.heading - properties.minHeading)) {
                             pov.heading = properties.maxHeading;
                         } else {
                             pov.heading = properties.minHeading;
@@ -706,7 +734,7 @@ function Map (params) {
 
         currTime = new Date().getTime();
 
-        if (currTime - mouseStatus.prevMouseUpTime < 300) {
+        if (currTime - mouseStatus.prevMouseUpTime &lt; 300) {
             // Double click
             // canvas.doubleClickOnCanvas(mouseStatus.leftUpX, mouseStatus.leftDownY);
             svl.tracker.push('ViewControl_DoubleClick');
@@ -756,7 +784,7 @@ function Map (params) {
             // $divViewControlLayer.css("cursor", "default");
         }
 
-        if (mouseStatus.isLeftDown &&
+        if (mouseStatus.isLeftDown &amp;&amp;
             status.disableWalking === false) {
             //
             // If a mouse is being dragged on the control layer, move the sv image.
@@ -779,9 +807,9 @@ function Map (params) {
 
         //
         // Show label delete menu
-        if ('canvas' in svl && svl.canvas) {
+        if ('canvas' in svl &amp;&amp; svl.canvas) {
             var item = svl.canvas.isOn(mouseStatus.currX,  mouseStatus.currY);
-            if (item && item.className === "Point") {
+            if (item &amp;&amp; item.className === "Point") {
                 var path = item.belongsTo();
                 var selectedLabel = path.belongsTo();
 
@@ -789,11 +817,11 @@ function Map (params) {
                 svl.canvas.showLabelTag(selectedLabel);
                 svl.canvas.clear();
                 svl.canvas.render2();
-            } else if (item && item.className === "Label") {
+            } else if (item &amp;&amp; item.className === "Label") {
                 var selectedLabel = item;
                 svl.canvas.setCurrentLabel(selectedLabel);
                 svl.canvas.showLabelTag(selectedLabel);
-            } else if (item && item.className === "Path") {
+            } else if (item &amp;&amp; item.className === "Path") {
                 var label = item.belongsTo();
                 svl.canvas.clear();
                 svl.canvas.render2();
@@ -816,7 +844,7 @@ function Map (params) {
 
     function showDeleteLabelMenu () {
         var item = canvas.isOn(mouseStatus.currX,  mouseStatus.currY);
-        if (item && item.className === "Point") {
+        if (item &amp;&amp; item.className === "Point") {
             var selectedLabel = item.belongsTo().belongsTo();
             if (selectedLabel === canvas.getCurrentLabel()) {
                 canvas.showDeleteLabel(mouseStatus.currX, mouseStatus.currY);
@@ -930,13 +958,13 @@ function Map (params) {
 
             //
             // Clear the map first
-            for (var i = 0; i < markers.length; i += 1) {
+            for (var i = 0; i &lt; markers.length; i += 1) {
                 markers[i].setMap(null);
             }
 
             markers = [];
             // Then plot markers
-            for (i = 0; i < labelsLen; i++) {
+            for (i = 0; i &lt; labelsLen; i++) {
                 prop = labels[i].getProperties();
                 labelType = prop.labelProperties.labelType;
                 latlng = prop.panoramaProperties.latlng;
@@ -979,7 +1007,7 @@ function Map (params) {
     self.setPov = function (pov, duration, callback) {
         // Change the pov.
         // If a transition duration is set, smoothly change the pov over the time specified (milli-sec)
-        if (('panorama' in svl) && svl.panorama) {
+        if (('panorama' in svl) &amp;&amp; svl.panorama) {
             var currentPov = svl.panorama.getPov();
             var end = false;
             var interval;
@@ -992,21 +1020,21 @@ function Map (params) {
             // Pov restriction
             if (pov.pitch > properties.maxPitch) {
                 pov.pitch = properties.maxPitch;
-            } else if (pov.pitch < properties.minPitch) {
+            } else if (pov.pitch &lt; properties.minPitch) {
                 pov.pitch = properties.minPitch;
             }
 
-            if (properties.minHeading && properties.maxHeading) {
-                if (properties.minHeading <= properties.maxHeading) {
+            if (properties.minHeading &amp;&amp; properties.maxHeading) {
+                if (properties.minHeading &lt;= properties.maxHeading) {
                     if (pov.heading > properties.maxHeading) {
                         pov.heading = properties.maxHeading;
-                    } else if (pov.heading < properties.minHeading) {
+                    } else if (pov.heading &lt; properties.minHeading) {
                         pov.heading = properties.minHeading;
                     }
                 } else {
-                    if (pov.heading < properties.minHeading &&
+                    if (pov.heading &lt; properties.minHeading &amp;&amp;
                         pov.heading > properties.maxHeading) {
-                        if (Math.abs(pov.heading - properties.maxHeading) < Math.abs(pov.heading - properties.minHeading)) {
+                        if (Math.abs(pov.heading - properties.maxHeading) &lt; Math.abs(pov.heading - properties.minHeading)) {
                             pov.heading = properties.maxHeading;
                         } else {
                             pov.heading = properties.minHeading;
@@ -1023,7 +1051,7 @@ function Map (params) {
                 var ccw = 360 - cw;
                 var headingDelta;
                 var headingIncrement;
-                if (cw < ccw) {
+                if (cw &lt; ccw) {
                     headingIncrement = cw * (timeSegment / duration);
                 } else {
                     headingIncrement = (-ccw) * (timeSegment / duration);
@@ -1041,7 +1069,7 @@ function Map (params) {
                         // Update heading angle and pitch angle
                         /*
                         var angle = (360 - pov.heading) + currentPov.heading;
-                        if (angle < 180 || angle > 360) {
+                        if (angle &lt; 180 || angle > 360) {
                             currentPov.heading -= headingIncrement;
                         } else {
                             currentPov.heading += headingIncrement;
@@ -1119,3 +1147,26 @@ function Map (params) {
     init(params);
     return self;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="svl.module_Keyboard.html">Keyboard</a></li></ul><h3>Classes</h3><ul><li><a href="svl.Canvas.html">Canvas</a></li><li><a href="svl.ExampleWindow.html">ExampleWindow</a></li><li><a href="svl.Label.html">Label</a></li><li><a href="svl.LabeledLandmarkFeedback.html">LabeledLandmarkFeedback</a></li><li><a href="svl.UI.html">UI</a></li><li><a href="svl.Validator.html">Validator</a></li><li><a href="svl.ValidatorForm.html">ValidatorForm</a></li></ul><h3>Namespaces</h3><ul><li><a href="svl.html">svl</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 05 2015 07:17:21 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

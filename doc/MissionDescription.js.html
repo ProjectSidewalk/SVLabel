@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Tooltip.js</title>
+    <title>JSDoc: Source: MissionDescription.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Tooltip.js</h1>
+    <h1 class="page-title">Source: MissionDescription.js</h1>
 
     
 
@@ -29,33 +29,40 @@
             <pre class="prettyprint source linenums"><code>/** @namespace */
 var svl = svl || {};
 
-function Tooltip ($, param) {
-    var self = {className: 'Tooltip'};
+function MissionDescription ($, params) {
+    var self = {
+        className : 'MissionDescription'
+    };
     var properties = {};
     var status = {};
 
-    var $divToolTip;
+    // jQuery elements
+    var $currentStatusDescription;
 
-    ////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     // Private functions
-    ////////////////////////////////////////
-    function _init(param) {
-        $divToolTip = $(param.domIds.tooltipHolder);
+    ////////////////////////////////////////////////////////////////////////////////
+    function init (params) {
+        // Initialize DOM elements
+        if (svl.ui &amp;&amp; svl.ui.missinDescription) {
+          // $currentStatusDescription = $(params.domIds.descriptionMessage);
+          $currentStatusDescription = svl.ui.missinDescription.description;
+          $currentStatusDescription.html(params.description);
+        }
     }
 
-    ////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
     // Public functions
-    ////////////////////////////////////////
-    self.show = function (message) {
-        $divToolTip.html(message);
-        $divToolTip.css('visibility', 'visible');
+    ////////////////////////////////////////////////////////////////////////////////
+    self.setCurrentStatusDescription = function (description) {
+      if (svl.ui &amp;&amp; svl.ui.missinDescription) {
+        $currentStatusDescription.html(description);
+      }
+      return this;
     };
 
-    self.hide = function () {
-        $divToolTip.css('visibility', 'hidden');
-    };
-
-    _init(param);
+    init(params);
     return self;
 }
 </code></pre>

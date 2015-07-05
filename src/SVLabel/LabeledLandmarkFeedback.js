@@ -1,4 +1,9 @@
-/** @constructor */
+var svl = svl || {};
+
+/**
+ * @memberof svl
+ * @constructor
+ */
 
 function LabeledLandmarkFeedback ($, params) {
     var self = { className : 'LabeledLandmarkFeedback' };

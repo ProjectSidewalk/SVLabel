@@ -1,4 +1,32 @@
-var svl = svl || {};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Form.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Form.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var svl = svl || {};
 
 /**
  * @memberof svl
@@ -66,17 +94,17 @@ function Form ($, params) {
         properties.onboarding = params.onboarding;
         properties.dataStoreUrl = params.dataStoreUrl;
 
-        if (('assignmentId' in params) && params.assignmentId) {
+        if (('assignmentId' in params) &amp;&amp; params.assignmentId) {
             properties.assignmentId = params.assignmentId;
         }
-        if (('hitId' in params) && params.hitId) {
+        if (('hitId' in params) &amp;&amp; params.hitId) {
             properties.hitId = params.hitId;
         }
-        if (('turkerId' in params) && params.turkerId) {
+        if (('turkerId' in params) &amp;&amp; params.turkerId) {
             properties.turkerId = params.turkerId;
         }
 
-        if (('userExperiment' in params) && params.userExperiment) {
+        if (('userExperiment' in params) &amp;&amp; params.userExperiment) {
             properties.userExperiment = true;
         }
 
@@ -105,15 +133,15 @@ function Form ($, params) {
         $('input[name="hitId"]').attr('value', properties.hitId);
 
 
-        if (assignmentId && assignmentId === 'ASSIGNMENT_ID_NOT_AVAILABLE') {
+        if (assignmentId &amp;&amp; assignmentId === 'ASSIGNMENT_ID_NOT_AVAILABLE') {
             properties.isPreviewMode = true;
             properties.isAMTTask = true;
             self.unlockDisableSubmit().disableSubmit().lockDisableSubmit();
             self.unlockDisableSkip().disableSkip().lockDisableSkip();
-        } else if (hasWorkerId && !assignmentId) {
+        } else if (hasWorkerId &amp;&amp; !assignmentId) {
             properties.isPreviewMode = false;
             properties.isAMTTask = false;
-        } else if (!assignmentId && !hasHitId && !hasWorkerId) {
+        } else if (!assignmentId &amp;&amp; !hasHitId &amp;&amp; !hasWorkerId) {
             properties.isPreviewMode = false;
             properties.isAMTTask = false;
         } else {
@@ -134,18 +162,18 @@ function Form ($, params) {
         //
         // Check if this is a preview and, if so, disable submission and show a message saying
         // this is a preview.
-        if (properties.isAMTTask && properties.isPreviewMode) {
-            var dom = '<div class="amt-preview-warning-holder">' +
-                '<div class="amt-preview-warning">' +
+        if (properties.isAMTTask &amp;&amp; properties.isPreviewMode) {
+            var dom = '&lt;div class="amt-preview-warning-holder">' +
+                '&lt;div class="amt-preview-warning">' +
                 'Warning: you are on a Preview Mode!' +
-                '</div>' +
-                '</div>';
+                '&lt;/div>' +
+                '&lt;/div>';
             $("body").append(dom);
             self.disableSubmit();
             self.lockDisableSubmit();
         }
 
-        // if (!('onboarding' in svl && svl.onboarding)) {
+        // if (!('onboarding' in svl &amp;&amp; svl.onboarding)) {
         //     messageCanvas = new Onboarding(params, $)
         // }
 
@@ -237,7 +265,7 @@ function Form ($, params) {
 
         data.labels = [];
         var labels = svl.canvas.getLabels();
-        for(var i = 0; i < labels.length; i += 1) {
+        for(var i = 0; i &lt; labels.length; i += 1) {
             var label = labels[i];
             var prop = label.getProperties();
             var points = label.getPath().getPoints();
@@ -252,12 +280,12 @@ function Form ($, params) {
                 label_additional_information : undefined
             };
 
-            if (("photographerHeading" in prop) && ("photographerPitch" in prop)) {
+            if (("photographerHeading" in prop) &amp;&amp; ("photographerPitch" in prop)) {
                 temp.photographer_heading = prop.photographerHeading,
                 temp.photographer_pitch = prop.photographerPitch
             }
 
-            for (var j = 0; j < pathLen; j += 1) {
+            for (var j = 0; j &lt; pathLen; j += 1) {
                 var point = points[j];
                 var gsvImageCoordinate = point.getGSVImageCoordinate();
                 var pointParam = {
@@ -296,7 +324,7 @@ function Form ($, params) {
         // Add the value in the comment field if there are any.
         var comment = $textieldComment.val();
         data.comment = undefined;
-        if (comment &&
+        if (comment &amp;&amp;
             comment !== $textieldComment.attr('title')) {
             data.comment = $textieldComment.val();
         }
@@ -336,7 +364,7 @@ function Form ($, params) {
 
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+        if ('goldenInsertion' in svl &amp;&amp; svl.goldenInsertion) {
             var numMistakes = svl.goldenInsertion.reviewLabels();
             self.disableSubmit().lockDisableSubmit();
             self.disableSkip().lockDisableSkip();
@@ -416,7 +444,7 @@ function Form ($, params) {
 
     function goldenInsertionSubmit () {
         // This method submits the labels that a user provided on golden insertion task and refreshes the page.
-        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+        if ('goldenInsertion' in svl &amp;&amp; svl.goldenInsertion) {
             svl.tracker.push('GoldenInsertion_Submit');
             var url = properties.dataStoreUrl;
             var data;
@@ -433,7 +461,7 @@ function Form ($, params) {
                     data: data,
                     dataType: 'json',
                     success: function (result) {
-                        if (((typeof result) == 'object') && ('error' in result) && result.error) {
+                        if (((typeof result) == 'object') &amp;&amp; ('error' in result) &amp;&amp; result.error) {
                             console.log(result.error);
                         }
                     },
@@ -459,8 +487,8 @@ function Form ($, params) {
         // not looked around and inspected the entire panorama.
         var completionRate = parseInt(svl.progressPov.getCompletionRate() * 100, 10);
 
-        if (!('onboarding' in svl && svl.onboarding) &&
-            (completionRate < 100)) {
+        if (!('onboarding' in svl &amp;&amp; svl.onboarding) &amp;&amp;
+            (completionRate &lt; 100)) {
             var message = "You have inspected " + completionRate + "% of the scene. Let's inspect all the corners before you submit the task!";
             var $OkBtn;
 
@@ -473,7 +501,7 @@ function Form ($, params) {
 
             if (status.disabledButtonMessageVisibility === 'hidden') {
                 status.disabledButtonMessageVisibility = 'visible';
-                var okButton = '<button id="TempOKButton" class="button bold" style="left:20px;position:relative; width:100px;">OK</button>';
+                var okButton = '&lt;button id="TempOKButton" class="button bold" style="left:20px;position:relative; width:100px;">OK&lt;/button>';
                 $divOnboardingMessageBox.append(okButton);
                 $OkBtn = $("#TempOKButton");
                 $OkBtn.bind('click', function () {
@@ -500,7 +528,7 @@ function Form ($, params) {
         var data = {};
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+        if ('goldenInsertion' in svl &amp;&amp; svl.goldenInsertion) {
             self.disableSubmit().lockDisableSubmit();
             $btnSkip.attr('disabled', true);
             $btnConfirmSkip.attr('disabled', true);
@@ -645,7 +673,7 @@ function Form ($, params) {
 
     function skipOtherReasonInput () {
         // This function is invoked when the text is entered in Other field.
-        if (status.radioValue && status.radioValue === 'Other:') {
+        if (status.radioValue &amp;&amp; status.radioValue === 'Other:') {
             var textValue = $textSkipOtherReason.val();
             if (textValue) {
                 enableConfirmSkip();
@@ -666,9 +694,9 @@ function Form ($, params) {
 
 
         if (status.taskDifficulty) {
-            if (('submitType' in status) && status.submitType == 'submit') {
+            if (('submitType' in status) &amp;&amp; status.submitType == 'submit') {
                 formSubmit(e);
-            } else if (('submitType' in status) && status.submitType == 'skip') {
+            } else if (('submitType' in status) &amp;&amp; status.submitType == 'skip') {
                 skipSubmit(e);
             }
         }
@@ -680,7 +708,7 @@ function Form ($, params) {
         // This method checks whether users can submit labels or skip this task by first checking if they
         // assessed all the angles of the street view.
         // Enable/disable form a submit button and a skip button
-        if ('progressPov' in svl && svl.progressPov) {
+        if ('progressPov' in svl &amp;&amp; svl.progressPov) {
             var completionRate = svl.progressPov.getCompletionRate();
         } else {
             var completionRate = 0;
@@ -688,7 +716,7 @@ function Form ($, params) {
 
         var labelCount = svl.canvas.getNumLabels();
 
-        if (1 - completionRate < 0.01) {
+        if (1 - completionRate &lt; 0.01) {
             if (labelCount > 0) {
                 self.enableSubmit();
                 self.disableSkip();
@@ -813,3 +841,26 @@ function Form ($, params) {
     _init(params);
     return self;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="svl.module_Keyboard.html">Keyboard</a></li></ul><h3>Classes</h3><ul><li><a href="svl.Canvas.html">Canvas</a></li><li><a href="svl.ExampleWindow.html">ExampleWindow</a></li><li><a href="svl.Label.html">Label</a></li><li><a href="svl.LabeledLandmarkFeedback.html">LabeledLandmarkFeedback</a></li><li><a href="svl.UI.html">UI</a></li><li><a href="svl.Validator.html">Validator</a></li><li><a href="svl.ValidatorForm.html">ValidatorForm</a></li></ul><h3>Namespaces</h3><ul><li><a href="svl.html">svl</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 05 2015 07:17:21 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

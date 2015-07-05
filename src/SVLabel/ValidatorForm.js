@@ -1,6 +1,9 @@
-/** @namespace */
 var svl = svl || {};
 
+/** ValidationForm
+ * @memberof svl
+ * @constructor
+ */
 function ValidatorForm (param, $) {
     var oPublic = {className: 'ValidatorForm'};
     var properties = {

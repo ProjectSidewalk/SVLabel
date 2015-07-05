@@ -1,4 +1,32 @@
-var svl = svl || {};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Validator.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Validator.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var svl = svl || {};
 
 /**
  * Validator
@@ -88,16 +116,16 @@ function Validator (param, $) {
         canvasCoords = getCanvasCoordinates(pov);
         len = canvasCoords.length;
 
-        for (j = 0; j < len; j += 1) {
+        for (j = 0; j &lt; len; j += 1) {
             var coord = canvasCoords[j];
 
-            if (coord.x < xMin) {
+            if (coord.x &lt; xMin) {
                 xMin = coord.x;
             }
             if (coord.x > xMax) {
                 xMax = coord.x;
             }
-            if (coord.y < yMin) {
+            if (coord.y &lt; yMin) {
                 yMin = coord.y;
             }
             if (coord.y > yMax) {
@@ -125,27 +153,27 @@ function Validator (param, $) {
         var min = 10000000;
         var max = -1;
 
-        for (i = 0; i < len; i += 1) {
+        for (i = 0; i &lt; len; i += 1) {
             if (min > imCoords[i].x) {
                 min = imCoords[i].x;
             }
-            if (max < imCoords[i].x) {
+            if (max &lt; imCoords[i].x) {
                 max = imCoords[i].x;
             }
         }
 
         // Note canvasWidthInGSVImage is approximately equals to the image width of GSV image that fits in one canvas view
         var canvasWidthInGSVImage = 3328;
-        for (i = 0; i < len; i += 1) {
-            if (pov.heading < 180) {
+        for (i = 0; i &lt; len; i += 1) {
+            if (pov.heading &lt; 180) {
                 if (max > svl.svImageWidth - canvasWidthInGSVImage) {
                     if (imCoords[i].x > canvasWidthInGSVImage) {
                         imCoords[i].x -= svl.svImageWidth;
                     }
                 }
             } else {
-                if (min < canvasWidthInGSVImage) {
-                    if (imCoords[i].x < svl.svImageWidth - canvasWidthInGSVImage) {
+                if (min &lt; canvasWidthInGSVImage) {
+                    if (imCoords[i].x &lt; svl.svImageWidth - canvasWidthInGSVImage) {
                         imCoords[i].x += svl.svImageWidth;
                     }
                 }
@@ -172,7 +200,7 @@ function Validator (param, $) {
         // Format a label points.
         var point = undefined;
         var points = [];
-        for (i = 0; i < len; i++) {
+        for (i = 0; i &lt; len; i++) {
             point = {
                 x: parseInt(label.points[i].svImageX),
                 y: parseInt(label.points[i].svImageY)
@@ -185,9 +213,9 @@ function Validator (param, $) {
 
         var coord;
         var maxY = -1;
-        for (i = 0; i < len; i++) {
+        for (i = 0; i &lt; len; i++) {
             coord = canvasCoordinates[i];
-            if (maxY < coord.y) {
+            if (maxY &lt; coord.y) {
                 maxY = coord.y;
             }
         }
@@ -208,7 +236,7 @@ function Validator (param, $) {
         // Format a label points.
         var point = undefined;
         var points = [];
-        for (i = 0; i < len; i++) {
+        for (i = 0; i &lt; len; i++) {
             point = {
                 x: parseInt(label.points[i].svImageX),
                 y: parseInt(label.points[i].svImageY)
@@ -221,7 +249,7 @@ function Validator (param, $) {
 
         var coord;
         var minX = 1000000;
-        for (i = 0; i < len; i++) {
+        for (i = 0; i &lt; len; i++) {
             coord = canvasCoordinates[i];
             if (minX > coord.x) {
                 minX = coord.x;
@@ -237,7 +265,7 @@ function Validator (param, $) {
         var len = labels.length;
         var label;
         var allLabelsHaveBeenValidated = true;
-        for (i = 0; i < len; i++) {
+        for (i = 0; i &lt; len; i++) {
             label = labels[i];
             if (!label.validated) {
                 allLabelsHaveBeenValidated = false;
@@ -258,7 +286,7 @@ function Validator (param, $) {
         var i;
         var numTotalTasks = labels.length;
         var numTasksDone = 0;
-        for (i = 0; i < numTotalTasks; i ++) {
+        for (i = 0; i &lt; numTotalTasks; i ++) {
             if (labels[i].validated) {
                 numTasksDone += 1;
             }
@@ -310,10 +338,10 @@ function Validator (param, $) {
                 showLabel = false;
             }
 
-            for (i = 0; i < len; i ++) {
+            for (i = 0; i &lt; len; i ++) {
                 canvasLabel = canvasLabels[i];
                 canvasPath = canvasLabel.getPath(true); // Get a reference to the currentPath
-                if (currentLabel.meta.labelId === canvasLabels[i].getProperty("labelId") &&
+                if (currentLabel.meta.labelId === canvasLabels[i].getProperty("labelId") &amp;&amp;
                     showLabel) {
                     // Highlight the label
                     // Change the fill and stroke color of a path to the original color (green and white)
@@ -324,7 +352,7 @@ function Validator (param, $) {
                     // Change the fill and stroke color of points to the original color
                     pathPoints = canvasPath.points;
                     pathPointsLen = pathPoints.length;
-                    for (j = 0; j < pathPointsLen; j++) {
+                    for (j = 0; j &lt; pathPointsLen; j++) {
                         pathPoints[j].resetFillStyle();
                         pathPoints[j].resetStrokeStyle();
                     }
@@ -338,7 +366,7 @@ function Validator (param, $) {
                     // Change the fill and stroke color of points invisible
                     pathPoints = canvasPath.points;
                     pathPointsLen = pathPoints.length;
-                    for (j = 0; j < pathPointsLen; j++) {
+                    for (j = 0; j &lt; pathPointsLen; j++) {
                         pathPoints[j].setFillStyle('rgba(255,255,255,0)');
                         pathPoints[j].setStrokeStyle('rgba(255,255,255,0)');
                     }
@@ -403,9 +431,9 @@ function Validator (param, $) {
 
             if (currentLabel.meta.labelType === 'CurbRamp') {
                 message = "We believe the green box (label) is correctly placed on a curb ramp in this image. Do you agree?";
-                // message = 'We believe the <span class="bold">green box is placed on a curb ramp</span> in this image.';
+                // message = 'We believe the &lt;span class="bold">green box is placed on a curb ramp&lt;/span> in this image.';
             } else {
-                message = 'We believe <span class="bold">there should be a curb ramp</span> under the highlighted area.';
+                message = 'We believe &lt;span class="bold">there should be a curb ramp&lt;/span> under the highlighted area.';
             }
             $validationLabelMessage.html(message);
             // console.log(currentLabel.meta.labelType);
@@ -448,7 +476,7 @@ function Validator (param, $) {
         var r;
         var g;
         var rgbValue;
-        if (widthRatio < 0.5) {
+        if (widthRatio &lt; 0.5) {
             r = 255;
             g = parseInt(255 * widthRatio * 2);
         } else {
@@ -486,7 +514,7 @@ function Validator (param, $) {
         if (properties.onboarding) {
             return false;
         }
-        if (getNumTasksDone() < labels.length) {
+        if (getNumTasksDone() &lt; labels.length) {
             return false;
         } else {
             if (properties.previewMode) {
@@ -519,7 +547,7 @@ function Validator (param, $) {
         if (properties.onboarding) {
             return false;
         }
-        if (getNumTasksDone() < labels.length) {
+        if (getNumTasksDone() &lt; labels.length) {
             return false;
         } else {
             if (properties.previewMode) {
@@ -559,7 +587,7 @@ function Validator (param, $) {
         if (status.menuBarMouseDown) {
             // Move around the validation dialog window if mouse is held down on the menu bar
 
-            if (m && m.x && m.y && mouse.menuBarPrevX && mouse.menuBarPrevX) {
+            if (m &amp;&amp; m.x &amp;&amp; m.y &amp;&amp; mouse.menuBarPrevX &amp;&amp; mouse.menuBarPrevX) {
                 var dx = m.x - mouse.menuBarPrevX;
                 var dy = m.y - mouse.menuBarPrevY;
 
@@ -709,7 +737,7 @@ function Validator (param, $) {
         // Sorting an array of objects
         // http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
         function compare (a, b) {
-            if (parseInt(a.points[0].svImageX) < parseInt(b.points[0].svImageX)) {
+            if (parseInt(a.points[0].svImageX) &lt; parseInt(b.points[0].svImageX)) {
                 return -1;
             }
             if (parseInt(a.points[0].svImageX) > parseInt(b.points[0].svImageX)) {
@@ -747,7 +775,7 @@ function Validator (param, $) {
 
             hideDialogWindow();
 
-            if (typeof timelapse === "number" && timelapse >= 0) {
+            if (typeof timelapse === "number" &amp;&amp; timelapse >= 0) {
                 var changePOVDuration = 500;
                 svl.map.setPov(pov, changePOVDuration);
                 highlightCurrentLabel();
@@ -782,3 +810,26 @@ function Validator (param, $) {
 
     return oPublic;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="svl.module_Keyboard.html">Keyboard</a></li></ul><h3>Classes</h3><ul><li><a href="svl.Canvas.html">Canvas</a></li><li><a href="svl.ExampleWindow.html">ExampleWindow</a></li><li><a href="svl.Label.html">Label</a></li><li><a href="svl.LabeledLandmarkFeedback.html">LabeledLandmarkFeedback</a></li><li><a href="svl.UI.html">UI</a></li><li><a href="svl.Validator.html">Validator</a></li><li><a href="svl.ValidatorForm.html">ValidatorForm</a></li></ul><h3>Namespaces</h3><ul><li><a href="svl.html">svl</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 05 2015 07:17:21 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

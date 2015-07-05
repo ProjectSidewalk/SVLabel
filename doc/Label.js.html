@@ -1,4 +1,32 @@
-var svl = svl || {};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Label.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Label.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var svl = svl || {};
 
 /**
  * Label class
@@ -73,7 +101,7 @@ function Label (pathIn, params) {
                      attrName === 'photographerPov' ||
                      attrName === 'photographerHeading' ||
                      attrName === 'photographerPitch'
-                    ) &&
+                    ) &amp;&amp;
                     !param[attrName]) {
                     continue;
                 }
@@ -124,9 +152,9 @@ function Label (pathIn, params) {
         ctx.font = '10.5pt Calibri';
         var height = properties.tagHeight * messages.length;
         var width = -1;
-        for (var i = 0; i < messages.length; i += 1) {
+        for (var i = 0; i &lt; messages.length; i += 1) {
             var w = ctx.measureText(messages[i]).width + 5;
-            if (width < w) {
+            if (width &lt; w) {
                 width = w;
             }
         }
@@ -144,13 +172,13 @@ function Label (pathIn, params) {
             connectorX = boundingBox.width - 1;
         }
 
-        if (boundingBox.x < 5) {
+        if (boundingBox.x &lt; 5) {
             tagX = 5;
         } else {
             tagX = boundingBox.x;
         }
 
-        if (boundingBox.y + boundingBox.height < 400) {
+        if (boundingBox.y + boundingBox.height &lt; 400) {
             ctx.moveTo(tagX + connectorX, boundingBox.y + boundingBox.height);
             ctx.lineTo(tagX + connectorX, boundingBox.y + boundingBox.height + 10);
             ctx.stroke();
@@ -224,7 +252,7 @@ function Label (pathIn, params) {
         imageObj.src = iconImagePath;
         ctx.drawImage(imageObj, imageX, imageY, imageHeight, imageWidth);
 
-        for (var i = 0; i < messages.length; i += 1) {
+        for (var i = 0; i &lt; messages.length; i += 1) {
             ctx.fillText(messages[i], tagX + paddingLeft + 20, tagY + 20 + 20 * i);
         }
         // ctx.fillText(msg, tagX, tagY + 17);
@@ -257,7 +285,7 @@ function Label (pathIn, params) {
         // Blink (highlight and fade) the color of this label. If fade is true, turn the label into gray;
         if (!numberOfBlinks) {
             numberOfBlinks = 3;
-        } else if (numberOfBlinks < 0) {
+        } else if (numberOfBlinks &lt; 0) {
             numberOfBlinks = 0;
         }
         var interval;
@@ -276,14 +304,14 @@ function Label (pathIn, params) {
                 if (highlighted) {
                     highlighted = false;
                     path.setFillStyle(fillStyle);
-                    for (i = 0; i < len; i++) {
+                    for (i = 0; i &lt; len; i++) {
                         points[i].setFillStyle(fillStyle);
                     }
                     svl.canvas.clear().render2();
                 } else {
                     highlighted = true;
                     path.setFillStyle(fillStyleHighlight);
-                    for (i = 0; i < len; i++) {
+                    for (i = 0; i &lt; len; i++) {
                         points[i].setFillStyle(fillStyleHighlight);
                     }
                     svl.canvas.clear().render2();
@@ -292,7 +320,7 @@ function Label (pathIn, params) {
             } else {
                 if (fade) {
                     path.setFillStyle(fillStyle);
-                    for (i = 0; i < len; i++) {
+                    for (i = 0; i &lt; len; i++) {
                         points[i].setFillStyle(fillStyle);
                     }
                     svl.canvas.clear().render2();
@@ -328,7 +356,7 @@ function Label (pathIn, params) {
             fillStyle = 'rgba(255,165,0,0.8)';
         }
         path.setFillStyle(fillStyle);
-        for (; i < len; i++) {
+        for (; i &lt; len; i++) {
             points[i].setFillStyle(fillStyle);
         }
         return this;
@@ -342,7 +370,7 @@ function Label (pathIn, params) {
 
     oPublic.getCoordinate = function () {
         // This function returns the coordinate of a point.
-        if (path && path.points.length > 0) {
+        if (path &amp;&amp; path.points.length > 0) {
             var pov = path.getPOV();
             return $.extend(true, {}, path.points[0].getCanvasCoordinate(pov));
         }
@@ -351,7 +379,7 @@ function Label (pathIn, params) {
 
     oPublic.getGSVImageCoordinate = function () {
         // This function return the coordinate of a point in the GSV image coordinate.
-        if (path && path.points.length > 0) {
+        if (path &amp;&amp; path.points.length > 0) {
             return path.points[0].getGSVImageCoordinate();
         }
     };
@@ -389,7 +417,7 @@ function Label (pathIn, params) {
 
     oPublic.getPoint = function () {
         // This function returns the coordinate of the first point in the path.
-        if (path && path.points.length > 0) {
+        if (path &amp;&amp; path.points.length > 0) {
             return path.points[0];
         }
         return path;
@@ -416,7 +444,7 @@ function Label (pathIn, params) {
 
         if (svImageXs.max() - svImageXs.min() > (svl.svImageWidth / 2)) {
             svImageXs = svImageXs.map(function (x) {
-                if (x < (svl.svImageWidth / 2)) {
+                if (x &lt; (svl.svImageWidth / 2)) {
                     x += svl.svImageWidth;
                 }
                 return x;
@@ -467,7 +495,7 @@ function Label (pathIn, params) {
         var len = points.length;
 
         path.setFillStyle(fill);
-        for (; i < len; i++) {
+        for (; i &lt; len; i++) {
             points[i].setFillStyle(fill);
         }
         return this;
@@ -498,9 +526,9 @@ function Label (pathIn, params) {
             return false;
 
             var margin = 20;
-            if (properties.tagX - margin < x &&
-                properties.tagX + properties.tagWidth + margin > x &&
-                properties.tagY - margin < y &&
+            if (properties.tagX - margin &lt; x &amp;&amp;
+                properties.tagX + properties.tagWidth + margin > x &amp;&amp;
+                properties.tagY - margin &lt; y &amp;&amp;
                 properties.tagY + properties.tagHeight + margin > y) {
                 // The mouse cursor is on the tag.
                 return this;
@@ -558,7 +586,7 @@ function Label (pathIn, params) {
             evaluationMode = false;
         }
 
-        if (!status.deleted &&
+        if (!status.deleted &amp;&amp;
             status.visibility === 'visible') {
             // Render a tag
             // Get a text to render (e.g, attribute type), and
@@ -587,7 +615,7 @@ function Label (pathIn, params) {
         var i = 0;
         var len = points.length;
         path.resetFillStyle();
-        for (; i < len; i++) {
+        for (; i &lt; len; i++) {
             points[i].resetFillStyle();
         }
         return this;
@@ -611,7 +639,7 @@ function Label (pathIn, params) {
         fill = svl.util.color.changeAlphaRGBA(fill, 0.3);
 
         path.setFillStyle(fill);
-        for (; i < len; i++) {
+        for (; i &lt; len; i++) {
             points[i].setFillStyle(fill);
         }
         return this;
@@ -619,7 +647,7 @@ function Label (pathIn, params) {
 
     oPublic.setIconPath = function (iconPath) {
         // This function sets the icon path of the point this label holds.
-        if (path && path.points[0]) {
+        if (path &amp;&amp; path.points[0]) {
             var point = path.points[0];
             point.setIconPath(iconPath);
             return this;
@@ -636,14 +664,14 @@ function Label (pathIn, params) {
 
     oPublic.setStatus = function (key, value) {
         if (key in status) {
-            if (key === 'visibility' &&
+            if (key === 'visibility' &amp;&amp;
                 (value === 'visible' || value === 'hidden')) {
                 // status[key] = value;
                 oPublic.setVisibility(value);
-            } else if (key === 'tagVisibility' &&
+            } else if (key === 'tagVisibility' &amp;&amp;
                 (value === 'visible' || value === 'hidden')) {
                 oPublic.setTagVisibility(value);
-            } else if (key === 'deleted' && typeof value === 'boolean') {
+            } else if (key === 'deleted' &amp;&amp; typeof value === 'boolean') {
                 status[key] = value;
             }
         }
@@ -725,7 +753,7 @@ function Label (pathIn, params) {
         var tablesLen = tables.length;
         var matched = false;
 
-        for (i = 0; i < tablesLen; i += 1) {
+        for (i = 0; i &lt; tablesLen; i += 1) {
             if (tables[i].userIds.indexOf(properties.labelerId) !== -1) {
                 if (tables[i].labelTypesToRender.indexOf(properties.labelProperties.labelType) !== -1) {
                     matched = true;
@@ -783,3 +811,26 @@ function Label (pathIn, params) {
     }
     return oPublic;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="svl.module_Keyboard.html">Keyboard</a></li></ul><h3>Classes</h3><ul><li><a href="svl.Canvas.html">Canvas</a></li><li><a href="svl.ExampleWindow.html">ExampleWindow</a></li><li><a href="svl.Label.html">Label</a></li><li><a href="svl.LabeledLandmarkFeedback.html">LabeledLandmarkFeedback</a></li><li><a href="svl.UI.html">UI</a></li><li><a href="svl.Validator.html">Validator</a></li><li><a href="svl.ValidatorForm.html">ValidatorForm</a></li></ul><h3>Namespaces</h3><ul><li><a href="svl.html">svl</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 05 2015 07:17:21 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
