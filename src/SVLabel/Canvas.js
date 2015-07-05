@@ -10,16 +10,18 @@
 // It seems like these constants do not depend on browsers... (tested on Chrome, Firefox, and Safari.)
 // Distortion coefficient for a window size 640x360: var alpha_x = 5.2, alpha_y = -5.25;
 // Distortion coefficient for a window size 720x480:
-var svw = svw || {}; // Street View Walker namespace.
-svw.canvasWidth = 720;
-svw.canvasHeight = 480;
-svw.svImageHeight = 6656;
-svw.svImageWidth = 13312;
-svw.alpha_x = 4.6;
-svw.alpha_y = -4.65;
-svw._labelCounter = 0;
-svw.getLabelCounter = function () {
-    return svw._labelCounter++;
+
+/** @namespace */
+var svl = svl || {}; // Street View Walker namespace.
+svl.canvasWidth = 720;
+svl.canvasHeight = 480;
+svl.svImageHeight = 6656;
+svl.svImageWidth = 13312;
+svl.alpha_x = 4.6;
+svl.alpha_y = -4.65;
+svl._labelCounter = 0;
+svl.getLabelCounter = function () {
+    return svl._labelCounter++;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,10 +131,10 @@ function Canvas ($, param) {
     }
 
     function closeLabelPath() {
-        svw.tracker.push('LabelingCanvas_FinishLabeling');
-        var labelType = svw.ribbon.getStatus('selectedLabelType');
+        svl.tracker.push('LabelingCanvas_FinishLabeling');
+        var labelType = svl.ribbon.getStatus('selectedLabelType');
         var labelColor = getLabelColors()[labelType];
-        var labelDescription = getLabelDescriptions()[svw.ribbon.getStatus('selectedLabelType')];
+        var labelDescription = getLabelDescriptions()[svl.ribbon.getStatus('selectedLabelType')];
         var iconImagePath = getLabelIconImagePath()[labelDescription.id].iconImagePath;
 
         pointParameters.fillStyleInnerCircle = labelColor.fillStyle;
@@ -140,7 +142,7 @@ function Canvas ($, param) {
 
         var pathLen = tempPath.length;
         var points = [];
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
         var i;
 
         for (i = 0; i < pathLen; i++) {
@@ -149,11 +151,11 @@ function Canvas ($, param) {
         var path = new Path(points, {});
         var latlng = getPosition();
         var param = {
-            canvasWidth: svw.canvasWidth,
-            canvasHeight: svw.canvasHeight,
-            canvasDistortionAlphaX: svw.alpha_x,
-            canvasDistortionAlphaY: svw.alpha_y,
-            labelId: svw.getLabelCounter(),
+            canvasWidth: svl.canvasWidth,
+            canvasHeight: svl.canvasHeight,
+            canvasDistortionAlphaX: svl.alpha_x,
+            canvasDistortionAlphaY: svl.alpha_y,
+            labelId: svl.getLabelCounter(),
             labelType: labelDescription.id,
             labelDescription: labelDescription.text,
             labelFillStyle: labelColor.fillStyle,
@@ -163,12 +165,12 @@ function Canvas ($, param) {
             panoramaHeading: pov.heading,
             panoramaPitch: pov.pitch,
             panoramaZoom: pov.zoom,
-            svImageWidth: svw.svImageWidth,
-            svImageHeight: svw.svImageHeight,
+            svImageWidth: svl.svImageWidth,
+            svImageHeight: svl.svImageHeight,
             svMode: 'html4'
         };
-        if (("panorama" in svw) && ("getPhotographerPov" in svw.panorama)) {
-            var photographerPov = svw.panorama.getPhotographerPov();
+        if (("panorama" in svl) && ("getPhotographerPov" in svl.panorama)) {
+            var photographerPov = svl.panorama.getPhotographerPov();
             param.photographerHeading = photographerPov.heading;
             param.photographerPitch = photographerPov.pitch;
         }
@@ -177,21 +179,21 @@ function Canvas ($, param) {
         if (label) {
             status.currentLabel = new Label(path, param)
             labels.push(status.currentLabel);
-            svw.actionStack.push('addLabel', status.currentLabel);
+            svl.actionStack.push('addLabel', status.currentLabel);
         } else {
             throw "Failed to add a new label.";
         }
 
         // Initialize the tempPath
         tempPath = [];
-        svw.ribbon.backToWalk();
+        svl.ribbon.backToWalk();
 
         //
         // Review label correctness if this is a ground truth insertion task.
-        if (("goldenInsertion" in svw) &&
-            svw.goldenInsertion &&
-            svw.goldenInsertion.isRevisingLabels()) {
-            svw.goldenInsertion.reviewLabels();
+        if (("goldenInsertion" in svl) &&
+            svl.goldenInsertion &&
+            svl.goldenInsertion.isRevisingLabels()) {
+            svl.goldenInsertion.reviewLabels();
         }
     }
 
@@ -202,7 +204,7 @@ function Canvas ($, param) {
         mouseStatus.leftDownY = mouseposition(e, this).y;
 
         if (!properties.evaluationMode) {
-            svw.tracker.push('LabelingCanvas_MouseDown', {x: mouseStatus.leftDownX, y: mouseStatus.leftDownY});
+            svl.tracker.push('LabelingCanvas_MouseDown', {x: mouseStatus.leftDownX, y: mouseStatus.leftDownY});
         }
 
         mouseStatus.prevMouseDownTime = new Date().getTime();
@@ -231,9 +233,9 @@ function Canvas ($, param) {
                 var labelColor;
                 var labelDescription;
 
-                if (svw.ribbon) {
-                    // labelColor = getLabelColors()[svw.ribbon.getStatus('selectedLabelType')];
-                    var labelType = svw.ribbon.getStatus('selectedLabelType');
+                if (svl.ribbon) {
+                    // labelColor = getLabelColors()[svl.ribbon.getStatus('selectedLabelType')];
+                    var labelType = svl.ribbon.getStatus('selectedLabelType');
                     var labelDescriptions = getLabelDescriptions();
                     labelDescription = labelDescriptions[labelType];
                     // iconImagePath = getLabelIconImagePath()[labelDescription.id].iconImagePath;
@@ -243,8 +245,8 @@ function Canvas ($, param) {
                     if (!status.drawing) {
                         // Start drawing a path if a user hasn't started to do so.
                         status.drawing = true;
-                        if ('tracker' in svw && svw.tracker) {
-                            svw.tracker.push('LabelingCanvas_StartLabeling');
+                        if ('tracker' in svl && svl.tracker) {
+                            svl.tracker.push('LabelingCanvas_StartLabeling');
                         }
 
                         var point = {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY};
@@ -294,7 +296,7 @@ function Canvas ($, param) {
             // If it is an evaluation mode, do... (nothing)
         }
 
-        svw.tracker.push('LabelingCanvas_MouseUp', {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
+        svl.tracker.push('LabelingCanvas_MouseUp', {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
         mouseStatus.prevMouseUpTime = new Date().getTime();
         mouseStatus.prevMouseDownTime = 0;
     }
@@ -308,9 +310,9 @@ function Canvas ($, param) {
 
         // Change a cursor according to the label type.
         // $(this).css('cursor', )
-        if ('ribbon' in svw) {
-            var cursorImagePaths = svw.misc.getLabelCursorImagePath();
-            var labelType = svw.ribbon.getStatus('mode');
+        if ('ribbon' in svl) {
+            var cursorImagePaths = svl.misc.getLabelCursorImagePath();
+            var labelType = svl.ribbon.getStatus('mode');
             if (labelType) {
                 var cursorImagePath = cursorImagePaths[labelType].cursorImagePath;
                 var cursorUrl = "url(" + cursorImagePath + ") 6 25, auto";
@@ -382,7 +384,7 @@ function Canvas ($, param) {
     function labelDeleteIconClick () {
         // Deletes the current label
         if (!status.disableLabelDelete) {
-            svw.tracker.push('Click_LabelDelete');
+            svl.tracker.push('Click_LabelDelete');
             var currLabel = oPublic.getCurrentLabel();
             if (!currLabel) {
                 //
@@ -407,7 +409,7 @@ function Canvas ($, param) {
 
             if (currLabel) {
                 oPublic.removeLabel(currLabel);
-                svw.actionStack.push('deleteLabel', oPublic.getCurrentLabel());
+                svl.actionStack.push('deleteLabel', oPublic.getCurrentLabel());
                 $divHolderLabelDeleteIcon.css('visibility', 'hidden');
                 // $divHolderLabelEditIcon.css('visibility', 'hidden');
 
@@ -425,17 +427,17 @@ function Canvas ($, param) {
     function renderTempPath() {
         // This method renders a line from the last point in tempPath to current mouse point.
 
-        if (!svw.ribbon) {
+        if (!svl.ribbon) {
             // return if the ribbon menu is not correctly loaded.
             return false;
         }
 
         var i = 0;
         var pathLen = tempPath.length;
-        var labelColor = getLabelColors()[svw.ribbon.getStatus('selectedLabelType')];
+        var labelColor = getLabelColors()[svl.ribbon.getStatus('selectedLabelType')];
 
         var pointFill = labelColor.fillStyle;
-        pointFill = svw.util.color.changeAlphaRGBA(pointFill, 0.5);
+        pointFill = svl.util.color.changeAlphaRGBA(pointFill, 0.5);
 
 
         // Draw the first line.
@@ -448,9 +450,9 @@ function Canvas ($, param) {
 
             // Change the circle radius of the first point depending on the distance between a mouse cursor and the point coordinate.
             if (r < properties.radiusThresh && pathLen > 2) {
-                svw.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 2 * properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+                svl.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 2 * properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
             } else {
-                svw.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+                svl.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, properties.tempPointRadius, curr.x, curr.y, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
             }
         }
 
@@ -458,13 +460,13 @@ function Canvas ($, param) {
         for (i = 2; i < pathLen; i++) {
             var curr = tempPath[i];
             var prev = tempPath[i-1];
-            svw.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 5, curr.x, curr.y, 5, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+            svl.util.shape.lineWithRoundHead(ctx, prev.x, prev.y, 5, curr.x, curr.y, 5, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
         }
 
         if (r < properties.radiusThresh && pathLen > 2) {
-            svw.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, tempPath[0].x, tempPath[0].y, 2 * properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
+            svl.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, tempPath[0].x, tempPath[0].y, 2 * properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'none', 'rgba(255,255,255,1)', pointFill);
         } else {
-            svw.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, mouseStatus.currX, mouseStatus.currY, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'stroke', 'rgba(255,255,255,1)', pointFill);
+            svl.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, mouseStatus.currX, mouseStatus.currY, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'stroke', 'rgba(255,255,255,1)', pointFill);
         }
         return;
     }
@@ -474,8 +476,8 @@ function Canvas ($, param) {
     ////////////////////////////////////////
     oPublic.cancelDrawing = function () {
         // This method clears a tempPath and cancels drawing. This method is called by Keyboard when esc is pressed.
-        if ('tracker' in svw && svw.tracker) {
-            svw.tracker.push("LabelingCanvas_CancelLabeling");
+        if ('tracker' in svl && svl.tracker) {
+            svl.tracker.push("LabelingCanvas_CancelLabeling");
         }
 
         tempPath = [];
@@ -670,8 +672,8 @@ function Canvas ($, param) {
         }
 
         var i;
-        var labelColors = svw.misc.getLabelColors();
-        var iconImagePaths = svw.misc.getIconImagePaths();
+        var labelColors = svl.misc.getLabelColors();
+        var iconImagePaths = svl.misc.getIconImagePaths();
         var length = labelPoints.length;
         var pointData;
         var pov;
@@ -716,14 +718,14 @@ function Canvas ($, param) {
 
         var param = {};
         var path;
-        var labelDescriptions = svw.misc.getLabelDescriptions();
+        var labelDescriptions = svl.misc.getLabelDescriptions();
 
         path = new Path(points);
 
-        param.canvasWidth = svw.canvasWidth;
-        param.canvasHeight = svw.canvasHeight;
-        param.canvasDistortionAlphaX = svw.alpha_x;
-        param.canvasDistortionAlphaY = svw.alpha_y;
+        param.canvasWidth = svl.canvasWidth;
+        param.canvasHeight = svl.canvasHeight;
+        param.canvasDistortionAlphaX = svl.alpha_x;
+        param.canvasDistortionAlphaY = svl.alpha_y;
         param.labelId = labelPoints[0].LabelId;
         param.labelerId = labelPoints[0].AmazonTurkerId
         param.labelType = labelPoints[0].LabelType;
@@ -736,8 +738,8 @@ function Canvas ($, param) {
         param.panoramaPitch = labelPoints[0].pitch;
         param.panoramaZoom = labelPoints[0].zoom;
 
-        param.svImageWidth = svw.svImageWidth;
-        param.svImageHeight = svw.svImageHeight;
+        param.svImageWidth = svl.svImageWidth;
+        param.svImageHeight = svl.svImageHeight;
         param.svMode = 'html4';
 
         if (("PhotographerPitch" in labelPoints[0]) && ("PhotographerHeading" in labelPoints[0])) {
@@ -838,8 +840,8 @@ function Canvas ($, param) {
     oPublic.pushLabel = function (label) {
         status.currentLabel = label;
         labels.push(label);
-        if (svw.actionStack) {
-            svw.actionStack.push('addLabel', label);
+        if (svl.actionStack) {
+            svl.actionStack.push('addLabel', label);
         }
         return this;
     };
@@ -858,7 +860,7 @@ function Canvas ($, param) {
         if (!label) {
             return false;
         }
-        svw.tracker.push('RemoveLabel', {labelId: label.getProperty('labelId')});
+        svl.tracker.push('RemoveLabel', {labelId: label.getProperty('labelId')});
 
         label.setStatus('deleted', true);
         label.setStatus('visibility', 'hidden');
@@ -869,10 +871,10 @@ function Canvas ($, param) {
 
         //
         // Review label correctness if this is a ground truth insertion task.
-        if (("goldenInsertion" in svw) &&
-            svw.goldenInsertion &&
-            svw.goldenInsertion.isRevisingLabels()) {
-            svw.goldenInsertion.reviewLabels();
+        if (("goldenInsertion" in svl) &&
+            svl.goldenInsertion &&
+            svl.goldenInsertion.isRevisingLabels()) {
+            svl.goldenInsertion.reviewLabels();
         }
 
         oPublic.clear();
@@ -883,7 +885,7 @@ function Canvas ($, param) {
     oPublic.render = function () {
         // KH. Deprecated.
         // Renders labels and pathes (as well as points in each path.)
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
         // renderLabels(pov, ctx);
         return this;
     };
@@ -909,7 +911,7 @@ function Canvas ($, param) {
             NoCurbRamp: 0
         };
         status.totalLabelCount = 0;
-        var pov = svw.getPOV();
+        var pov = svl.getPOV();
 
 
         //
@@ -917,7 +919,7 @@ function Canvas ($, param) {
         // you can get from Street View API change. So adjust the image coordinate
         // Note that this adjustment happens only once
         if (!status.svImageCoordinatesAdjusted) {
-            var currentPhotographerPov = svw.panorama.getPhotographerPov();
+            var currentPhotographerPov = svl.panorama.getPhotographerPov();
             if (currentPhotographerPov && 'heading' in currentPhotographerPov && 'pitch' in currentPhotographerPov) {
                 var j;
                 //
@@ -935,8 +937,8 @@ function Canvas ($, param) {
                         if ('photographerHeading' in pointData && pointData.photographerHeading) {
                             var deltaHeading = currentPhotographerPov.heading - pointData.photographerHeading;
                             var deltaPitch = currentPhotographerPov.pitch - pointData.photographerPitch;
-                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svw.svImageWidth + svw.svImageWidth) % svw.svImageWidth;
-                            var y = svImageCoordinate.y + (deltaPitch / 90) * svw.svImageHeight;
+                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svl.svImageWidth + svl.svImageWidth) % svl.svImageWidth;
+                            var y = svImageCoordinate.y + (deltaPitch / 90) * svl.svImageHeight;
                             points[j].resetSVImageCoordinate({x: x, y: y})
                         }
                     }
@@ -957,8 +959,8 @@ function Canvas ($, param) {
                         if ('photographerHeading' in pointData && pointData.photographerHeading) {
                             var deltaHeading = currentPhotographerPov.heading - pointData.photographerHeading;
                             var deltaPitch = currentPhotographerPov.pitch - pointData.photographerPitch;
-                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svw.svImageWidth + svw.svImageWidth) % svw.svImageWidth;
-                            var y = svImageCoordinate.y + (deltaPitch / 180) * svw.svImageHeight;
+                            var x = (svImageCoordinate.x + (deltaHeading / 360) * svl.svImageWidth + svl.svImageWidth) % svl.svImageWidth;
+                            var y = svImageCoordinate.y + (deltaPitch / 180) * svl.svImageHeight;
                             points[j].resetSVImageCoordinate({x: x, y: y})
                         }
                     }
@@ -1010,36 +1012,36 @@ function Canvas ($, param) {
 
         //
         // Check if the user audited all the angles or not.
-        if ('form' in svw) {
-            svw.form.checkSubmittable();
+        if ('form' in svl) {
+            svl.form.checkSubmittable();
         }
 
-        if ('progressPov' in svw) {
-            svw.progressPov.updateCompletionRate();
+        if ('progressPov' in svl) {
+            svl.progressPov.updateCompletionRate();
         }
 
         //
         // Update the landmark counts on the right side of the interface.
-        if (svw.labeledLandmarkFeedback) {
-            svw.labeledLandmarkFeedback.setLabelCount(labelCount);
+        if (svl.labeledLandmarkFeedback) {
+            svl.labeledLandmarkFeedback.setLabelCount(labelCount);
         }
 
         //
         // Update the opacity of undo and redo buttons.
-        if (svw.actionStack) {
-            svw.actionStack.updateOpacity();
+        if (svl.actionStack) {
+            svl.actionStack.updateOpacity();
         }
 
         //
         // Update the opacity of Zoom In and Zoom Out buttons.
-        if (svw.zoomControl) {
-            svw.zoomControl.updateOpacity();
+        if (svl.zoomControl) {
+            svl.zoomControl.updateOpacity();
         }
 
         //
         // This like of code checks if the golden insertion code is running or not.
-        if ('goldenInsertion' in svw && svw.goldenInsertion) {
-            svw.goldenInsertion.renderMessage();
+        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+            svl.goldenInsertion.renderMessage();
         }
         return this;
     };
