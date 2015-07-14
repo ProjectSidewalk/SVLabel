@@ -2,15 +2,14 @@
 * This class is applied to DIVs and CANVASes
 * which overlap with a Google Map.
 */
-#Holder_GoogleMap  {
+#google-maps-holder  {
     position: absolute;
     left: 735px;
     top: 288px;
 }
 
-.Window_GoogleMap {
+.google-maps-pane {
     border: 1px solid black;
-    /* Position */
     position: absolute;
     left: 0px;
     top:0px;

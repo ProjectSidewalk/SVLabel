@@ -388,7 +388,8 @@ function Validator (param, $) {
         hideDialogWindow();
         updateProgress();
 
-        $("#Holder_GoogleMap").css('visibility', 'hidden');
+        svl.ui.googleMaps.holder.css('visibility', 'hidden');
+        // $("#google-maps-holder").css('visibility', 'hidden');
     }
 
     function showDialogWindow (timelapse) {

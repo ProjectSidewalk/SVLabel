@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="css/svl-canvas.css" />
     <link rel="stylesheet" href="css/svl-map.css" />
     <link rel="stylesheet" href="css/svl-ribbon.css" />
+    <link rel="stylesheet" href="css/svl-zoom-control.css" />
+    <link rel="stylesheet" href="css/svl-action-stack.css" />
     <link rel="stylesheet" href="css/svl-onboarding.css" />
     <link rel="stylesheet" href="css/svl-labeled-landmarks.css" />
     <link rel="stylesheet" href="css/svl-progress-pov.css" />
@@ -163,36 +165,8 @@
         </span>
 
     </div>
-    <div id="Holder_ZoomControl">
-        <div id="Holder_ZoomControlButtons">
-            <button id="ZoomControlZoomInButton" class="button ZoomControlButtons">
-                <img src="img/icons/ZoomIn.svg"
-                     class="ZoomButtonIcons"><br />
-                <small>Zoom In</small>
-            </button>
-            <button id="ZoomControlZoomOutButton" class="button ZoomControlButtons">
-                <img src="img/icons/ZoomOut.svg"
-                     class="ZoomButtonIcons"><br />
-                <small>Zoom Out</small>
-            </button>
-        </div>
-    </div>
-    <div id="action-stack-control-holder">
-        <div id="Holder_ActionStackButtons">
-            <button id="ActionStackUndoButton" class="button ActionStackButtons" value="Undo">
-                <img src="img/icons/Icon_Undo.png" class="ActionStackButtonIcons" alt="Undo" /><br />
-                <small>Undo</small>
-            </button>
-            <button id="ActionStackRedoButton" class="button ActionStackButtons" value="Redo">
-                <img src="img/icons/Icon_Redo.png" class="ActionStackButtonIcons" alt="Redo" /><br />
-                <small>Redo</small>
-            </button>
-        </div>
-            <span class="VerticalLine_ThinDottedGray InlineBlock"
-                  style="height:42px; position:absolute;right:12px;bottom:0px;">
-                    <!-- Vertical border -->
-            </span>
-    </div>
+    <div id="zoom-control-holder"></div>
+    <div id="action-stack-control-holder"></div>
     <div id="Holder_DirectManipulation" onSelectStart="return true;">
         <div id="Holder_StreetView">
             <div id="StreetViewLabelRibbonConnection">
@@ -284,19 +258,7 @@
             </div>
             <div id="progress-pov-holder"></div>
         </div>
-        <div id="Holder_GoogleMap">
-            <div id="google-maps" class="Window_GoogleMap" style="">
-
-            </div>
-            <div id="google-maps-overlay" class="Window_GoogleMap" style="z-index: 1">
-                <!-- In IE, it seems like a div element that has nothing inside gets neglected...
-                        So I put an empty canvas as a place holder.
-                -->
-                <!--[if IE]>
-                <canvas width="200px" height="200px" class="Window_GoogleMap"></canvas>
-                <![endif]-->
-            </div>
-        </div>
+        <div id="google-maps-holder"></div>
     </div>
     <div id="Holder_Form">
         <form id="BusStopLabelerForm"

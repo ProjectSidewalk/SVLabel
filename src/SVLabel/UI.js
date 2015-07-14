@@ -17,14 +17,14 @@ function UI ($, params) {
     // Private Functions
     ////////////////////////////////////////
     function _init (params) {
-
-      // ActionStack DOMs
-      $buttonRedo = $("#ActionStackRedoButton");
-      $buttonUndo = $("#ActionStackUndoButton");
+      // Todo. Use better templating techniques rather so it's prettier!
 
       self.actionStack = {};
-      self.actionStack.redo = $buttonRedo;
-      self.actionStack.undo = $buttonUndo;
+      self.actionStack.holder = $("#action-stack-control-holder");
+      self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
+      self.actionStack.holder.append('<button id="redo-button" class="button action-stack-button" value="Redo"><img src="img/icons/Icon_Redo.png" class="action-stack-icons" alt="Redo" /><br /><small>Redo</small></button>');
+      self.actionStack.redo = $("#redo-button");
+      self.actionStack.undo = $("#undo-button");
 
       // LabeledLandmarkFeedback DOMs
       $labelCountCurbRamp = $("#LabeledLandmarkCount_CurbRamp");
@@ -45,6 +45,9 @@ function UI ($, params) {
       self.map.viewControlLayer = $("div#viewControlLayer");
       self.map.modeSwitchWalk = $("span#modeSwitchWalk");
       self.map.modeSwitchDraw = $("span#modeSwitchDraw");
+      self.googleMaps = {};
+      self.googleMaps.holder = $("#google-maps-holder");
+      self.googleMaps.holder.append('<div id="google-maps" class="google-maps-pane" style=""></div><div id="google-maps-overlay" class="google-maps-pane" style="z-index: 1"></div>')
 
       // MissionDescription DOMs
       self.missinDescription = {};
@@ -80,13 +83,13 @@ function UI ($, params) {
       self.ribbonMenu.bottonBottomBorders = $ribbonButtonBottomLines;
       self.ribbonMenu.connector = $ribbonConnector;
 
-      // ZoomControl DOMs
-      $buttonZoomIn = $("#ZoomControlZoomInButton");
-      $buttonZoomOut = $("#ZoomControlZoomOutButton");
-
+      // Zoom control
       self.zoomControl = {};
-      self.zoomControl.zoomIn = $buttonZoomIn;
-      self.zoomControl.zoomOut = $buttonZoomOut;
+      self.zoomControl.holder = $("#zoom-control-holder");
+      self.zoomControl.holder.append('<button id="zoom-in-button" class="button zoom-control-button"><img src="img/icons/ZoomIn.svg" class="zoom-button-icon" alt="Zoom in"><br /><small>Zoom In</small></button>');
+      self.zoomControl.holder.append('<button id="zoom-out-button" class="button zoom-control-button"><img src="img/icons/ZoomOut.svg" class="zoom-button-icon" alt="Zoom out"><br /><small>Zoom Out</small></button>');
+      self.zoomControl.zoomIn = $("#zoom-in-button");
+      self.zoomControl.zoomOut = $("#zoom-out-button");
 
       self.onboarding = {};
       self.onboarding.holder = $("#onboarding-holder");

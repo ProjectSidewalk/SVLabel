@@ -157,51 +157,7 @@
 
 
 
-/*****************************************
-* Ribbon Menu general styling
-*/
-#action-stack-control-holder {
-    /* Holder_ActionStackControl { */
-    background: transparent;
-    position: absolute;
-    left: 580px;
-    top: 48px;
-    height: 50px;
-    width: 160px;
-}
 
-#Holder_ActionStackButtons {
-    margin: 5px;
-}
-
-.ActionStackButtons, .ZoomControlButtons {
-    color: rgba(0,0,0,1);
-    height: 40px;
-    width: 65px;
-}
-
-.ActionStackButtonIcons {
-    height: 16px;
-    width: 16px;
-}
-
-#Holder_ZoomControl {
-    background: transparent;
-    position: absolute;
-    left: 400px;
-    top: 53px;
-    height: 50px;
-    width: 200px;
-}
-
-.ZoomControlButtons {
-    width: 80px;
-}
-
-.ZoomButtonIcons {
-    height: 18px;
-    width: 18px;
-}
 
 #StreetViewLabelRibbonConnection {
     border-left: 5px solid black;
