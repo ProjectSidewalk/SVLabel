@@ -96,7 +96,7 @@ var polys = [];
  * @constructor
  * @memberof svl
  */
-function Map (params) {
+function Map ($, params) {
     var self = {className: 'Map'};
     var canvas;
     var overlayMessageBox;
@@ -165,7 +165,7 @@ function Map (params) {
     var svgListenerAdded = false;
 
     // Street View variables
-    var streetViewInit = undefined;
+    var _streetViewInit;
 
     // jQuery doms
     var $canvas;
@@ -247,13 +247,23 @@ function Map (params) {
 
     map.setOptions({styles: mapStyleOptions});
 
-    function init(params) {
+    function _init(params) {
+        params = params || {};
+
         self.properties = properties; // Make properties public.
-        properties.browser = getBrowser();
+        properties.browser = svl.util.getBrowser();
 
-        // canvas = params.canvas;
-        overlayMessageBox = params.overlayMessageBox;
+        if ("overlayMessageBox" in params) {
+            overlayMessageBox = params.overlayMessageBox;
+        }
 
+        if ("disableWalking" in params) {
+            if (params.disableWalking) {
+                disableWalking();
+            } else {
+                enableWalking();
+            }
+        }
 
         // Set GSV panorama options
         // To not show StreetView controls, take a look at the following gpage
@@ -282,7 +292,7 @@ function Map (params) {
         }
 
         var panoCanvas = document.getElementById('pano');
-        svl.panorama = new google.maps.StreetViewPanorama(panoCanvas,panoramaOptions);
+        svl.panorama = new google.maps.StreetViewPanorama(panoCanvas, panoramaOptions);
         svl.panorama.set('addressControl', false);
         svl.panorama.set('clickToGo', false);
         svl.panorama.set('disableDefaultUI', true);
@@ -322,7 +332,7 @@ function Map (params) {
         // Set it to walking mode initially.
         google.maps.event.addListenerOnce(svl.panorama, "pano_changed", self.modeSwitchWalkClick);
 
-        streetViewInit = setInterval(initStreetView, 100);
+        _streetViewInit = setInterval(initStreetView, 100);
 
         //
         // Set the fog parameters
@@ -361,6 +371,10 @@ function Map (params) {
     ////////////////////////////////////////
     // Private functions
     ////////////////////////////////////////
+    /**
+     * This method disables walking by hiding links towards other Street View panoramas.
+     * @returns {disableWalking}
+     */
     function disableWalking () {
         // This method hides links on SV and disables users from walking.
         if (!status.lockDisableWalking) {
@@ -369,8 +383,12 @@ function Map (params) {
             $spanModeSwitchWalk.css('opacity', 0.5);
             status.disableWalking = true;
         }
+        return this;
     }
 
+    /**
+     * This method enables walking to other panoramas by showing links.
+     */
     function enableWalking () {
         // This method shows links on SV and enables users to walk.
         if (!status.lockDisableWalking) {
@@ -379,6 +397,7 @@ function Map (params) {
             $spanModeSwitchWalk.css('opacity', 1);
             status.disableWalking = false;
         }
+        return this;
     }
 
     function fogUpdate () {
@@ -389,7 +408,6 @@ function Map (params) {
             var dir = heading * (Math.PI / 180);
             svl.fog.updateFromPOV(current, radius, dir, Math.PI/2);
         }
-        return;
     }
 
     function getPanoramaLayer () {
@@ -402,8 +420,13 @@ function Map (params) {
         return $divPano.find('svg').parent();
     }
 
+    /**
+     * This method hides links to neighboring Street View images by changing the
+     * svg path elements.
+     *
+     * @returns {hideLinks} This object.
+     */
     function hideLinks () {
-        // Hide links by chaging the svg path elements' visibility to hidden.
         if (properties.browser === 'chrome') {
             // Somehow chrome does not allow me to select path
             // and fadeOut. Instead, I'm just manipulating path's style
@@ -413,6 +436,7 @@ function Map (params) {
             // $('path').fadeOut(1000);
             $('path').css('visibility', 'hidden');
         }
+        return this;
     }
 
     function makeLinksClickable () {
@@ -447,10 +471,10 @@ function Map (params) {
         var numPath = $divViewControlLayer.find("path").length;
         if (numPath !== 0) {
             status.svLinkArrowsLoaded = true;
-            window.clearTimeout(streetViewInit);
+            window.clearTimeout(_streetViewInit);
         }
 
-        if (!status.svLinkArrowsLoaded) {
+        if (!status.svLinkArrowsLoaded && status.hideLinks) {
             hideLinks();
         }
     }
@@ -874,11 +898,8 @@ function Map (params) {
         }
     };
 
-    self.hideLinks = function () {
-        // This method hides links (arrows to adjacent panoramas.)
-        hideLinks();
-        return this;
-    };
+
+
 
     self.lockDisableWalking = function () {
         // This method locks status.disableWalking
@@ -905,7 +926,11 @@ function Map (params) {
         }
     };
 
-    self.modeSwitchLabelClick = function () {
+
+    /**
+     * This is a call back function for mode switch click.
+     */
+    function modeSwitchLabelClick () {
         // This function
         $divLabelDrawingLayer.css('z-index','1');
         $divViewControlLayer.css('z-index', '0');
@@ -917,8 +942,7 @@ function Map (params) {
         }
 
         hideLinks();
-
-    };
+    }
 
     self.plotMarkers = function () {
         // Examples for plotting markers:
@@ -1120,6 +1144,9 @@ function Map (params) {
         canvas.testCases.renderLabels();
     };
 
-    init(params);
+    self.hideLinks = hideLinks;
+    self.modeSwitchLabelClick = modeSwitchLabelClick;
+
+    _init(params);
     return self;
 }

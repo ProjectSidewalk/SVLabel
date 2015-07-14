@@ -1,8 +1,8 @@
 describe("Tests for the RibbonMenu module.", function () {
   var ribbon = new RibbonMenu(jQuery);
-  svw.map = {};
-  svw.map.modeSwitchLabelClick = function () { return this; } // mock function
-  svw.map.modeSwitchWalkClick = function () { return this; }
+  svl.map = {};
+  svl.map.modeSwitchLabelClick = function () { return this; } // mock function
+  svl.map.modeSwitchWalkClick = function () { return this; }
 
   beforeEach(function () {
     ribbon.unlockDisableModeSwitch();

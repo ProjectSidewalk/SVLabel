@@ -1,4 +1,3 @@
-/** @namespace */
 var svl = svl || {};
 svl.util = svl.util || {};
 svl.util.color = {};

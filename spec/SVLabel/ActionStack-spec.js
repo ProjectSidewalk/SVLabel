@@ -11,14 +11,14 @@ describe("The ActionStack module's basic API", function () {
     pitch: 0,
     zoom: 1
   };
-  var labelColors = svw.misc.getLabelColors();
+  var labelColors = svl.misc.getLabelColors();
   var latlng = {lat: 38.894799, lng: -77.021906};
   var latlng2 = {lat: 37.894799, lng: -76.021906};
   var param = {
-      canvasWidth: svw.canvasWidth,
-      canvasHeight: svw.canvasHeight,
-      canvasDistortionAlphaX: svw.alpha_x,
-      canvasDistortionAlphaY: svw.alpha_y,
+      canvasWidth: svl.canvasWidth,
+      canvasHeight: svl.canvasHeight,
+      canvasDistortionAlphaX: svl.alpha_x,
+      canvasDistortionAlphaY: svl.alpha_y,
       labelId: 1,
       labelType: 1,
       labelDescription: "CurbRamp",
@@ -29,8 +29,8 @@ describe("The ActionStack module's basic API", function () {
       panoramaHeading: pov.heading,
       panoramaPitch: pov.pitch,
       panoramaZoom: pov.zoom,
-      svImageWidth: svw.svImageWidth,
-      svImageHeight: svw.svImageHeight,
+      svImageWidth: svl.svImageWidth,
+      svImageHeight: svl.svImageHeight,
       svMode: 'html4'
   };
   var p1 = new Point(0, 0, pov, param);

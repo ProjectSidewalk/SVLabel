@@ -114,6 +114,9 @@ function Canvas ($, param) {
     // Initialization
     function _init (param) {
         var el = document.getElementById("label-canvas");
+        if (!el) {
+            return false;
+        }
         ctx = el.getContext('2d');
         canvasProperties.width = el.width;
         canvasProperties.height = el.height;

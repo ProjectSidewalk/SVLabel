@@ -1,5 +1,5 @@
 describe("Tests for the Keyboard module.", function () {
-  var keyboard = new Keyboard(jQuery);
+  var keyboard = new Keyboard($);
 
   describe("The clearShiftDown method", function() {
     it("should set status.shiftDown to false", function() {

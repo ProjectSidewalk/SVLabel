@@ -21,7 +21,9 @@ function Keyboard ($) {
     var $inputSkipOther;
 
     function init () {
-        $textareaComment = (svl.ui.form.commentField.length) > 0 ? svl.ui.form.commentField : null;
+        if ('ui' in svl && 'form' in svl.ui) {
+            $textareaComment = (svl.ui.form.commentField.length) > 0 ? svl.ui.form.commentField : null;
+        }
         $taskDifficultyComment = ($("#task-difficulty-comment").length > 0) ? $("#task-difficulty-comment") : null;
         $inputSkipOther = ($("#Text_BusStopAbsenceOtherReason").length > 0) ? $("#Text_BusStopAbsenceOtherReason") : null;
 

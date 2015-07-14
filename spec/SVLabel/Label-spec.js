@@ -11,14 +11,14 @@ describe("Tests for the Label module.", function () {
   var points = [p1,p2,p3];
   var path = new Path([p1, p2, p3], {});
 
-  var labelColors = svw.misc.getLabelColors();
+  var labelColors = svl.misc.getLabelColors();
   var latlng = {lat: 38.894799, lng: -77.021906};
 
   param = {
-      canvasWidth: svw.canvasWidth,
-      canvasHeight: svw.canvasHeight,
-      canvasDistortionAlphaX: svw.alpha_x,
-      canvasDistortionAlphaY: svw.alpha_y,
+      canvasWidth: svl.canvasWidth,
+      canvasHeight: svl.canvasHeight,
+      canvasDistortionAlphaX: svl.alpha_x,
+      canvasDistortionAlphaY: svl.alpha_y,
       labelId: 1,
       labelType: 1,
       labelDescription: "CurbRamp",
@@ -29,8 +29,8 @@ describe("Tests for the Label module.", function () {
       panoramaHeading: pov.heading,
       panoramaPitch: pov.pitch,
       panoramaZoom: pov.zoom,
-      svImageWidth: svw.svImageWidth,
-      svImageHeight: svw.svImageHeight,
+      svImageWidth: svl.svImageWidth,
+      svImageHeight: svl.svImageHeight,
       svMode: 'html4'
   };
   var label = new Label(path, param);

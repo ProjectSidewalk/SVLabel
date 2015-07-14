@@ -1,9 +1,7 @@
-////////////////////////////////////////////////////////////////////////////////
-// General utility functions
-////////////////////////////////////////////////////////////////////////////////
-//
+var svl = svl || {};
+svl.util = svl.util || {};
+
 // A cross-browser function to capture a mouse position
-//
 function mouseposition (e, dom) {
     var mx, my;
     //if(e.offsetX) {
@@ -146,6 +144,11 @@ jQuery.browser = {
     mozilla: /mozilla/.test( userAgent ) && !/(compatible|webkit)/.test( userAgent )
 };
 
+/**
+ * This method identifies the type of the user's browser
+ *
+ * @returns {*}
+ */
 function getBrowser() {
     // Return a browser name
     var b;
@@ -156,6 +159,7 @@ function getBrowser() {
     }
     return undefined;
 }
+svl.util.getBrowser = getBrowser;
 
 function getBrowserVersion () {
     // Return a browser version
