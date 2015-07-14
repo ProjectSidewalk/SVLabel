@@ -1337,6 +1337,7 @@ function Canvas ($, param) {
     self.hideDeleteLabel = hideDeleteLabel;
     self.hideRightClickMenu = hideRightClickMenu;
     self.insertLabel = insertLabel;
+    self.isDrawing = isDrawing;
     self.isOn = isOn;
     self.lockCurrentLabel = lockCurrentLabel;
     self.lockDisableLabelDelete = lockDisableLabelDelete;

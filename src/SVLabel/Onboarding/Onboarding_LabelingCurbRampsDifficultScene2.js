@@ -2239,7 +2239,7 @@ function Onboarding_LabelingCurbRampsDifficultScene2 (params, $) {
         $submitButton.bind('click', function (e) {
             $divHolderOnboardingCanvas.css('z-index', 1);
             onb.clear();
-            $("#PageOverlayImage_AjaxLoader").css('visibility', 'hidden');
+            $("#ajax-loader-image").css('visibility', 'hidden');
             svw.quickCheck.show();
 
             // submit(e);

@@ -18,8 +18,8 @@ function MessageBox ($, param) {
 
 
     function init () {
-        $divMessageBoxHolder = $("#Holder_Message");
-        $divMessageBox = $("#MessageBox");
+        $divMessageBoxHolder = $("#message-box-holder");
+        $divMessageBox = $("#message-box");
     }
 
     self.setMessage = function (message) {

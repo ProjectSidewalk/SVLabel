@@ -96,7 +96,7 @@ function Form ($, params) {
         $radioSkipReason = $('.Radio_BusStopAbsence');
         $textSkipOtherReason = $("#Text_BusStopAbsenceOtherReason");
         $divSkipOptions = $("#Holder_SkipOptions");
-        $pageOverlay = $("#Holder_PageOverlay");
+        $pageOverlay = $("#page-overlay-holder");
 
 
         if (properties.userExperiment) {

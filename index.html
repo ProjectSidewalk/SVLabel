@@ -2,86 +2,98 @@
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta charset="utf-8">
-<title>Street View Labeler - Demo Interface</title>
-<link rel="stylesheet" href="css/Fonts.css" />
-<link rel="stylesheet" href="css/StreetViewWalker.css" />
-<script src="lib/jquery-1.7.2.min.js"></script>
-<script src="lib/jquery.hoverIntent.minified.js"></script>
-<script src="lib/jquery.cookies.2.2.0.min.js"></script>
-<script src="lib/kinetic-v4.3.3.min.js"></script>
-<script src="lib/clipper.js"></script>
+    <meta charset="utf-8">
+    <title>Street View Labeler - Demo Interface</title>
+    <link rel="stylesheet" href="css/Fonts.css" />
+    <link rel="stylesheet" href="css/svl.css" />
+    <link rel="stylesheet" href="css/svl-canvas.css" />
+    <link rel="stylesheet" href="css/svl-map.css" />
+    <link rel="stylesheet" href="css/svl-ribbon.css" />
+    <link rel="stylesheet" href="css/svl-onboarding.css" />
+    <link rel="stylesheet" href="css/svl-labeled-landmarks.css" />
+    <link rel="stylesheet" href="css/svl-progress-pov.css" />
+    <link rel="stylesheet" href="css/svl-progress.css" />
+    <link rel="stylesheet" href="css/svl-form.css" />
+    <link rel="stylesheet" href="css/svl-overlay-message.css" />
+    <link rel="stylesheet" href="css/svl-message-box.css" />
+    <link rel="stylesheet" href="css/svl-qualification.css" />
 
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDzYR4m-3upEQ-bIQam35ixN1BgxnPsY7k&sensor=false"></script>
-<script src="src/SVLabel/Main.js"></script>
-<script src="src/SVLabel/UI.js"></script>
-<script src="src/SVLabel/util/Utilities.js"></script>
-<script src="src/SVLabel/util/UtilitiesMath.js"></script>
-<script src="src/SVLabel/util/UtilitiesColor.js"></script>
-<script src="src/SVLabel/util/UtilitiesShape.js"></script>
-<script src="src/SVLabel/util/UtilitiesSidewalk.js"></script>
-<script src="src/SVLabel/Point.js"></script>
-<script src="src/SVLabel/Path.js"></script>
-<script src="src/SVLabel/Label.js"></script>
-<script src="src/SVLabel/Canvas.js"></script>
-<script src="src/Fog.js"></script>
-<script src="src/SVLabel/Map.js"></script>
-<script src="src/SVLabel/RibbonMenu.js"></script>
-<script src="src/SVLabel/RightClickMenu.js"></script>
-<script src="src/SVLabel/Form.js"></script>
-<script src="src/SVLabel/OverlayMessageBox.js"></script>
-<script src="src/SVLabel/ActionStack.js"></script>
-<script src="src/SVLabel/ExampleWindow.js"></script>
-<script src="src/SVLabel/Keyboard.js"></script>
-<script src="src/SVLabel/MissionDescription.js"></script>
-<script src="src/SVLabel/LabeledLandmarkFeedback.js"></script>
-<script src="src/SVLabel/QualificationBadges.js"></script>
-<script src="src/SVLabel/ProgressFeedback.js"></script>
-<script src="src/SVLabel/Tracker.js"></script>
-<script src="src/SVLabel/MessageBox.js"></script>
-<script src="src/SVLabel/ZoomControl.js"></script>
-<script src="src/SVLabel/Tooltip.js"></script>
-<script src="src/SVLabel/ProgressPov.js"></script>
-<script>
-var svl = svl || {};
 
-$(document).ready(function(){
-    //
-    // Solutions to annoying text selection cursor.
-    // http://forum.jquery.com/topic/chrome-text-select-cursor-on-drag
-    document.onselectstart = function () { return false; };
+    <script src="lib/jquery-1.7.2.min.js"></script>
+    <script src="lib/jquery.hoverIntent.minified.js"></script>
+    <script src="lib/jquery.cookies.2.2.0.min.js"></script>
+    <script src="lib/kinetic-v4.3.3.min.js"></script>
+    <script src="lib/clipper.js"></script>
 
-    var mainParam = {};
-    var hitId = getURLParameter("hitId");
-    var assignmentId =  getURLParameter("assignmentId");
-    var turkerId =  getURLParameter("workerId");
-    turkerId = turkerId ? turkerId : 'Test_User';
-    assignmentId = assignmentId ? assignmentId : 'Test_Assignment';
-    hitId = hitId ? hitId : 'Test_Hit';
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDzYR4m-3upEQ-bIQam35ixN1BgxnPsY7k&sensor=false"></script>
+    <script src="src/SVLabel/Main.js"></script>
+    <script src="src/SVLabel/UI.js"></script>
+    <script src="src/SVLabel/util/Utilities.js"></script>
+    <script src="src/SVLabel/util/UtilitiesMath.js"></script>
+    <script src="src/SVLabel/util/UtilitiesColor.js"></script>
+    <script src="src/SVLabel/util/UtilitiesShape.js"></script>
+    <script src="src/SVLabel/util/UtilitiesSidewalk.js"></script>
+    <script src="src/SVLabel/Point.js"></script>
+    <script src="src/SVLabel/Path.js"></script>
+    <script src="src/SVLabel/Label.js"></script>
+    <script src="src/SVLabel/Canvas.js"></script>
+    <script src="src/Fog.js"></script>
+    <script src="src/SVLabel/Map.js"></script>
+    <script src="src/SVLabel/RibbonMenu.js"></script>
+    <script src="src/SVLabel/RightClickMenu.js"></script>
+    <script src="src/SVLabel/Form.js"></script>
+    <script src="src/SVLabel/OverlayMessageBox.js"></script>
+    <script src="src/SVLabel/ActionStack.js"></script>
+    <script src="src/SVLabel/ExampleWindow.js"></script>
+    <script src="src/SVLabel/Keyboard.js"></script>
+    <script src="src/SVLabel/MissionDescription.js"></script>
+    <script src="src/SVLabel/LabeledLandmarkFeedback.js"></script>
+    <script src="src/SVLabel/QualificationBadges.js"></script>
+    <script src="src/SVLabel/ProgressFeedback.js"></script>
+    <script src="src/SVLabel/Tracker.js"></script>
+    <script src="src/SVLabel/MessageBox.js"></script>
+    <script src="src/SVLabel/ZoomControl.js"></script>
+    <script src="src/SVLabel/ProgressPov.js"></script>
+    <script>
+    var svl = svl || {};
 
-    var formParam = {};
-    formParam.dataStoreUrl = ''; // '<?php echo url_for("/api_post_labels");?>';
-    formParam.hitId = hitId;
-    formParam.assignmentId = assignmentId;
-    formParam.turkerId = turkerId;
-    formParam.onboarding = false;
-    formParam.taskPanoramaId = "";
-    formParam.taskDescription = "";
-    formParam.domIds = {};
-    formParam.domIds.canvas = 'onboardingCanvas';
-    mainParam.form = formParam;
+    $(document).ready(function(){
+        //
+        // Solutions to annoying text selection cursor.
+        // http://forum.jquery.com/topic/chrome-text-select-cursor-on-drag
+        document.onselectstart = function () { return false; };
 
-    var missionDescriptionParam = {};
-    missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
-    mainParam.missionDescription = missionDescriptionParam
+        var mainParam = {};
+        var hitId = getURLParameter("hitId");
+        var assignmentId =  getURLParameter("assignmentId");
+        var turkerId =  getURLParameter("workerId");
+        turkerId = turkerId ? turkerId : 'Test_User';
+        assignmentId = assignmentId ? assignmentId : 'Test_Assignment';
+        hitId = hitId ? hitId : 'Test_Hit';
 
-    svl.main = new Main($, mainParam);
-});
-</script>
+        var formParam = {};
+        formParam.dataStoreUrl = ''; // '<?php echo url_for("/api_post_labels");?>';
+        formParam.hitId = hitId;
+        formParam.assignmentId = assignmentId;
+        formParam.turkerId = turkerId;
+        formParam.onboarding = false;
+        formParam.taskPanoramaId = "";
+        formParam.taskDescription = "";
+        formParam.domIds = {};
+        formParam.domIds.canvas = 'onboardingCanvas';
+        mainParam.form = formParam;
+
+        var missionDescriptionParam = {};
+        missionDescriptionParam.description = "Your mission is to learn how to <span class='bold'>walk</span> using our interface.";
+        mainParam.missionDescription = missionDescriptionParam
+
+        svl.main = new Main($, mainParam);
+    });
+    </script>
 </head>
 <body>
 <div id="Holder_Application">
-<div id="Holder_RibbonMenu">
+    <div id="Holder_RibbonMenu">
         <span id="Holder_RibbonMenuLeftColumn">
             <div id="RibbonMenu_LeftColumnTitle">
 
@@ -89,10 +101,7 @@ $(document).ready(function(){
             <div id="RibbonMenu_LeftColumnIcons">
                 <span class="modeSwitch" val="Walk" id="modeSwitchWalk" style="width:50px;">
                     <span class="modeSwitch_Icon">
-                        <img src="img/icons/Icon_Walker.png"
-                             id="Icon_Explore"
-                             class="Icon_RibbonMenuLarge"
-                             alt="Mode switch: Walk" align="">
+                        <img src="img/icons/Icon_Walker.png" id="Icon_Explore" class="Icon_RibbonMenuLarge" alt="Mode switch: Walk" align="">
                     </span>
                     <span class="modeSwitch_Name" style="position:absolute; left: 0px;">
                         Explore
@@ -153,220 +162,212 @@ $(document).ready(function(){
             </div>
         </span>
 
-</div>
-<div id="Holder_ZoomControl">
-    <div id="Holder_ZoomControlButtons">
-        <button id="ZoomControlZoomInButton" class="button ZoomControlButtons">
-            <img src="img/icons/ZoomIn.svg"
-                 class="ZoomButtonIcons"><br />
-            <small>Zoom In</small>
-        </button>
-        <button id="ZoomControlZoomOutButton" class="button ZoomControlButtons">
-            <img src="img/icons/ZoomOut.svg"
-                 class="ZoomButtonIcons"><br />
-            <small>Zoom Out</small>
-        </button>
     </div>
-</div>
-<div id="Holder_ActionStackControl">
-    <div id="Holder_ActionStackButtons">
-        <button id="ActionStackUndoButton" class="button ActionStackButtons" value="Undo">
-            <img src="img/icons/Icon_Undo.png" class="ActionStackButtonIcons" alt="Undo" /><br />
-            <small>Undo</small>
-        </button>
-        <button id="ActionStackRedoButton" class="button ActionStackButtons" value="Redo">
-            <img src="img/icons/Icon_Redo.png" class="ActionStackButtonIcons" alt="Redo" /><br />
-            <small>Redo</small>
-        </button>
+    <div id="Holder_ZoomControl">
+        <div id="Holder_ZoomControlButtons">
+            <button id="ZoomControlZoomInButton" class="button ZoomControlButtons">
+                <img src="img/icons/ZoomIn.svg"
+                     class="ZoomButtonIcons"><br />
+                <small>Zoom In</small>
+            </button>
+            <button id="ZoomControlZoomOutButton" class="button ZoomControlButtons">
+                <img src="img/icons/ZoomOut.svg"
+                     class="ZoomButtonIcons"><br />
+                <small>Zoom Out</small>
+            </button>
+        </div>
     </div>
-        <span class="VerticalLine_ThinDottedGray InlineBlock"
-              style="height:42px; position:absolute;right:12px;bottom:0px;">
-                <!-- Vertical border -->
-        </span>
-</div>
-<div id="Holder_DirectManipulation" onSelectStart="return true;">
-    <div id="Holder_StreetView">
-        <div id="StreetViewLabelRibbonConnection">
-            <!-- border -->
+    <div id="action-stack-control-holder">
+        <div id="Holder_ActionStackButtons">
+            <button id="ActionStackUndoButton" class="button ActionStackButtons" value="Undo">
+                <img src="img/icons/Icon_Undo.png" class="ActionStackButtonIcons" alt="Undo" /><br />
+                <small>Undo</small>
+            </button>
+            <button id="ActionStackRedoButton" class="button ActionStackButtons" value="Redo">
+                <img src="img/icons/Icon_Redo.png" class="ActionStackButtonIcons" alt="Redo" /><br />
+                <small>Redo</small>
+            </button>
         </div>
-        <!-- You can put an extra div element on top of the Street View div panel to disable any of StreetView control. -->
-        <div id="pano" class="Window_StreetView" style="z-index: 0;" ></div>
-        <div id="Holder_OverlayMessage" class="Window_StreetView">
-                <span id="OverlayMessageBox">
-                    <span id="OverlayMessage">Walk</span>
-                </span>
-        </div>
-        <div id="Holder_Onboarding" class="Window_StreetView">
-            <div id="Holder_OnboardingCanvas">
-                <canvas id="onboardingCanvas"
-                        width="720px" height="480px">
-                </canvas>
-                <div id="Holder_OnboardingMessageBox">
-                    <div id="Holder_OnboardingMessage">
+            <span class="VerticalLine_ThinDottedGray InlineBlock"
+                  style="height:42px; position:absolute;right:12px;bottom:0px;">
+                    <!-- Vertical border -->
+            </span>
+    </div>
+    <div id="Holder_DirectManipulation" onSelectStart="return true;">
+        <div id="Holder_StreetView">
+            <div id="StreetViewLabelRibbonConnection">
+                <!-- border -->
+            </div>
+            <!-- You can put an extra div element on top of the Street View div panel to disable any of StreetView control. -->
+            <div id="pano" class="Window_StreetView" style="z-index: 0;" ></div>
+            <div id="Holder_OverlayMessage" class="Window_StreetView">
+                    <span id="OverlayMessageBox">
+                        <span id="OverlayMessage">Walk</span>
+                    </span>
+            </div>
+            <div id="Holder_Onboarding" class="Window_StreetView">
+                <div id="Holder_OnboardingCanvas">
+                    <canvas id="onboardingCanvas" width="720px" height="480px">
+                    </canvas>
+                    <div id="Holder_OnboardingMessageBox">
+                        <div id="Holder_OnboardingMessage">
 
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="userControlLayer"  class="Window_StreetView" style="z-index: 0;">
-            <div id="viewControlLayer"  class="Window_StreetView" style="cursor: url(img/cursors/openhand.cur) 4 4, move; z-index: 1;">
+            <div id="userControlLayer"  class="Window_StreetView" style="z-index: 0;">
+                <div id="viewControlLayer"  class="Window_StreetView" style="cursor: url(img/cursors/openhand.cur) 4 4, move; z-index: 1;">
+                    <!-- In IE, it seems like a div element that has nothing inside gets neglected...
+                        So I put an empty canvas as a place holder.
+                    -->
+                    <!--[if IE]>
+                    <canvas width="720px" height="480px"  class="Window_StreetView" style=""></canvas>
+                    <![endif]-->
+                </div>
+                <div id="labelDrawingLayer"  class="Window_StreetView" style="z-index: 0;">
+                    <canvas id="label-canvas"  class="Window_StreetView" width="720px" height="480px" style="cursor: default, move; /*cursor: url(img/cursors/Target.cur) 16 16, move;*/"></canvas>
+                </div>
+            </div>
+            <div id="Holder_LabelDeleteIcon">
+                <!-- <img src="public/img/icons/Icon_Delete_WhiteBackground.png"
+                     id="LabelDeleteIcon"    /> -->
+                <img src="img/icons/Sidewalk/Icon_Delete.svg" id="LabelDeleteIcon" />
+            </div>
+            <div id="Holder_LabelEditIcon">
+                <img src="img/icons/Icon_Edit.png" id="LabelEditIcon" />
+            </div>
+        </div>
+        <div id="Holder_Feedback" class="Window_Feedback">
+            <div id="FeedbackTitle">
+                Status
+            </div>
+            <div id="Holder_FeedbackContents">
+                <div id="Holder_CurrentStatus" class="FeedbackBox">
+                    <div id="CurrentStatus_Title">
+                        <span class="bold">Mission:</span>
+                    </div>
+                    <div id="CurrentStatus_Description">
+                        A description of a user's current mission.
+                    </div>
+                </div>
+                <div id="Holder_Progress" class="FeedbackBox">
+                    <div id="Progress_Title">
+                        <span class="bold">Progress:</span>
+                    </div>
+                    <div id="Progress_Description">
+                        <div id="ProgressBarContainer">
+                            <div id="ProgressBarFilled">
+                            </div>
+                        </div>
+                        <div id="Progress_Message">
+                            You are half way done with tutorials!
+                        </div>
+                    </div>
+                </div>
+                <div id="Holder_LabeledLandmarks" class="FeedbackBox">
+                    <div id="LabeledLandmarks_Title">
+                        <span class="bold">Labeled Landmarks:</span>
+                    </div>
+                    <div id="LabeledLandmarks_Description">
+                        <div id="LabeledLandmarkHolder_CurbRamp" class="LabeledLandmarkHolder">
+                            <div class="LabeledLandmarkIconHolder">
+                                <img src="img/icons/Sidewalk/Icon_CurbRamp.svg"
+                                     class="LabeledLandmark_Icon">
+                                <div class="LabeledLandmark_Description">
+                                    Bus Stop Sign
+                                </div>
+                                <div id="LabeledLandmarkCount_CurbRamp" class="LabeledLandmark_Count">
+                                    0
+                                </div>
+                            </div>
+                        </div>
+                        <div id="LabeledLandmarkHolder_NoCurbRamp" class="LabeledLandmarkHolder">
+                            <div class="LabeledLandmarkIconHolder">
+                                <img src="img/icons/Sidewalk/Icon_NoCurbRamp.svg"
+                                     class="LabeledLandmark_Icon">
+                                <div class="LabeledLandmark_Description">
+                                    Bus stop shelter
+                                </div>
+                                <div id="LabeledLandmarkCount_NoCurbRamp" class="LabeledLandmark_Count">
+                                    0
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="progress-pov-holder">
+                <div id="Holder_ProgressPovDescription" class="bold">Observed area:</div>
+                <div id="Holder_CurrentCompletionBar"></div>
+                <div id="Holder_CurrentCompletionBarFiller"></div>
+                <div id="Holder_CurrentCompletionRate">Hi!</div>
+            </div>
+        </div>
+        <div id="Holder_GoogleMap">
+            <div id="google-maps" class="Window_GoogleMap" style="">
+
+            </div>
+            <div id="mapOverlay" class="Window_GoogleMap" style="z-index: 1">
                 <!-- In IE, it seems like a div element that has nothing inside gets neglected...
-                    So I put an empty canvas as a place holder.
+                        So I put an empty canvas as a place holder.
                 -->
                 <!--[if IE]>
-                <canvas width="720px" height="480px"  class="Window_StreetView" style=""></canvas>
+                <canvas width="200px" height="200px" class="Window_GoogleMap"></canvas>
                 <![endif]-->
             </div>
-            <div id="labelDrawingLayer"  class="Window_StreetView" style="z-index: 0;">
-                <canvas id="label-canvas"  class="Window_StreetView"
-                        width="720px" height="480px"
-                        style="cursor: default, move; /*cursor: url(img/cursors/Target.cur) 16 16, move;*/">
-                </canvas>
-
-            </div>
-        </div>
-
-        <div id="Holder_LabelDeleteIcon">
-            <!-- <img src="public/img/icons/Icon_Delete_WhiteBackground.png"
-                 id="LabelDeleteIcon"    /> -->
-            <img src="img/icons/Sidewalk/Icon_Delete.svg"
-                 id="LabelDeleteIcon" />
-        </div>
-        <div id="Holder_LabelEditIcon">
-            <img src="img/icons/Icon_Edit.png"
-                 id="LabelEditIcon"    />
         </div>
     </div>
-    <div id="Holder_Feedback" class="Window_Feedback">
-        <div id="FeedbackTitle">
-            Status
-        </div>
-        <div id="Holder_FeedbackContents">
-            <div id="Holder_CurrentStatus" class="FeedbackBox">
-                <div id="CurrentStatus_Title">
-                    <span class="bold">Mission:</span>
-                </div>
-                <div id="CurrentStatus_Description">
-                    A description of a user's current mission.
-                </div>
+    <div id="Holder_Form">
+        <form id="BusStopLabelerForm"
+              method="Post"
+              action="http://www.mturk.com/mturk/externalSubmit">
+            <input type="hidden" name="assignmentId" value="" />
+            <input type="hidden" name="workerId" value=""/>
+            <input type="hidden" name="hitId" value="" />
+            <div id="Holder_CommentField">
+                <textarea id="CommentField" class="defaultTextActive"
+                          title="Please enter any comments about this bus stop that may affect people with visual impairment (optional)"></textarea>
             </div>
-            <div id="Holder_Progress" class="FeedbackBox">
-                <div id="Progress_Title">
-                    <span class="bold">Progress:</span>
-                </div>
-                <div id="Progress_Description">
-                    <div id="ProgressBarContainer">
-                        <div id="ProgressBarFilled">
-                        </div>
-                    </div>
-                    <div id="Progress_Message">
-                        You are half way done with tutorials!
-                    </div>
-                </div>
+            <div id="Holder_Buttons">
+                <button id="Button_Skip" class="button" style="margin-top: 3px; width:300px;" onclick="return false;">Skip</button>
+                <input type="submit" id="Button_Submit" class="button" style="margin-top: 3px; width:635px;" value="Submit" />
             </div>
-            <div id="Holder_LabeledLandmarks" class="FeedbackBox">
-                <div id="LabeledLandmarks_Title">
-                    <span class="bold">Labeled Landmarks:</span>
-                </div>
-                <div id="LabeledLandmarks_Description">
-                    <div id="LabeledLandmarkHolder_CurbRamp" class="LabeledLandmarkHolder">
-                        <div class="LabeledLandmarkIconHolder">
-                            <img src="img/icons/Sidewalk/Icon_CurbRamp.svg"
-                                 class="LabeledLandmark_Icon">
-                            <div class="LabeledLandmark_Description">
-                                Bus Stop Sign
-                            </div>
-                            <div id="LabeledLandmarkCount_CurbRamp" class="LabeledLandmark_Count">
-                                0
-                            </div>
-                        </div>
+            <div id="Holder_SkipOptions">
+                <div id="Holder_BusStopAbsenceBackground">
+                    <div id="BusStopAbsenceQuestion">
+                        Why are you skipping this task?
                     </div>
-                    <div id="LabeledLandmarkHolder_NoCurbRamp" class="LabeledLandmarkHolder">
-                        <div class="LabeledLandmarkIconHolder">
-                            <img src="img/icons/Sidewalk/Icon_NoCurbRamp.svg"
-                                 class="LabeledLandmark_Icon">
-                            <div class="LabeledLandmark_Description">
-                                Bus stop shelter
-                            </div>
-                            <div id="LabeledLandmarkCount_NoCurbRamp" class="LabeledLandmark_Count">
-                                0
-                            </div>
-                        </div>
+                    <div id="BusStopAbsenceOptions">
+                            <span class="BusStopAbsenceOption">
+                                <input type="radio" name="BusStopAbsence" class="Radio_BusStopAbsence" value="Not an intersection: The user thinks this is not an intersection.">
+                                This is not an intersection.
+                            </span>
+                            <span class="BusStopAbsenceOption">
+                                <input type="radio" name="BusStopAbsence"
+                                       id="Radio_NoCurbRampsRequired"
+                                       class="Radio_BusStopAbsence"
+                                       value="Curb Ramps Not Necessary: The user thinks curb ramps are not necessary at this intersection.">
+                                This intersection does not require curb ramps.
+                            </span>
+                            <span class="BusStopAbsenceOption">
+                                <input type="radio" name="BusStopAbsence" class="Radio_BusStopAbsence" value="Other:">
+                                Other:
+                                <input type="text" name="BusStopAbsenceOtherReason" id="Text_BusStopAbsenceOtherReason">
+                            </span>
+                    </div>
+                    <div id="BusStopAbsenceButtons">
+                        <button class="button" id="BusStopAbsence_Submit" onclick="return false;">OK</button>
+                        <button class="button" id="BusStopAbsence_Cancel" onclick="return false;">Cancel</button>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="Holder_ProgressPov">
-            <div id="Holder_ProgressPovDescription" class="bold">Observed area:</div>
-            <div id="Holder_CurrentCompletionBar"></div>
-            <div id="Holder_CurrentCompletionBarFiller"></div>
-            <div id="Holder_CurrentCompletionRate">Hi!</div>
-        </div>
+            <div id="Holder_FooterMessage">
+                This study is being conducted by the University of Maryland.
+            </div>
+        </form>
     </div>
-    <div id="Holder_GoogleMap">
-        <div id="google-maps" class="Window_GoogleMap" style="">
-
-        </div>
-        <div id="mapOverlay" class="Window_GoogleMap" style="z-index: 1">
-            <!-- In IE, it seems like a div element that has nothing inside gets neglected...
-                    So I put an empty canvas as a place holder.
-            -->
-            <!--[if IE]>
-            <canvas width="200px" height="200px" class="Window_GoogleMap"></canvas>
-            <![endif]-->
-        </div>
-    </div>
-</div>
-<div id="Holder_Form">
-    <form id="BusStopLabelerForm"
-          method="Post"
-          action="http://www.mturk.com/mturk/externalSubmit">
-        <input type="hidden" name="assignmentId" value="" />
-        <input type="hidden" name="workerId" value=""/>
-        <input type="hidden" name="hitId" value="" />
-        <div id="Holder_CommentField">
-            <textarea id="CommentField" class="defaultTextActive"
-                      title="Please enter any comments about this bus stop that may affect people with visual impairment (optional)"></textarea>
-        </div>
-        <div id="Holder_Buttons">
-            <button id="Button_Skip" class="button" style="margin-top: 3px; width:300px;" onclick="return false;">Skip</button>
-            <input type="submit" id="Button_Submit" class="button" style="margin-top: 3px; width:635px;" value="Submit" />
-        </div>
-        <div id="Holder_SkipOptions">
-            <div id="Holder_BusStopAbsenceBackground">
-                <div id="BusStopAbsenceQuestion">
-                    Why are you skipping this task?
-                </div>
-                <div id="BusStopAbsenceOptions">
-                        <span class="BusStopAbsenceOption">
-                            <input type="radio" name="BusStopAbsence" class="Radio_BusStopAbsence" value="Not an intersection: The user thinks this is not an intersection.">
-                            This is not an intersection.
-                        </span>
-                        <span class="BusStopAbsenceOption">
-                            <input type="radio" name="BusStopAbsence"
-                                   id="Radio_NoCurbRampsRequired"
-                                   class="Radio_BusStopAbsence"
-                                   value="Curb Ramps Not Necessary: The user thinks curb ramps are not necessary at this intersection.">
-                            This intersection does not require curb ramps.
-                        </span>
-                        <span class="BusStopAbsenceOption">
-                            <input type="radio" name="BusStopAbsence" class="Radio_BusStopAbsence" value="Other:">
-                            Other:
-                            <input type="text" name="BusStopAbsenceOtherReason" id="Text_BusStopAbsenceOtherReason">
-                        </span>
-                </div>
-                <div id="BusStopAbsenceButtons">
-                    <button class="button" id="BusStopAbsence_Submit" onclick="return false;">OK</button>
-                    <button class="button" id="BusStopAbsence_Cancel" onclick="return false;">Cancel</button>
-                </div>
-            </div>
-        </div>
-        <div id="Holder_FooterMessage">
-            This study is being conducted by the University of Maryland.
-        </div>
-    </form>
-</div>
   <div id="Holder_QuickCheck">
       <h2 class="bold">Quick Check</h2><br />
       <p id="QuickCheckInstructionHolder"></p>
@@ -379,13 +380,12 @@ $(document).ready(function(){
           <input type="button" id="QuickCheckNext" class="button" value="Next"/>
       </div>
   </div>
-  <div id="Holder_PageOverlay">
+  <div id="page-overlay-holder">
       <img src="img/misc/AjaxLoader.gif"
-           id="PageOverlayImage_AjaxLoader">
+           id="ajax-loader-image">
   </div>
       <!-- <span id="debug" style="position:absolute;top:700px;left:0;">Debug</span> -->
   </div>
   <div id="Researcher_Message"></div>
-  <div id="HolderTooltip">HelloWorld</div>
 </body>
 </html>

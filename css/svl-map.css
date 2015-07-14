@@ -1,0 +1,20 @@
+/*******************************************
+* This class is applied to DIVs and CANVASes
+* which overlap with a Google Map.
+*/
+#Holder_GoogleMap  {
+    position: absolute;
+    left: 735px;
+    top: 288px;
+}
+
+.Window_GoogleMap {
+    border: 1px solid black;
+    /* Position */
+    position: absolute;
+    left: 0px;
+    top:0px;
+    width: 200px;
+    height: 200px;
+}
+
