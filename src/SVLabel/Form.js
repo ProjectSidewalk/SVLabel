@@ -471,7 +471,7 @@ function Form ($, params) {
 
             //
             // Clear and render the onboarding canvas
-            var $divOnboardingMessageBox = $("#Holder_OnboardingMessageBox");
+            var $divOnboardingMessageBox = undefined; //
             messageCanvas.clear();
             messageCanvas.renderMessage(300, 250, message, 350, 140);
             messageCanvas.renderArrow(650, 282, 710, 282);

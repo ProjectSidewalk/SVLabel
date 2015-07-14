@@ -1,21 +1,16 @@
-
-/*******************************************
- * ProgressPov
- */
 #progress-pov-holder {
-    /* background: #aaa; */
     height: 25px;
     position: absolute;
     top: 367px;
     width: 202px;
 }
 
-#Holder_ProgressPovDescription {
+#progress-pov-label {
     text-align: justify;
     font-size: 8pt;
 }
 
-#Holder_CurrentCompletionBar {
+#progress-pov-current-completion-bar {
     background: #ffffff;
     border: solid 1px #000;
     bottom: 3px;
@@ -25,7 +20,7 @@
     width: 200px;
 }
 
-#Holder_CurrentCompletionBarFiller {
+#progress-pov-current-completion-bar-filler {
     border-width: 0px;
     bottom: 4px;
     height: 5px;
@@ -34,13 +29,9 @@
     width: 198px;
 }
 
-#Holder_CurrentCompletionRate {
+#progress-pov-current-completion-rate {
     color: #888;
     font-size: 8pt;
-    /*left: 162px;*/
-    /*position: absolute;*/
-    /*text-align: right;*/
-    /*bottom: 11px;*/
     width: 40px;
 }
 

@@ -200,22 +200,8 @@
             </div>
             <!-- You can put an extra div element on top of the Street View div panel to disable any of StreetView control. -->
             <div id="pano" class="Window_StreetView" style="z-index: 0;" ></div>
-            <div id="Holder_OverlayMessage" class="Window_StreetView">
-                    <span id="OverlayMessageBox">
-                        <span id="OverlayMessage">Walk</span>
-                    </span>
-            </div>
-            <div id="Holder_Onboarding" class="Window_StreetView">
-                <div id="Holder_OnboardingCanvas">
-                    <canvas id="onboardingCanvas" width="720px" height="480px">
-                    </canvas>
-                    <div id="Holder_OnboardingMessageBox">
-                        <div id="Holder_OnboardingMessage">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="overlay-message-holder" class="Window_StreetView"></div>
+            <div id="onboarding-holder" class="Window_StreetView"></div>
 
             <div id="userControlLayer"  class="Window_StreetView" style="z-index: 0;">
                 <div id="viewControlLayer"  class="Window_StreetView" style="cursor: url(img/cursors/openhand.cur) 4 4, move; z-index: 1;">
@@ -231,8 +217,6 @@
                 </div>
             </div>
             <div id="Holder_LabelDeleteIcon">
-                <!-- <img src="public/img/icons/Icon_Delete_WhiteBackground.png"
-                     id="LabelDeleteIcon"    /> -->
                 <img src="img/icons/Sidewalk/Icon_Delete.svg" id="LabelDeleteIcon" />
             </div>
             <div id="Holder_LabelEditIcon">
@@ -240,7 +224,7 @@
             </div>
         </div>
         <div id="Holder_Feedback" class="Window_Feedback">
-            <div id="FeedbackTitle">
+            <div id="status-pane-title">
                 Status
             </div>
             <div id="Holder_FeedbackContents">
@@ -298,18 +282,13 @@
                     </div>
                 </div>
             </div>
-            <div id="progress-pov-holder">
-                <div id="Holder_ProgressPovDescription" class="bold">Observed area:</div>
-                <div id="Holder_CurrentCompletionBar"></div>
-                <div id="Holder_CurrentCompletionBarFiller"></div>
-                <div id="Holder_CurrentCompletionRate">Hi!</div>
-            </div>
+            <div id="progress-pov-holder"></div>
         </div>
         <div id="Holder_GoogleMap">
             <div id="google-maps" class="Window_GoogleMap" style="">
 
             </div>
-            <div id="mapOverlay" class="Window_GoogleMap" style="z-index: 1">
+            <div id="google-maps-overlay" class="Window_GoogleMap" style="z-index: 1">
                 <!-- In IE, it seems like a div element that has nothing inside gets neglected...
                         So I put an empty canvas as a place holder.
                 -->
@@ -345,9 +324,7 @@
                                 This is not an intersection.
                             </span>
                             <span class="BusStopAbsenceOption">
-                                <input type="radio" name="BusStopAbsence"
-                                       id="Radio_NoCurbRampsRequired"
-                                       class="Radio_BusStopAbsence"
+                                <input type="radio" name="BusStopAbsence" id="Radio_NoCurbRampsRequired" class="Radio_BusStopAbsence"
                                        value="Curb Ramps Not Necessary: The user thinks curb ramps are not necessary at this intersection.">
                                 This intersection does not require curb ramps.
                             </span>

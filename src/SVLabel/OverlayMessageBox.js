@@ -25,8 +25,6 @@ function OverlayMessageBox ($, params) {
     ////////////////////////////////////////
     function init() {
         // Initialization function.
-        // $divOverlayMessage = $(params.domIds.OverlayMessage);
-        // $divOverlayMessageBox = $(params.domIds.Holder_OverlayMessage);
         if (svl.ui && svl.ui.overlayMessage) {
           $divOverlayMessage = svl.ui.overlayMessage.message;
           $divOverlayMessageBox = svl.ui.overlayMessage.box;

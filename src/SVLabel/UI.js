@@ -1,7 +1,7 @@
 var svl = svl || {};
 
 /**
- *
+ * A UI class
  * @param $
  * @param params
  * @returns {{moduleName: string}}
@@ -10,10 +10,8 @@ var svl = svl || {};
  */
 function UI ($, params) {
     var self = {moduleName: 'MainUI'};
-    var properties = {};
-    var status = {};
-
     self.streetViewPane = {};
+    params = params || {};
 
     ////////////////////////////////////////
     // Private Functions
@@ -33,7 +31,7 @@ function UI ($, params) {
       $labelCountNoCurbRamp = $("#LabeledLandmarkCount_NoCurbRamp");
       $submittedLabelMessage = $("#LabeledLandmarks_SubmittedLabelCount");
 
-      self.labeledLandmark = {}
+      self.labeledLandmark = {};
       self.labeledLandmark.curbRamp = $labelCountCurbRamp;
       self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
       self.labeledLandmark.submitted = $submittedLabelMessage;
@@ -49,20 +47,26 @@ function UI ($, params) {
       self.map.modeSwitchDraw = $("span#modeSwitchDraw");
 
       // MissionDescription DOMs
-      $currentStatusDescription = $("#CurrentStatus_Description")
       self.missinDescription = {};
-      self.missinDescription.description = $currentStatusDescription;
+      self.missinDescription.description = $("#CurrentStatus_Description");
 
       // OverlayMessage
       self.overlayMessage = {};
-      self.overlayMessage.box = $("#OverlayMessageBox");
-      self.overlayMessage.message = $("#OverlayMessage");
+      self.overlayMessage.holder = $("#overlay-message-holder");
+      self.overlayMessage.holder.append("<span id='overlay-message-box'><span id='overlay-message'>Walk</span></span>");
+      self.overlayMessage.box = $("#overlay-message-box");
+      self.overlayMessage.message = $("#overlay-message");
 
       // ProgressPov
       self.progressPov = {};
-      self.progressPov.rate = $("#Holder_CurrentCompletionRate");
-      self.progressPov.bar = $("#Holder_CurrentCompletionBar");
-      self.progressPov.filler = $("#Holder_CurrentCompletionBarFiller");
+      self.progressPov.holder = $("#progress-pov-holder");
+      self.progressPov.holder.append("<div id='progress-pov-label' class='bold'>Observed area:</div>");
+      self.progressPov.holder.append("<div id='progress-pov-current-completion-bar'></div>");
+      self.progressPov.holder.append("<div id='progress-pov-current-completion-bar-filler'></div>");
+      self.progressPov.holder.append("<div id='progress-pov-current-completion-rate'>Hi</div>");
+      self.progressPov.rate = $("#progress-pov-current-completion-rate");
+      self.progressPov.bar = $("#progress-pov-current-completion-bar");
+      self.progressPov.filler = $("#progress-pov-current-completion-bar-filler");
 
       // Ribbon menu DOMs
       $divStreetViewHolder = $("#Holder_StreetView");
@@ -84,11 +88,13 @@ function UI ($, params) {
       self.zoomControl.zoomIn = $buttonZoomIn;
       self.zoomControl.zoomOut = $buttonZoomOut;
 
-    }
+      self.onboarding = {};
+      self.onboarding.holder = $("#onboarding-holder");
+      if ("onboarding" in params && params.onboarding) {
+        self.onboarding.holder.append("<div id='Holder_OnboardingCanvas'><canvas id='onboardingCanvas' width='720px' height='480px'></canvas><div id='Holder_OnboardingMessageBox'><div id='Holder_OnboardingMessage'></div></div></div>");
+      }
 
-    ////////////////////////////////////////
-    // Public Functions
-    ////////////////////////////////////////
+    }
 
     _init(params);
     return self;
