@@ -268,9 +268,16 @@ var Kinetic={};(function(){Kinetic.version="4.3.3",Kinetic.Filters={},Kinetic.Pl
 ();var a=this;this.on("mousedown.kinetic touchstart.kinetic",function(b){Kinetic.getNodeDragging()||a._startDrag(b)})},Kinetic.Node.prototype._dragChange=function(){if(this.attrs.draggable)this._listenDrag();else{this._dragCleanup();var a=this.getStage(),b=Kinetic.DD;a&&b.node&&b.node._id===this._id&&b._endDrag()}},Kinetic.Node.prototype._dragCleanup=function(){this.off("mousedown.kinetic"),this.off("touchstart.kinetic")},Kinetic.Node.prototype.isDraggable=Kinetic.Node.prototype.getDraggable,Kinetic.Node.addGettersSetters(Kinetic.Node,["dragBoundFunc","dragOnTop"]);var a=document.getElementsByTagName("html")[0];a.addEventListener("mouseup",Kinetic.DD._endDrag,!0),a.addEventListener("touchend",Kinetic.DD._endDrag,!0)}(),function(){Kinetic.Transition=function(a,b){function e(a,b,d,f){for(var g in a)g!=="duration"&&g!=="easing"&&g!=="callback"&&(Kinetic.Type._isObject(a[g])?(d[g]={},e(a[g],b[g],d[g],f)):c._add(c._getTween(b,g,a[g],d,f)))}var c=this,d={};this.node=a,this.config=b,this.tweens=[],e(b,a.attrs,d,d),this.tweens[0].onStarted=function(){},this.tweens[0].onStopped=function(){a.transAnim.stop()},this.tweens[0].onResumed=function(){a.transAnim.start()},this.tweens[0].onLooped=function(){},this.tweens[0].onChanged=function(){},this.tweens[0].onFinished=function(){var c={};for(var d in b)d!=="duration"&&d!=="easing"&&d!=="callback"&&(c[d]=b[d]);a.transAnim.stop(),a.setAttrs(c),b.callback&&b.callback()}},Kinetic.Transition.prototype={start:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].start()},stop:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].stop()},resume:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].resume()},_onEnterFrame:function(){for(var a=0;a<this.tweens.length;a++)this.tweens[a].onEnterFrame()},_add:function(a){this.tweens.push(a)},_getTween:function(a,b,c,d,e){var f=this.config,g=this.node,h=f.easing;h===undefined&&(h="linear");var i=new Kinetic.Tween(g,function(a){d[b]=a,g.setAttrs(e)},Kinetic.Tweens[h],a[b],c,f.duration);return i}},Kinetic.Node.prototype.transitionTo=function(a){var b=this,c=new Kinetic.Transition(this,a);return this.transAnim||(this.transAnim=new Kinetic.Animation),this.transAnim.func=function(){c._onEnterFrame()},this.transAnim.node=this.nodeType==="Stage"?this:this.getLayer(),c.start(),this.transAnim.start(),this.trans=c,c}}(),function(){Kinetic.Container=function(a){this._containerInit(a)},Kinetic.Container.prototype={_containerInit:function(a){this.children=[],Kinetic.Node.call(this,a)},getChildren:function(){return this.children},removeChildren:function(){while(this.children.length>0)this.children[0].remove()},add:function(a){var b=Kinetic.Global,c=this.children;return a.index=c.length,a.parent=this,c.push(a),this},get:function(a){var b=new Kinetic.Collection;if(a.charAt(0)==="#"){var c=this._getNodeById(a.slice(1));c&&b.push(c)}else if(a.charAt(0)==="."){var d=this._getNodesByName(a.slice(1));Kinetic.Collection.apply(b,d)}else{var e=[],f=this.getChildren(),g=f.length;for(var h=0;h<g;h++)e=e.concat(f[h]._get(a));Kinetic.Collection.apply(b,e)}return b},_getNodeById:function(a){var b=this.getStage(),c=Kinetic.Global,d=c.ids[a];return d!==undefined&&this.isAncestorOf(d)?d:null},_getNodesByName:function(a){var b=Kinetic.Global,c=b.names[a]||[];return this._getDescendants(c)},_get:function(a){var b=Kinetic.Node.prototype._get.call(this,a),c=this.getChildren(),d=c.length;for(var e=0;e<d;e++)b=b.concat(c[e]._get(a));return b},toObject:function(){var a=Kinetic.Node.prototype.toObject.call(this);a.children=[];var b=this.getChildren(),c=b.length;for(var d=0;d<c;d++){var e=b[d];a.children.push(e.toObject())}return a},_getDescendants:function(a){var b=[],c=a.length;for(var d=0;d<c;d++){var e=a[d];this.isAncestorOf(e)&&b.push(e)}return b},isAncestorOf:function(a){var b=a.getParent();while(b){if(b._id===this._id)return!0;b=b.getParent()}return!1},clone:function(a){var b=Kinetic.Node.prototype.clone.call(this,a);for(var c in this.children)b.add(this.children[c].clone());return b},getIntersections:function(){var a=Kinetic.Type._getXY(Array.prototype.slice.call(arguments)),b=[],c=this.get("Shape"),d=c.length;for(var e=0;e<d;e++){var f=c[e];f.isVisible()&&f.intersects(a)&&b.push(f)}return b},_setChildrenIndices:function(){var a=this.children,b=a.length;for(var c=0;c<b;c++)a[c].index=c},draw:function(){this.drawScene(),this.drawHit()},drawScene:function(a){if(this.isVisible()){var b=this.children,c=b.length;for(var d=0;d<c;d++)b[d].drawScene(a)}},drawHit:function(){if(this.isVisible()&&this.isListening()){var a=this.children,b=a.length;for(var c=0;c<b;c++)a[c].drawHit()}}},Kinetic.Global.extend(Kinetic.Container,Kinetic.Node)}(),function(){function a(a){a.fill()}function b(a){a.stroke()}function c(a){a.fill()}function d(a){a.stroke()}Kinetic.Shape=function(a){this._initShape(a)},Kinetic.Shape.prototype={_initShape:function(e){this.setDefaultAttrs({fillEnabled:!0,strokeEnabled:!0,shadowEnabled:!0,dashArrayEnabled:!0,fillPriority:"color"}),this.nodeType="Shape",this._fillFunc=a,this._strokeFunc=b,this._fillFuncHit=c,this._strokeFuncHit=d;var f=Kinetic.Global.shapes,g;for(;;){g=Kinetic.Type._getRandomColorKey();if(g&&!(g in f))break}this.colorKey=g,f[g]=this,Kinetic.Node.call(this,e)},getContext:function(){return this.getLayer().getContext()},getCanvas:function(){return this.getLayer().getCanvas()},hasShadow:function(){return!!(this.getShadowColor()||this.getShadowBlur()||this.getShadowOffset())},hasFill:function(){return!!(this.getFill()||this.getFillPatternImage()||this.getFillLinearGradientStartPoint()||this.getFillRadialGradientStartPoint())},_get:function(a){return this.nodeType===a||this.shapeType===a?[this]:[]},intersects:function(){var a=Kinetic.Type._getXY(Array.prototype.slice.call(arguments)),b=this.getStage(),c=b.hitCanvas;c.clear(),this.drawScene(c);var d=c.context.getImageData(Math.round(a.x),Math.round(a.y),1,1).data;return d[3]>0},enableFill:function(){this.setAttr("fillEnabled",!0)},disableFill:function(){this.setAttr("fillEnabled",!1)},enableStroke:function(){this.setAttr("strokeEnabled",!0)},disableStroke:function(){this.setAttr("strokeEnabled",!1)},enableShadow:function(){this.setAttr("shadowEnabled",!0)},disableShadow:function(){this.setAttr("shadowEnabled",!1)},enableDashArray:function(){this.setAttr("dashArrayEnabled",!0)},disableDashArray:function(){this.setAttr("dashArrayEnabled",!1)},remove:function(){Kinetic.Node.prototype.remove.call(this),delete Kinetic.Global.shapes[this.colorKey]},drawScene:function(a){var b=this.attrs,c=b.drawFunc,a=a||this.getLayer().getCanvas(),d=a.getContext();c&&this.isVisible()&&(d.save(),a._applyOpacity(this),a._applyLineJoin(this),a._applyAncestorTransforms(this),c.call(this,a),d.restore())},drawHit:function(){var a=this.attrs,b=a.drawHitFunc||a.drawFunc,c=this.getLayer().hitCanvas,d=c.getContext();b&&this.isVisible()&&this.isListening()&&(d.save(),c._applyLineJoin(this),c._applyAncestorTransforms(this),b.call(this,c),d.restore())},_setDrawFuncs:function(){!this.attrs.drawFunc&&this.drawFunc&&this.setDrawFunc(this.drawFunc),!this.attrs.drawHitFunc&&this.drawHitFunc&&this.setDrawHitFunc(this.drawHitFunc)}},Kinetic.Global.extend(Kinetic.Shape,Kinetic.Node),Kinetic.Node.addGettersSetters(Kinetic.Shape,["stroke","lineJoin","lineCap","strokeWidth","drawFunc","drawHitFunc","dashArray","shadowColor","shadowBlur","shadowOpacity","fillPatternImage","fill","fillPatternX","fillPatternY","fillLinearGradientColorStops","fillRadialGradientStartRadius","fillRadialGradientEndRadius","fillRadialGradientColorStops","fillPatternRepeat","fillEnabled","strokeEnabled","shadowEnabled","dashArrayEnabled","fillPriority"]),Kinetic.Node.addPointGettersSetters(Kinetic.Shape,["fillPatternOffset","fillPatternScale","fillLinearGradientStartPoint","fillLinearGradientEndPoint","fillRadialGradientStartPoint","fillRadialGradientEndPoint","shadowOffset"]),Kinetic.Node.addRotationGettersSetters(Kinetic.Shape,["fillPatternRotation"])}(),function(){Kinetic.Stage=function(a){this._initStage(a)},Kinetic.Stage.prototype={_initStage:function(a){var b=Kinetic.DD;this.setDefaultAttrs({width:400,height:200}),Kinetic.Container.call(this,a),this._setStageDefaultProperties(),this._id=Kinetic.Global.idCounter++,this._buildDOM(),this._bindContentEvents(),Kinetic.Global.stages.push(this),b&&b._initDragLayer(this)},setContainer:function(a){typeof a=="string"&&(a=document.getElementById(a)),this.setAttr("container",a)},setHeight:function(a){Kinetic.Node.prototype.setHeight.call(this,a),this._resizeDOM()},setWidth:function(a){Kinetic.Node.prototype.setWidth.call(this,a),this._resizeDOM()},clear:function(){var a=this.children;for(var b=0;b<a.length;b++)a[b].clear()},remove:function(){var a=this.content;Kinetic.Node.prototype.remove.call(this),a&&Kinetic.Type._isInDocument(a)&&this.attrs.container.removeChild(a)},reset:function(){this.removeChildren(),this._setStageDefaultProperties(),this.setAttrs(this.defaultNodeAttrs)},getMousePosition:function(){return this.mousePos},getTouchPosition:function(){return this.touchPos},getUserPosition:function(){return this.getTouchPosition()||this.getMousePosition()},getStage:function(){return this},getContent:function(){return this.content},toDataURL:function(a){function i(d){var e=h[d],j=e.toDataURL(),k=new Image;k.onload=function(){g.drawImage(k,0,0),d<h.length-1?i(d+1):a.callback(f.toDataURL(b,c))},k.src=j}a=a||{};var b=a.mimeType||null,c=a.quality||null,d=a.x||0,e=a.y||0,f=new Kinetic.SceneCanvas(a.width||this.getWidth(),a.height||this.getHeight()),g=f.getContext(),h=this.children;(d||e)&&g.translate(-1*d,-1*e),i(0)},toImage:function(a){var b=a.callback;a.callback=function(a){Kinetic.Type._getImage(a,function(a){b(a)})},this.toDataURL(a)},getIntersection:function(a){var b,c=this.getChildren();for(var d=c.length-1;d>=0;d--){var e=c[d];if(e.isVisible()&&e.isListening()){var f=e.hitCanvas.context.getImageData(Math.round(a.x),Math.round(a.y),1,1).data;if(f[3]===255){var g=Kinetic.Type._rgbToHex(f[0],f[1],f[2]);return b=Kinetic.Global.shapes[g],{shape:b,pixel:f}}if(f[0]>0||f[1]>0||f[2]>0||f[3]>0)return{pixel:f}}}return null},_resizeDOM:function(){if(this.content){var a=this.attrs.width,b=this.attrs.height;this.content.style.width=a+"px",this.content.style.height=b+"px",this.bufferCanvas.setSize(a,b,1),this.hitCanvas.setSize(a,b);var c=this.children;for(var d=0;d<c.length;d++){var e=c[d];e.getCanvas().setSize(a,b),e.hitCanvas.setSize(a,b),e.draw()}}},add:function(a){return Kinetic.Container.prototype.add.call(this,a),a.canvas.setSize(this.attrs.width,this.attrs.height),a.hitCanvas.setSize(this.attrs.width,this.attrs.height),a.draw(),this.content.appendChild(a.canvas.element),this},getDragLayer:function(){return this.dragLayer},_setUserPosition:function(a){a||(a=window.event),this._setMousePosition(a),this._setTouchPosition(a)},_bindContentEvents:function(){var a=Kinetic.Global,b=this,c=["mousedown","mousemove","mouseup","mouseout","touchstart","touchmove","touchend"];for(var d=0;d<c.length;d++){var e=c[d];(function(){var a=e;b.content.addEventListener(a,function(c){b["_"+a](c)},!1)})()}},_mouseout:function(a){this._setUserPosition(a);var b=Kinetic.DD,c=this.targetShape;c&&(!b||!b.moving)&&(c._handleEvent("mouseout",a),c._handleEvent("mouseleave",a),this.targetShape=null),this.mousePos=undefined},_mousemove:function(a){this._setUserPosition(a);var b=Kinetic.DD,c=this.getIntersection(this.getUserPosition());if(c){var d=c.shape;d&&(!!b&&!!b.moving||c.pixel[3]!==255||!!this.targetShape&&this.targetShape._id===d._id?d._handleEvent("mousemove",a):(this.targetShape&&(this.targetShape._handleEvent("mouseout",a,d),this.targetShape._handleEvent("mouseleave",a,d)),d._handleEvent("mouseover",a,this.targetShape),d._handleEvent("mouseenter",a,this.targetShape),this.targetShape=d))}else this.targetShape&&(!b||!b.moving)&&(this.targetShape._handleEvent("mouseout",a),this.targetShape._handleEvent("mouseleave",a),this.targetShape=null);b&&b._drag(a)},_mousedown:function(a){var b,c=Kinetic.DD;this._setUserPosition(a),b=this.getIntersection(this.getUserPosition());if(b&&b.shape){var d=b.shape;this.clickStart=!0,d._handleEvent("mousedown",a)}c&&this.attrs.draggable&&!c.node&&this._startDrag(a)},_mouseup:function(a){this._setUserPosition(a);var b=this,c=Kinetic.DD,d=this.getIntersection(this.getUserPosition());if(d&&d.shape){var e=d.shape;e._handleEvent("mouseup",a),this.clickStart&&(!c||!c.moving||!c.node)&&(e._handleEvent("click",a),this.inDoubleClickWindow&&e._handleEvent("dblclick",a),this.inDoubleClickWindow=!0,setTimeout(function(){b.inDoubleClickWindow=!1},this.dblClickWindow))}this.clickStart=!1},_touchstart:function(a){var b,c=Kinetic.DD;this._setUserPosition(a),a.preventDefault(),b=this.getIntersection(this.getUserPosition());if(b&&b.shape){var d=b.shape;this.tapStart=!0,d._handleEvent("touchstart",a)}c&&this.attrs.draggable&&!c.node&&this._startDrag(a)},_touchend:function(a){this._setUserPosition(a);var b=this,c=Kinetic.DD,d=this.getIntersection(this.getUserPosition());if(d&&d.shape){var e=d.shape;e._handleEvent("touchend",a),this.tapStart&&(!c||!c.moving||!c.node)&&(e._handleEvent("tap",a),this.inDoubleClickWindow&&e._handleEvent("dbltap",a),this.inDoubleClickWindow=!0,setTimeout(function(){b.inDoubleClickWindow=!1},this.dblClickWindow))}this.tapStart=!1},_touchmove:function(a){this._setUserPosition(a);var b=Kinetic.DD;a.preventDefault();var c=this.getIntersection(this.getUserPosition());if(c&&c.shape){var d=c.shape;d._handleEvent("touchmove",a)}b&&b._drag(a)},_setMousePosition:function(a){var b=a.clientX-this._getContentPosition().left,c=a.clientY-this._getContentPosition().top;this.mousePos={x:b,y:c}},_setTouchPosition:function(a){if(a.touches!==undefined&&a.touches.length===1){var b=a.touches[0],c=b.clientX-this._getContentPosition().left,d=b.clientY-this._getContentPosition().top;this.touchPos={x:c,y:d}}},_getContentPosition:function(){var a=this.content.getBoundingClientRect();return{top:a.top,left:a.left}},_buildDOM:function(){this.content=document.createElement("div"),this.content.style.position="relative",this.content.style.display="inline-block",this.content.className="kineticjs-content",this.attrs.container.appendChild(this.content),this.bufferCanvas=new Kinetic.SceneCanvas,this.hitCanvas=new Kinetic.HitCanvas,this._resizeDOM()},_onContent:function(a,b){var c=a.split(" ");for(var d=0;d<c.length;d++){var e=c[d];this.content.addEventListener(e,b,!1)}},_setStageDefaultProperties:function(){this.nodeType="Stage",this.dblClickWindow=400,this.targetShape=null,this.mousePos=undefined,this.clickStart=!1,this.touchPos=undefined,this.tapStart=!1}},Kinetic.Global.extend(Kinetic.Stage,Kinetic.Container),Kinetic.Node.addGetters(Kinetic.Stage,["container"])}(),function(){Kinetic.Layer=function(a){this._initLayer(a)},Kinetic.Layer.prototype={_initLayer:function(a){this.setDefaultAttrs({clearBeforeDraw:!0}),this.nodeType="Layer",this.beforeDrawFunc=undefined,this.afterDrawFunc=undefined,this.canvas=new Kinetic.SceneCanvas,this.canvas.getElement().style.position="absolute",this.hitCanvas=new Kinetic.HitCanvas,Kinetic.Container.call(this,a)},draw:function(){var a=this.getContext();this.beforeDrawFunc!==undefined&&this.beforeDrawFunc.call(this),Kinetic.Container.prototype.draw.call(this),this.afterDrawFunc!==undefined&&this.afterDrawFunc.call(this)},drawHit:function(){this.hitCanvas.clear(),Kinetic.Container.prototype.drawHit.call(this)},drawScene:function(a){a=a||this.getCanvas(),this.attrs.clearBeforeDraw&&a.clear(),Kinetic.Container.prototype.drawScene.call(this,a)},toDataURL:function(a){a=a||{};var b=a.mimeType||null,c=a.quality||null,d,e,f=a.x||0,g=a.y||0;return a.width||a.height||a.x||a.y?Kinetic.Node.prototype.toDataURL.call(this,a):this.getCanvas().toDataURL(b,c)},beforeDraw:function(a){this.beforeDrawFunc=a},afterDraw:function(a){this.afterDrawFunc=a},getCanvas:function(){return this.canvas},getContext:function(){return this.canvas.context},clear:function(){this.getCanvas().clear()},setVisible:function(a){Kinetic.Node.prototype.setVisible.call(this,a),a?(this.canvas.element.style.display="block",this.hitCanvas.element.style.display="block"):(this.canvas.element.style.display="none",this.hitCanvas.element.style.display="none")},setZIndex:function(a){Kinetic.Node.prototype.setZIndex.call(this,a);var b=this.getStage();b&&(b.content.removeChild(this.canvas.element),a<b.getChildren().length-1?b.content.insertBefore(this.canvas.element,b.getChildren()[a+1].canvas.element):b.content.appendChild(this.canvas.element))},moveToTop:function(){Kinetic.Node.prototype.moveToTop.call(this);var a=this.getStage();a&&(a.content.removeChild(this.canvas.element),a.content.appendChild(this.canvas.element))},moveUp:function(){if(Kinetic.Node.prototype.moveUp.call(this)){var a=this.getStage();a&&(a.content.removeChild(this.canvas.element),this.index<a.getChildren().length-1?a.content.insertBefore(this.canvas.element,a.getChildren()[this.index+1].canvas.element):a.content.appendChild(this.canvas.element))}},moveDown:function(){if(Kinetic.Node.prototype.moveDown.call(this)){var a=this.getStage();if(a){var b=a.getChildren();a.content.removeChild(this.canvas.element),a.content.insertBefore(this.canvas.element,b[this.index+1].canvas.element)}}},moveToBottom:function(){if(Kinetic.Node.prototype.moveToBottom.call(this)){var a=this.getStage();if(a){var b=a.getChildren();a.content.removeChild(this.canvas.element),a.content.insertBefore(this.canvas.element,b[1].canvas.element)}}},getLayer:function(){return this},remove:function(){var a=this.getStage(),b=this.canvas,c=b.element;Kinetic.Node.prototype.remove.call(this),a&&b&&Kinetic.Type._isInDocument(c)&&a.content.removeChild(c)}},Kinetic.Global.extend(Kinetic.Layer,Kinetic.Container),Kinetic.Node.addGettersSetters(Kinetic.Layer,["clearBeforeDraw"])}(),function(){Kinetic.Group=function(a){this._initGroup(a)},Kinetic.Group.prototype={_initGroup:function(a){this.nodeType="Group",Kinetic.Container.call(this,a)}},Kinetic.Global.extend(Kinetic.Group,Kinetic.Container)}(),function(){Kinetic.Rect=function(a){this._initRect(a)},Kinetic.Rect.prototype={_initRect:function(a){this.setDefaultAttrs({width:0,height:0,cornerRadius:0}),Kinetic.Shape.call(this,a),this.shapeType="Rect",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext();b.beginPath();var c=this.getCornerRadius(),d=this.getWidth(),e=this.getHeight();c===0?b.rect(0,0,d,e):(b.moveTo(c,0),b.lineTo(d-c,0),b.arc(d-c,c,c,Math.PI*3/2,0,!1),b.lineTo(d,e-c),b.arc(d-c,e-c,c,0,Math.PI/2,!1),b.lineTo(c,e),b.arc(c,e-c,c,Math.PI/2,Math.PI,!1),b.lineTo(0,c),b.arc(c,c,c,Math.PI,Math.PI*3/2,!1)),b.closePath(),a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.Rect,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Rect,["cornerRadius"])}(),function(){Kinetic.Circle=function(a){this._initCircle(a)},Kinetic.Circle.prototype={_initCircle:function(a){this.setDefaultAttrs({radius:0}),Kinetic.Shape.call(this,a),this.shapeType="Circle",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext();b.beginPath(),b.arc(0,0,this.getRadius(),0,Math.PI*2,!0),b.closePath(),a.fillStroke(this)},getWidth:function(){return this.getRadius()*2},getHeight:function(){return this.getRadius()*2},setWidth:function(a){Kinetic.Node.prototype.setWidth.call(this,a),this.setRadius(a/2)},setHeight:function(a){Kinetic.Node.prototype.setHeight.call(this,a),this.setRadius(a/2)}},Kinetic.Global.extend(Kinetic.Circle,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Circle,["radius"])}(),function(){Kinetic.Wedge=function(a){this._initWedge(a)},Kinetic.Wedge.prototype={_initWedge:function(a){this.setDefaultAttrs({radius:0,angle:0,clockwise:!1}),Kinetic.Shape.call(this,a),this.shapeType="Wedge",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext();b.beginPath(),b.arc(0,0,this.getRadius(),0,this.getAngle(),this.getClockwise()),b.lineTo(0,0),b.closePath(),a.fillStroke(this)},setAngleDeg:function(a){this.setAngle(Kinetic.Type._degToRad(a))},getAngleDeg:function(){return Kinetic.Type._radToDeg(this.getAngle())}},Kinetic.Global.extend(Kinetic.Wedge,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Wedge,["radius","angle","clockwise"])}(),function(){Kinetic.Ellipse=function(a){this._initEllipse(a)},Kinetic.Ellipse.prototype={_initEllipse:function(a){this.setDefaultAttrs({radius:{x:0,y:0}}),Kinetic.Shape.call(this,a),this.shapeType="Ellipse",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.getRadius();b.beginPath(),b.save(),c.x!==c.y&&b.scale(1,c.y/c.x),b.arc(0,0,c.x,0,Math.PI*2,!0),b.restore(),b.closePath(),a.fillStroke(this)},getWidth:function(){return this.getRadius().x*2},getHeight:function(){return this.getRadius().y*2},setWidth:function(a){Kinetic.Node.prototype.setWidth.call(this,a),this.setRadius({x:a/2})},setHeight:function(a){Kinetic.Node.prototype.setHeight.call(this,a),this.setRadius({y:a/2})}},Kinetic.Global.extend(Kinetic.Ellipse,Kinetic.Shape),Kinetic.Node.addPointGettersSetters(Kinetic.Ellipse,["radius"])}(),function(){Kinetic.Image=function(a){this._initImage(a)},Kinetic.Image.prototype={_initImage:function(a){Kinetic.Shape.call(this,a),this.shapeType="Image",this._setDrawFuncs();var b=this;this.on("imageChange",function(a){b._syncSize()}),this._syncSize()},drawFunc:function(a){var b=this.getWidth(),c=this.getHeight(),d,e=this,f=a.getContext();f.beginPath(),f.rect(0,0,b,c),f.closePath(),a.fillStroke(this);if(this.attrs.image){if(this.attrs.crop&&this.attrs.crop.width&&this.attrs.crop.height){var g=this.attrs.crop.x||0,h=this.attrs.crop.y||0,i=this.attrs.crop.width,j=this.attrs.crop.height;d=[this.attrs.image,g,h,i,j,0,0,b,c]}else d=[this.attrs.image,0,0,b,c];this.hasShadow()?a.applyShadow(this,function(){e._drawImage(f,d)}):this._drawImage(f,d)}},drawHitFunc:function(a){var b=this.getWidth(),c=this.getHeight(),d=this.imageHitRegion,e=!1,f=a.getContext();d?(f.drawImage(d,0,0,b,c),f.beginPath(),f.rect(0,0,b,c),f.closePath(),a.stroke(this)):(f.beginPath(),f.rect(0,0,b,c),f.closePath(),a.fillStroke(this))},applyFilter:function(a,b,c){var d=new Kinetic.Canvas(this.attrs.image.width,this.attrs.image.height),e=d.getContext();e.drawImage(this.attrs.image,0,0);try{var f=e.getImageData(0,0,d.getWidth(),d.getHeight());a(f,b);var g=this;Kinetic.Type._getImage(f,function(a){g.setImage(a),c&&c()})}catch(h){Kinetic.Global.warn("Unable to apply filter. "+h.message)}},setCrop:function(){var a=[].slice.call(arguments),b=Kinetic.Type._getXY(a),c=Kinetic.Type._getSize(a),d=Kinetic.Type._merge(b,c);this.setAttr("crop",Kinetic.Type._merge(d,this.getCrop()))},createImageHitRegion:function(a){var b=new Kinetic.Canvas(this.attrs.width,this.attrs.height),c=b.getContext();c.drawImage(this.attrs.image,0,0);try{var d=c.getImageData(0,0,b.getWidth(),b.getHeight()),e=d.data,f=Kinetic.Type._hexToRgb(this.colorKey);for(var g=0,h=e.length;g<h;g+=4)e[g]=f.r,e[g+1]=f.g,e[g+2]=f.b;var i=this;Kinetic.Type._getImage(d,function(b){i.imageHitRegion=b,a&&a()})}catch(j){Kinetic.Global.warn("Unable to create image hit region. "+j.message)}},clearImageHitRegion:function(){delete this.imageHitRegion},_syncSize:function(){this.attrs.image&&(this.attrs.width||this.setWidth(this.attrs.image.width),this.attrs.height||this.setHeight(this.attrs.image.height))},_drawImage:function(a,b){b.length===5?a.drawImage(b[0],b[1],b[2],b[3],b[4]):b.length===9&&a.drawImage(b[0],b[1],b[2],b[3],b[4],b[5],b[6],b[7],b[8])}},Kinetic.Global.extend(Kinetic.Image,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Image,["image"]),Kinetic.Node.addGetters(Kinetic.Image,["crop"])}(),function(){Kinetic.Polygon=function(a){this._initPolygon(a)},Kinetic.Polygon.prototype={_initPolygon:function(a){this.setDefaultAttrs({points:[]}),Kinetic.Shape.call(this,a),this.shapeType="Polygon",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.getPoints(),d=c.length;b.beginPath(),b.moveTo(c[0].x,c[0].y);for(var e=1;e<d;e++)b.lineTo(c[e].x,c[e].y);b.closePath(),a.fillStroke(this)},setPoints:function(a){this.setAttr("points",Kinetic.Type._getPoints(a))}},Kinetic.Global.extend(Kinetic.Polygon,Kinetic.Shape),Kinetic.Node.addGetters(Kinetic.Polygon,["points"])}(),function(){function v(a){a.fillText(this.partialText,0,0)}function w(a){a.strokeText(this.partialText,0,0)}var a="auto",b="Calibri",c="canvas",d="center",e="Change.kinetic",f="2d",g="\n",h="",i="left",j="\n",k="text",l="Text",m="top",o="middle",p="normal",q="px ",r=" ",s="right",t=["fontFamily","fontSize","fontStyle","padding","align","lineHeight","text","width","height"],u=t.length;Kinetic.Text=function(a){this._initText(a)},Kinetic.Text.prototype={_initText:function(d){var f=this;this.setDefaultAttrs({fontFamily:b,text:h,fontSize:12,align:i,verticalAlign:m,fontStyle:p,padding:0,width:a,height:a,lineHeight:1}),this.dummyCanvas=document.createElement(c),Kinetic.Shape.call(this,d),this._fillFunc=v,this._strokeFunc=w,this.shapeType=l,this._setDrawFuncs();for(var g=0;g<u;g++)this.on(t[g]+e,f._setTextData);this._setTextData()},drawFunc:function(a){var b=a.getContext(),c=this.getPadding(),e=this.getFontStyle(),f=this.getFontSize(),g=this.getFontFamily(),h=this.getTextHeight(),j=this.getLineHeight()*h,k=this.textArr,l=k.length,m=this.getWidth();b.font=e+r+f+q+g,b.textBaseline=o,b.textAlign=i,b.save(),b.translate(c,0),b.translate(0,c+h/2);for(var n=0;n<l;n++){var p=k[n],t=p.text,u=p.width;b.save(),this.getAlign()===s?b.translate(m-u-c*2,0):this.getAlign()===d&&b.translate((m-u-c*2)/2,0),this.partialText=t,a.fillStroke(this),b.restore(),b.translate(0,j)}b.restore()},drawHitFunc:function(a){var b=a.getContext(),c=this.getWidth(),d=this.getHeight();b.beginPath(),b.rect(0,0,c,d),b.closePath(),a.fillStroke(this)},setText:function(a){var b=Kinetic.Type._isString(a)?a:a.toString();this.setAttr(k,b)},getWidth:function(){return this.attrs.width===a?this.getTextWidth()+this.getPadding()*2:this.attrs.width},getHeight:function(){return this.attrs.height===a?this.getTextHeight()*this.textArr.length*this.attrs.lineHeight+this.attrs.padding*2:this.attrs.height},getTextWidth:function(){return this.textWidth},getTextHeight:function(){return this.textHeight},_getTextSize:function(a){var b=this.dummyCanvas,c=b.getContext(f),d=this.getFontSize(),e;return c.save(),c.font=this.getFontStyle()+r+d+q+this.getFontFamily(),e=c.measureText(a),c.restore(),{width:e.width,height:parseInt(d,10)}},_expandTextData:function(a){var b=a.length;n=0,text=h,newArr=[];for(n=0;n<b;n++)text=a[n],newArr.push({text:text,width:this._getTextSize(text).width});return newArr},_setTextData:function(){var b=this.getText().split(h),c=[],d=0;addLine=!0,lineHeightPx=0,padding=this.getPadding(),this.textWidth=0,this.textHeight=this._getTextSize(this.getText()).height,lineHeightPx=this.getLineHeight()*this.textHeight;while(b.length>0&&addLine&&(this.attrs.height===a||lineHeightPx*(d+1)<this.attrs.height-padding*2)){var e=0,f=undefined;addLine=!1;while(e<b.length){if(b.indexOf(j)===e){b.splice(e,1),f=b.splice(0,e).join(h);break}var i=b.slice(0,e);if(this.attrs.width!==a&&this._getTextSize(i.join(h)).width>this.attrs.width-padding*2){if(e==0)break;var k=i.lastIndexOf(r),l=i.lastIndexOf(g),m=Math.max(k,l);if(m>=0){f=b.splice(0,1+m).join(h);break}f=b.splice(0,e).join(h);break}e++,e===b.length&&(f=b.splice(0,e).join(h))}this.textWidth=Math.max(this.textWidth,this._getTextSize(f).width),f!==undefined&&(c.push(f),addLine=!0),d++}this.textArr=this._expandTextData(c)}},Kinetic.Global.extend(Kinetic.Text,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Text,["fontFamily","fontSize","fontStyle","padding","align","lineHeight"]),Kinetic.Node.addGetters(Kinetic.Text,[k])}(),function(){Kinetic.Line=function(a){this._initLine(a)},Kinetic.Line.prototype={_initLine:function(a){this.setDefaultAttrs({points:[],lineCap:"butt"}),Kinetic.Shape.call(this,a),this.shapeType="Line",this._setDrawFuncs()},drawFunc:function(a){var b=this.getPoints(),c=b.length,d=a.getContext();d.beginPath(),d.moveTo(b[0].x,b[0].y);for(var e=1;e<c;e++){var f=b[e];d.lineTo(f.x,f.y)}a.stroke(this)},setPoints:function(a){this.setAttr("points",Kinetic.Type._getPoints(a))}},Kinetic.Global.extend(Kinetic.Line,Kinetic.Shape),Kinetic.Node.addGetters(Kinetic.Line,["points"])}(),function(){Kinetic.Spline=function(a){this._initSpline(a)},Kinetic.Spline._getControlPoints=function(a,b,c,d){var e=a.x,f=a.y,g=b.x,h=b.y,i=c.x,j=c.y,k=Math.sqrt(Math.pow(g-e,2)+Math.pow(h-f,2)),l=Math.sqrt(Math.pow(i-g,2)+Math.pow(j-h,2)),m=d*k/(k+l),n=d*l/(k+l),o=g-m*(i-e),p=h-m*(j-f),q=g+n*(i-e),r=h+n*(j-f);return[{x:o,y:p},{x:q,y:r}]},Kinetic.Spline.prototype={_initSpline:function(a){this.setDefaultAttrs({tension:1}),Kinetic.Line.call(this,a),this.shapeType="Spline"},drawFunc:function(a){var b=this.getPoints(),c=b.length,d=a.getContext(),e=this.getTension();d.beginPath(),d.moveTo(b[0].x,b[0].y);if(e!==0&&c>2){var f=this.allPoints,g=f.length;d.quadraticCurveTo(f[0].x,f[0].y,f[1].x,f[1].y);var h=2;while(h<g-1)d.bezierCurveTo(f[h].x,f[h++].y,f[h].x,f[h++].y,f[h].x,f[h++].y);d.quadraticCurveTo(f[g-1].x,f[g-1].y,b[c-1].x,b[c-1].y)}else for(var h=1;h<c;h++){var i=b[h];d.lineTo(i.x,i.y)}a.stroke(this)},setPoints:function(a){Kinetic.Line.prototype.setPoints.call(this,a),this._setAllPoints()},setTension:function(a){this.setAttr("tension",a),this._setAllPoints()},_setAllPoints:function(){var a=this.getPoints(),b=a.length,c=this.getTension(),d=[];for(var e=1;e<b-1;e++){var f=Kinetic.Spline._getControlPoints(a[e-1],a[e],a[e+1],c);d.push(f[0]),d.push(a[e]),d.push(f[1])}this.allPoints=d}},Kinetic.Global.extend(Kinetic.Spline,Kinetic.Line),Kinetic.Node.addGetters(Kinetic.Spline,["tension"])}(),function(){Kinetic.Blob=function(a){this._initBlob(a)},Kinetic.Blob.prototype={_initBlob:function(a){Kinetic.Spline.call(this,a),this.shapeType="Blob"},drawFunc:function(a){var b=this.getPoints(),c=b.length,d=a.getContext(),e=this.getTension();d.beginPath(),d.moveTo(b[0].x,b[0].y);if(e!==0&&c>2){var f=this.allPoints,g=f.length,h=0;while(h<g-1)d.bezierCurveTo(f[h].x,f[h++].y,f[h].x,f[h++].y,f[h].x,f[h++].y)}else for(var h=1;h<c;h++){var i=b[h];d.lineTo(i.x,i.y)}d.closePath(),a.fillStroke(this)},_setAllPoints:function(){var a=this.getPoints(),b=a.length,c=this.getTension(),d=Kinetic.Spline._getControlPoints(a[b-1],a[0],a[1],c),e=Kinetic.Spline._getControlPoints(a[b-2],a[b-1],a[0],c);Kinetic.Spline.prototype._setAllPoints.call(this),this.allPoints.unshift(d[1]),this.allPoints.push(e[0]),this.allPoints.push(a[b-1]),this.allPoints.push(e[1]),this.allPoints.push(d[0]),this.allPoints.push(a[0])}},Kinetic.Global.extend(Kinetic.Blob,Kinetic.Spline)}(),function(){Kinetic.Sprite=function(a){this._initSprite(a)},Kinetic.Sprite.prototype={_initSprite:function(a){this.setDefaultAttrs({index:0,frameRate:17}),Kinetic.Shape.call(this,a),this.shapeType="Sprite",this._setDrawFuncs(),this.anim=new Kinetic.Animation;var b=this;this.on("animationChange",function(){b.setIndex(0)})},drawFunc:function(a){var b=this.attrs.animation,c=this.attrs.index,d=this.attrs.animations[b][c],e=a.getContext(),f=this.attrs.image;f&&e.drawImage(f,d.x,d.y,d.width,d.height,0,0,d.width,d.height)},drawHitFunc:function(a){var b=this.attrs.animation,c=this.attrs.index,d=this.attrs.animations[b][c],e=a.getContext();e.beginPath(),e.rect(0,0,d.width,d.height),e.closePath(),a.fill(this)},start:function(){var a=this,b=this.getLayer();this.anim.node=b,this.interval=setInterval(function(){var b=a.attrs.index;a._updateIndex(),a.afterFrameFunc&&b===a.afterFrameIndex&&(a.afterFrameFunc(),delete a.afterFrameFunc,delete a.afterFrameIndex)},1e3/this.attrs.frameRate),this.anim.start()},stop:function(){this.anim.stop(),clearInterval(this.interval)},afterFrame:function(a,b){this.afterFrameIndex=a,this.afterFrameFunc=b},_updateIndex:function(){var a=this.attrs.index,b=this.attrs.animation;a<this.attrs.animations[b].length-1?this.attrs.index++:this.attrs.index=0}},Kinetic.Global.extend(Kinetic.Sprite,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Sprite,["animation","animations","index"])}(),function(){Kinetic.Star=function(a){this._initStar(a)},Kinetic.Star.prototype={_initStar:function(a){this.setDefaultAttrs({numPoints:0,innerRadius:0,outerRadius:0}),Kinetic.Shape.call(this,a),this.shapeType="Star",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.attrs.innerRadius,d=this.attrs.outerRadius,e=this.attrs.numPoints;b.beginPath(),b.moveTo(0,0-this.attrs.outerRadius);for(var f=1;f<e*2;f++){var g=f%2===0?d:c,h=g*Math.sin(f*Math.PI/e),i=-1*g*Math.cos(f*Math.PI/e);b.lineTo(h,i)}b.closePath(),a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.Star,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.Star,["numPoints","innerRadius","outerRadius"])}(),function(){Kinetic.RegularPolygon=function(a){this._initRegularPolygon(a)},Kinetic.RegularPolygon.prototype={_initRegularPolygon:function(
 a){this.setDefaultAttrs({radius:0,sides:0}),Kinetic.Shape.call(this,a),this.shapeType="RegularPolygon",this._setDrawFuncs()},drawFunc:function(a){var b=a.getContext(),c=this.attrs.sides,d=this.attrs.radius;b.beginPath(),b.moveTo(0,0-d);for(var e=1;e<c;e++){var f=d*Math.sin(e*2*Math.PI/c),g=-1*d*Math.cos(e*2*Math.PI/c);b.lineTo(f,g)}b.closePath(),a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.RegularPolygon,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.RegularPolygon,["radius","sides"])}(),function(){Kinetic.Path=function(a){this._initPath(a)},Kinetic.Path.prototype={_initPath:function(a){this.dataArray=[];var b=this;Kinetic.Shape.call(this,a),this.shapeType="Path",this._setDrawFuncs(),this.dataArray=Kinetic.Path.parsePathData(this.attrs.data),this.on("dataChange",function(){b.dataArray=Kinetic.Path.parsePathData(b.attrs.data)})},drawFunc:function(a){var b=this.dataArray,c=a.getContext();c.beginPath();for(var d=0;d<b.length;d++){var e=b[d].command,f=b[d].points;switch(e){case"L":c.lineTo(f[0],f[1]);break;case"M":c.moveTo(f[0],f[1]);break;case"C":c.bezierCurveTo(f[0],f[1],f[2],f[3],f[4],f[5]);break;case"Q":c.quadraticCurveTo(f[0],f[1],f[2],f[3]);break;case"A":var g=f[0],h=f[1],i=f[2],j=f[3],k=f[4],l=f[5],m=f[6],n=f[7],o=i>j?i:j,p=i>j?1:i/j,q=i>j?j/i:1;c.translate(g,h),c.rotate(m),c.scale(p,q),c.arc(0,0,o,k,k+l,1-n),c.scale(1/p,1/q),c.rotate(-m),c.translate(-g,-h);break;case"z":c.closePath()}}a.fillStroke(this)}},Kinetic.Global.extend(Kinetic.Path,Kinetic.Shape),Kinetic.Path.getLineLength=function(a,b,c,d){return Math.sqrt((c-a)*(c-a)+(d-b)*(d-b))},Kinetic.Path.getPointOnLine=function(a,b,c,d,e,f,g){f===undefined&&(f=b),g===undefined&&(g=c);var h=(e-c)/(d-b+1e-8),i=Math.sqrt(a*a/(1+h*h));d<b&&(i*=-1);var j=h*i,k;if((g-c)/(f-b+1e-8)===h)k={x:f+i,y:g+j};else{var l,m,n=this.getLineLength(b,c,d,e);if(n<1e-8)return undefined;var o=(f-b)*(d-b)+(g-c)*(e-c);o/=n*n,l=b+o*(d-b),m=c+o*(e-c);var p=this.getLineLength(f,g,l,m),q=Math.sqrt(a*a-p*p);i=Math.sqrt(q*q/(1+h*h)),d<b&&(i*=-1),j=h*i,k={x:l+i,y:m+j}}return k},Kinetic.Path.getPointOnCubicBezier=function(a,b,c,d,e,f,g,h,i){function j(a){return a*a*a}function k(a){return 3*a*a*(1-a)}function l(a){return 3*a*(1-a)*(1-a)}function m(a){return(1-a)*(1-a)*(1-a)}var n=h*j(a)+f*k(a)+d*l(a)+b*m(a),o=i*j(a)+g*k(a)+e*l(a)+c*m(a);return{x:n,y:o}},Kinetic.Path.getPointOnQuadraticBezier=function(a,b,c,d,e,f,g){function h(a){return a*a}function i(a){return 2*a*(1-a)}function j(a){return(1-a)*(1-a)}var k=f*h(a)+d*i(a)+b*j(a),l=g*h(a)+e*i(a)+c*j(a);return{x:k,y:l}},Kinetic.Path.getPointOnEllipticalArc=function(a,b,c,d,e,f){var g=Math.cos(f),h=Math.sin(f),i={x:c*Math.cos(e),y:d*Math.sin(e)};return{x:a+(i.x*g-i.y*h),y:b+(i.x*h+i.y*g)}},Kinetic.Path.parsePathData=function(a){if(!a)return[];var b=a,c=["m","M","l","L","v","V","h","H","z","Z","c","C","q","Q","t","T","s","S","a","A"];b=b.replace(new RegExp(" ","g"),",");for(var d=0;d<c.length;d++)b=b.replace(new RegExp(c[d],"g"),"|"+c[d]);var e=b.split("|"),f=[],g=0,h=0;for(var d=1;d<e.length;d++){var i=e[d],j=i.charAt(0);i=i.slice(1),i=i.replace(new RegExp(",-","g"),"-"),i=i.replace(new RegExp("-","g"),",-"),i=i.replace(new RegExp("e,-","g"),"e-");var k=i.split(",");k.length>0&&k[0]===""&&k.shift();for(var l=0;l<k.length;l++)k[l]=parseFloat(k[l]);while(k.length>0){if(isNaN(k[0]))break;var m=null,n=[],o=g,p=h;switch(j){case"l":g+=k.shift(),h+=k.shift(),m="L",n.push(g,h);break;case"L":g=k.shift(),h=k.shift(),n.push(g,h);break;case"m":g+=k.shift(),h+=k.shift(),m="M",n.push(g,h),j="l";break;case"M":g=k.shift(),h=k.shift(),m="M",n.push(g,h),j="L";break;case"h":g+=k.shift(),m="L",n.push(g,h);break;case"H":g=k.shift(),m="L",n.push(g,h);break;case"v":h+=k.shift(),m="L",n.push(g,h);break;case"V":h=k.shift(),m="L",n.push(g,h);break;case"C":n.push(k.shift(),k.shift(),k.shift(),k.shift()),g=k.shift(),h=k.shift(),n.push(g,h);break;case"c":n.push(g+k.shift(),h+k.shift(),g+k.shift(),h+k.shift()),g+=k.shift(),h+=k.shift(),m="C",n.push(g,h);break;case"S":var q=g,r=h,s=f[f.length-1];s.command==="C"&&(q=g+(g-s.points[2]),r=h+(h-s.points[3])),n.push(q,r,k.shift(),k.shift()),g=k.shift(),h=k.shift(),m="C",n.push(g,h);break;case"s":var q=g,r=h,s=f[f.length-1];s.command==="C"&&(q=g+(g-s.points[2]),r=h+(h-s.points[3])),n.push(q,r,g+k.shift(),h+k.shift()),g+=k.shift(),h+=k.shift(),m="C",n.push(g,h);break;case"Q":n.push(k.shift(),k.shift()),g=k.shift(),h=k.shift(),n.push(g,h);break;case"q":n.push(g+k.shift(),h+k.shift()),g+=k.shift(),h+=k.shift(),m="Q",n.push(g,h);break;case"T":var q=g,r=h,s=f[f.length-1];s.command==="Q"&&(q=g+(g-s.points[0]),r=h+(h-s.points[1])),g=k.shift(),h=k.shift(),m="Q",n.push(q,r,g,h);break;case"t":var q=g,r=h,s=f[f.length-1];s.command==="Q"&&(q=g+(g-s.points[0]),r=h+(h-s.points[1])),g+=k.shift(),h+=k.shift(),m="Q",n.push(q,r,g,h);break;case"A":var t=k.shift(),u=k.shift(),v=k.shift(),w=k.shift(),x=k.shift(),y=g,z=h;g=k.shift(),h=k.shift(),m="A",n=this.convertEndpointToCenterParameterization(y,z,g,h,w,x,t,u,v);break;case"a":var t=k.shift(),u=k.shift(),v=k.shift(),w=k.shift(),x=k.shift(),y=g,z=h;g+=k.shift(),h+=k.shift(),m="A",n=this.convertEndpointToCenterParameterization(y,z,g,h,w,x,t,u,v)}f.push({command:m||j,points:n,start:{x:o,y:p},pathLength:this.calcLength(o,p,m||j,n)})}(j==="z"||j==="Z")&&f.push({command:"z",points:[],start:undefined,pathLength:0})}return f},Kinetic.Path.calcLength=function(a,b,c,d){var e,f,g,h=Kinetic.Path;switch(c){case"L":return h.getLineLength(a,b,d[0],d[1]);case"C":e=0,f=h.getPointOnCubicBezier(0,a,b,d[0],d[1],d[2],d[3],d[4],d[5]);for(t=.01;t<=1;t+=.01)g=h.getPointOnCubicBezier(t,a,b,d[0],d[1],d[2],d[3],d[4],d[5]),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;return e;case"Q":e=0,f=h.getPointOnQuadraticBezier(0,a,b,d[0],d[1],d[2],d[3]);for(t=.01;t<=1;t+=.01)g=h.getPointOnQuadraticBezier(t,a,b,d[0],d[1],d[2],d[3]),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;return e;case"A":e=0;var i=d[4],j=d[5],k=d[4]+j,l=Math.PI/180;Math.abs(i-k)<l&&(l=Math.abs(i-k)),f=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],i,0);if(j<0)for(t=i-l;t>k;t-=l)g=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],t,0),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;else for(t=i+l;t<k;t+=l)g=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],t,0),e+=h.getLineLength(f.x,f.y,g.x,g.y),f=g;return g=h.getPointOnEllipticalArc(d[0],d[1],d[2],d[3],k,0),e+=h.getLineLength(f.x,f.y,g.x,g.y),e}return 0},Kinetic.Path.convertEndpointToCenterParameterization=function(a,b,c,d,e,f,g,h,i){var j=i*(Math.PI/180),k=Math.cos(j)*(a-c)/2+Math.sin(j)*(b-d)/2,l=-1*Math.sin(j)*(a-c)/2+Math.cos(j)*(b-d)/2,m=k*k/(g*g)+l*l/(h*h);m>1&&(g*=Math.sqrt(m),h*=Math.sqrt(m));var n=Math.sqrt((g*g*h*h-g*g*l*l-h*h*k*k)/(g*g*l*l+h*h*k*k));e==f&&(n*=-1),isNaN(n)&&(n=0);var o=n*g*l/h,p=n*-h*k/g,q=(a+c)/2+Math.cos(j)*o-Math.sin(j)*p,r=(b+d)/2+Math.sin(j)*o+Math.cos(j)*p,s=function(a){return Math.sqrt(a[0]*a[0]+a[1]*a[1])},t=function(a,b){return(a[0]*b[0]+a[1]*b[1])/(s(a)*s(b))},u=function(a,b){return(a[0]*b[1]<a[1]*b[0]?-1:1)*Math.acos(t(a,b))},v=u([1,0],[(k-o)/g,(l-p)/h]),w=[(k-o)/g,(l-p)/h],x=[(-1*k-o)/g,(-1*l-p)/h],y=u(w,x);return t(w,x)<=-1&&(y=Math.PI),t(w,x)>=1&&(y=0),f===0&&y>0&&(y-=2*Math.PI),f==1&&y<0&&(y+=2*Math.PI),[q,r,g,h,v,y,j,f]},Kinetic.Node.addGettersSetters(Kinetic.Path,["data"])}(),function(){function a(a){a.fillText(this.partialText,0,0)}function b(a){a.strokeText(this.partialText,0,0)}Kinetic.TextPath=function(a){this._initTextPath(a)},Kinetic.TextPath.prototype={_initTextPath:function(c){this.setDefaultAttrs({fontFamily:"Calibri",fontSize:12,fontStyle:"normal",text:""}),this.dummyCanvas=document.createElement("canvas"),this.dataArray=[];var d=this;Kinetic.Shape.call(this,c),this._fillFunc=a,this._strokeFunc=b,this.shapeType="TextPath",this._setDrawFuncs(),this.dataArray=Kinetic.Path.parsePathData(this.attrs.data),this.on("dataChange",function(){d.dataArray=Kinetic.Path.parsePathData(this.attrs.data)});var e=["text","textStroke","textStrokeWidth"];for(var f=0;f<e.length;f++){var g=e[f];this.on(g+"Change",d._setTextData)}d._setTextData()},drawFunc:function(a){var b=this.charArr,c=a.getContext();c.font=this.attrs.fontStyle+" "+this.attrs.fontSize+"pt "+this.attrs.fontFamily,c.textBaseline="middle",c.textAlign="left",c.save();var d=this.glyphInfo;for(var e=0;e<d.length;e++){c.save();var f=d[e].p0,g=d[e].p1,h=parseFloat(this.attrs.fontSize);c.translate(f.x,f.y),c.rotate(d[e].rotation),this.partialText=d[e].text,a.fillStroke(this),c.restore()}c.restore()},getTextWidth:function(){return this.textWidth},getTextHeight:function(){return this.textHeight},setText:function(a){Kinetic.Text.prototype.setText.call(this,a)},_getTextSize:function(a){var b=this.dummyCanvas,c=b.getContext("2d");c.save(),c.font=this.attrs.fontStyle+" "+this.attrs.fontSize+"pt "+this.attrs.fontFamily;var d=c.measureText(a);return c.restore(),{width:d.width,height:parseInt(this.attrs.fontSize,10)}},_setTextData:function(){var a=this,b=this._getTextSize(this.attrs.text);this.textWidth=b.width,this.textHeight=b.height,this.glyphInfo=[];var c=this.attrs.text.split(""),d,e,f,g=-1,h=0,i=function(){h=0;var b=a.dataArray;for(var c=g+1;c<b.length;c++){if(b[c].pathLength>0)return g=c,b[c];b[c].command=="M"&&(d={x:b[c].points[0],y:b[c].points[1]})}return{}},j=function(b,c){var g=a._getTextSize(b).width,j=0,k=0,l=!1;e=undefined;while(Math.abs(g-j)/g>.01&&k<25){k++;var m=j;while(f===undefined)f=i(),f&&m+f.pathLength<g&&(m+=f.pathLength,f=undefined);if(f==={}||d===undefined)return undefined;var n=!1;switch(f.command){case"L":Kinetic.Path.getLineLength(d.x,d.y,f.points[0],f.points[1])>g?e=Kinetic.Path.getPointOnLine(g,d.x,d.y,f.points[0],f.points[1],d.x,d.y):f=undefined;break;case"A":var o=f.points[4],p=f.points[5],q=f.points[4]+p;h===0?h=o+1e-8:g>j?h+=Math.PI/180*p/Math.abs(p):h-=Math.PI/360*p/Math.abs(p),Math.abs(h)>Math.abs(q)&&(h=q,n=!0),e=Kinetic.Path.getPointOnEllipticalArc(f.points[0],f.points[1],f.points[2],f.points[3],h,f.points[6]);break;case"C":h===0?g>f.pathLength?h=1e-8:h=g/f.pathLength:g>j?h+=(g-j)/f.pathLength:h-=(j-g)/f.pathLength,h>1&&(h=1,n=!0),e=Kinetic.Path.getPointOnCubicBezier(h,f.start.x,f.start.y,f.points[0],f.points[1],f.points[2],f.points[3],f.points[4],f.points[5]);break;case"Q":h===0?h=g/f.pathLength:g>j?h+=(g-j)/f.pathLength:h-=(j-g)/f.pathLength,h>1&&(h=1,n=!0),e=Kinetic.Path.getPointOnQuadraticBezier(h,f.start.x,f.start.y,f.points[0],f.points[1],f.points[2],f.points[3])}e!==undefined&&(j=Kinetic.Path.getLineLength(d.x,d.y,e.x,e.y)),n&&(n=!1,f=undefined)}};for(var k=0;k<c.length;k++){j(c[k]);if(d===undefined||e===undefined)break;var l=Kinetic.Path.getLineLength(d.x,d.y,e.x,e.y),m=0,n=Kinetic.Path.getPointOnLine(m+l/2,d.x,d.y,e.x,e.y),o=Math.atan2(e.y-d.y,e.x-d.x);this.glyphInfo.push({transposeX:n.x,transposeY:n.y,text:c[k],rotation:o,p0:d,p1:e}),d=e}}},Kinetic.Global.extend(Kinetic.TextPath,Kinetic.Shape),Kinetic.Node.addGettersSetters(Kinetic.TextPath,["fontFamily","fontSize","fontStyle"]),Kinetic.Node.addGetters(Kinetic.TextPath,["text"])}();
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ * ActionStack keeps track of user's actions.
+ * @param {object} $ jQuery ojbect
+ * @param {object} params Other parameters
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function ActionStack ($, params) {
     var self = {
         'className' : 'ActionStack'
@@ -1140,9 +1147,12 @@ svl.getLabelCounter = function () {
 };
 
 /**
- * A Canvas module
+ * A canvas module
+ * @param $ {object} jQuery object
+ * @param param {object} Other parameters
+ * @returns {{className: string, testCases: {}}}
+ * @constructor
  * @memberof svl
- * @class
  */
 function Canvas ($, param) {
     var self = {
@@ -2450,6 +2460,7 @@ function Canvas ($, param) {
     self.hideDeleteLabel = hideDeleteLabel;
     self.hideRightClickMenu = hideRightClickMenu;
     self.insertLabel = insertLabel;
+    self.isDrawing = isDrawing;
     self.isOn = isOn;
     self.lockCurrentLabel = lockCurrentLabel;
     self.lockDisableLabelDelete = lockDisableLabelDelete;
@@ -2611,6 +2622,11 @@ function ExampleWindow ($, params) {
 var svl = svl || {};
 
 /**
+ * A form module
+ * @param $ {object} jQuery object
+ * @param params {object} Other parameters
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
  */
 function Form ($, params) {
@@ -2693,15 +2709,15 @@ function Form ($, params) {
         //
         // initiailze jQuery elements.
         $form = $("#BusStopLabelerForm");
-        $textieldComment = $("#CommentField");
-        $btnSubmit = $("#Button_Submit");
-        $btnSkip = $("#Button_Skip");
+        $textieldComment = svl.ui.form.commentField; //$("#CommentField");
+        $btnSubmit = svl.ui.form.submitButton;
+        $btnSkip = svl.ui.form.skipButton;
         $btnConfirmSkip = $("#BusStopAbsence_Submit");
         $btnCancelSkip = $("#BusStopAbsence_Cancel");
         $radioSkipReason = $('.Radio_BusStopAbsence');
         $textSkipOtherReason = $("#Text_BusStopAbsenceOtherReason");
         $divSkipOptions = $("#Holder_SkipOptions");
-        $pageOverlay = $("#Holder_PageOverlay");
+        $pageOverlay = $("#page-overlay-holder");
 
 
         if (properties.userExperiment) {
@@ -3076,7 +3092,7 @@ function Form ($, params) {
 
             //
             // Clear and render the onboarding canvas
-            var $divOnboardingMessageBox = $("#Holder_OnboardingMessageBox");
+            var $divOnboardingMessageBox = undefined; //
             messageCanvas.clear();
             messageCanvas.renderMessage(300, 250, message, 350, 140);
             messageCanvas.renderArrow(650, 282, 710, 282);
@@ -3427,8 +3443,12 @@ function Form ($, params) {
 var svl = svl || {};
 
 /**
- * @memberof svl
-  */
+ *
+ * @param param {object}
+ * @param $ {object} jQuery object
+ * @returns {{className: string}}
+ * @constructor
+ */
 function GoldenInsertion (param, $) {
     var oPublic = {
         className: 'GoldenInsertion'
@@ -4065,8 +4085,11 @@ svl.formatRecordsToLabels = svl.formatRecordsToGoldenLabels;
 var svl = svl || {};
 
 /**
+ * A Keyboard module
+ * @param $
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
- * @module
  */
 function Keyboard ($) {
     var oPublic = {
@@ -4082,7 +4105,7 @@ function Keyboard ($) {
     var $inputSkipOther;
 
     function init () {
-        $textareaComment = ($("#CommentField").length) > 0 ? $("#CommentField") : null;
+        $textareaComment = (svl.ui.form.commentField.length) > 0 ? svl.ui.form.commentField : null;
         $taskDifficultyComment = ($("#task-difficulty-comment").length > 0) ? $("#task-difficulty-comment") : null;
         $inputSkipOther = ($("#Text_BusStopAbsenceOtherReason").length > 0) ? $("#Text_BusStopAbsenceOtherReason") : null;
 
@@ -4228,7 +4251,10 @@ function Keyboard ($) {
 var svl = svl || {};
 
 /**
- * Label class
+ * A Label module.
+ * @param pathIn
+ * @param params
+ * @returns {*}
  * @constructor
  * @memberof svl
  */
@@ -5014,10 +5040,13 @@ function Label (pathIn, params) {
 var svl = svl || {};
 
 /**
- * @memberof svl
+ * A LabelLandmarkFeedback module
+ * @param $ {object} jQuery object
+ * @param params {object} Other parameters
+ * @returns {{className: string}}
  * @constructor
+ * @memberof svl
  */
-
 function LabeledLandmarkFeedback ($, params) {
     var self = { className : 'LabeledLandmarkFeedback' };
     var properties = {};
@@ -5086,7 +5115,14 @@ function LabeledLandmarkFeedback ($, params) {
 /** @namespace */
 var svl = svl || {};
 
-
+/**
+ * The main module of SVLabel
+ * @param $: jQuery object
+ * @param param: other parameters
+ * @returns {{moduleName: string}}
+ * @constructor
+ * @memberof svl
+ */
 function Main ($, param) {
     var self = {moduleName: 'MainUI'};
     var properties = {};
@@ -5283,6 +5319,10 @@ var polys = [];
 
 
 /**
+ * The Map module.
+ * @param params {object} Other parameters
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
  */
 function Map (params) {
@@ -6313,9 +6353,16 @@ function Map (params) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ * A MessageBox module
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function MessageBox ($, param) {
     var self = {className: 'MessageBox'};
     var OKButton = '<button id="MessageBoxOkButton" class="button" style="position: absolute; bottom: 10px; left: 10px;">OK</button>';
@@ -6326,8 +6373,8 @@ function MessageBox ($, param) {
 
 
     function init () {
-        $divMessageBoxHolder = $("#Holder_Message");
-        $divMessageBox = $("#MessageBox");
+        $divMessageBoxHolder = $("#message-box-holder");
+        $divMessageBox = $("#message-box");
     }
 
     self.setMessage = function (message) {
@@ -6442,9 +6489,16 @@ function MessageBox ($, param) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ * A MissionDescription module
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function MissionDescription ($, params) {
     var self = {
         className : 'MissionDescription'
@@ -6471,20 +6525,33 @@ function MissionDescription ($, params) {
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////////////////////////
-    self.setCurrentStatusDescription = function (description) {
+    /**
+     * The method sets what's shown in the current status pane in the interface
+     * @param description {string} A string (or html) to put.
+     * @returns {self}
+     */
+    function setCurrentStatusDescription (description) {
       if (svl.ui && svl.ui.missinDescription) {
         $currentStatusDescription.html(description);
       }
       return this;
-    };
+    }
 
+    self.setCurrentStatusDescription = setCurrentStatusDescription;
     init(params);
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $ {object} jQuery object
+ * @param params {object} other parameters
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function OverlayMessageBox ($, params) {
     var self = {
             'className' : 'OverlayMessageBox'
@@ -6502,8 +6569,6 @@ function OverlayMessageBox ($, params) {
     ////////////////////////////////////////
     function init() {
         // Initialization function.
-        // $divOverlayMessage = $(params.domIds.OverlayMessage);
-        // $divOverlayMessageBox = $(params.domIds.Holder_OverlayMessage);
         if (svl.ui && svl.ui.overlayMessage) {
           $divOverlayMessage = svl.ui.overlayMessage.message;
           $divOverlayMessageBox = svl.ui.overlayMessage.box;
@@ -6563,9 +6628,16 @@ function OverlayMessageBox ($, params) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param points
+ * @param params
+ * @returns {{className: string, points: undefined}}
+ * @constructor
+ * @memberof svl
+ */
 function Path (points, params) {
     // Path object constructor
     // This class object holds an array of Point objects.
@@ -7147,9 +7219,18 @@ function Path (points, params) {
     return oPublic;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param x
+ * @param y
+ * @param pov
+ * @param params
+ * @returns {{className: string, svImageCoordinate: undefined, canvasCoordinate: undefined, originalCanvasCoordinate: undefined, pov: undefined, originalPov: undefined}}
+ * @constructor
+ * @memberof svl
+ */
 function Point (x, y, pov, params) {
   'use strict';
     // Point object constructor.
@@ -7271,7 +7352,7 @@ function Point (x, y, pov, params) {
     }
     function getPOV () {
         return pov;
-    };
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Public functions
@@ -7343,9 +7424,14 @@ function Point (x, y, pov, params) {
         } else {
             return false;
         }
-    }
+    };
 
 
+    /**
+     *
+     * @param pov
+     * @param ctx
+     */
     self.render = function (pov, ctx) {
         // Render points
         if (status.visibility === 'visible') {
@@ -7420,7 +7506,7 @@ function Point (x, y, pov, params) {
 
     self.setProperties = function (params) {
         // This function resets all the properties specified in params.
-        for (key in params) {
+        for (var key in params) {
             if (key in properties) {
                 properties[key] = params[key];
             }
@@ -7552,7 +7638,7 @@ svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
 
 
     return {x : x, y : y};
-}
+};
 
 svl.zoomFactor = {
     1: 1,
@@ -7562,9 +7648,15 @@ svl.zoomFactor = {
     5: 16
 };
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ */
 function ProgressFeedback ($, params) {
     var self = {
         className : 'ProgressFeedback'
@@ -7655,9 +7747,15 @@ function ProgressFeedback ($, params) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ */
 function ProgressPov ($, param) {
     var oPublic = {className: 'ProgressPov'};
     var status = {
@@ -7896,9 +7994,16 @@ function ProgressPov ($, param) {
     return oPublic;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function QualificationBadges ($, params) {
     var self = { className : 'QualificationBadges' };
     var properties = {
@@ -7947,9 +8052,16 @@ function QualificationBadges ($, params) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function RibbonMenu ($, params) {
     var self = {className: 'RibbonMenu'};
     var properties = {
@@ -8334,9 +8446,15 @@ function RibbonMenu ($, params) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function RightClickMenu (params) {
     var oPublic = {
         'className' : 'RightClickMenu'
@@ -9115,9 +9233,16 @@ function RightClickMenu (params) {
     return oPublic;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function Tooltip ($, param) {
     var self = {className: 'Tooltip'};
     var properties = {};
@@ -9148,9 +9273,14 @@ function Tooltip ($, param) {
     return self;
 }
 
-/** @namespace */
 var svl = svl || {};
 
+/**
+ *
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
 function Tracker () {
     var self = {className: 'Tracker'};
     var actions = [];
@@ -9373,35 +9503,37 @@ function Tracker () {
 var svl = svl || {};
 
 /**
- * @memberof svl
+ * A UI class
+ * @param $
+ * @param params
+ * @returns {{moduleName: string}}
  * @constructor
+ * @memberof svl
  */
 function UI ($, params) {
     var self = {moduleName: 'MainUI'};
-    var properties = {};
-    var status = {};
-
     self.streetViewPane = {};
+    params = params || {};
 
     ////////////////////////////////////////
     // Private Functions
     ////////////////////////////////////////
     function _init (params) {
-
-      // ActionStack DOMs
-      $buttonRedo = $("#ActionStackRedoButton");
-      $buttonUndo = $("#ActionStackUndoButton");
+      // Todo. Use better templating techniques rather so it's prettier!
 
       self.actionStack = {};
-      self.actionStack.redo = $buttonRedo;
-      self.actionStack.undo = $buttonUndo;
+      self.actionStack.holder = $("#action-stack-control-holder");
+      self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
+      self.actionStack.holder.append('<button id="redo-button" class="button action-stack-button" value="Redo"><img src="img/icons/Icon_Redo.png" class="action-stack-icons" alt="Redo" /><br /><small>Redo</small></button>');
+      self.actionStack.redo = $("#redo-button");
+      self.actionStack.undo = $("#undo-button");
 
       // LabeledLandmarkFeedback DOMs
       $labelCountCurbRamp = $("#LabeledLandmarkCount_CurbRamp");
       $labelCountNoCurbRamp = $("#LabeledLandmarkCount_NoCurbRamp");
       $submittedLabelMessage = $("#LabeledLandmarks_SubmittedLabelCount");
 
-      self.labeledLandmark = {}
+      self.labeledLandmark = {};
       self.labeledLandmark.curbRamp = $labelCountCurbRamp;
       self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
       self.labeledLandmark.submitted = $submittedLabelMessage;
@@ -9415,22 +9547,31 @@ function UI ($, params) {
       self.map.viewControlLayer = $("div#viewControlLayer");
       self.map.modeSwitchWalk = $("span#modeSwitchWalk");
       self.map.modeSwitchDraw = $("span#modeSwitchDraw");
+      self.googleMaps = {};
+      self.googleMaps.holder = $("#google-maps-holder");
+      self.googleMaps.holder.append('<div id="google-maps" class="google-maps-pane" style=""></div><div id="google-maps-overlay" class="google-maps-pane" style="z-index: 1"></div>')
 
       // MissionDescription DOMs
-      $currentStatusDescription = $("#CurrentStatus_Description")
       self.missinDescription = {};
-      self.missinDescription.description = $currentStatusDescription;
+      self.missinDescription.description = $("#CurrentStatus_Description");
 
       // OverlayMessage
       self.overlayMessage = {};
-      self.overlayMessage.box = $("#OverlayMessageBox");
-      self.overlayMessage.message = $("#OverlayMessage");
+      self.overlayMessage.holder = $("#overlay-message-holder");
+      self.overlayMessage.holder.append("<span id='overlay-message-box'><span id='overlay-message'>Walk</span></span>");
+      self.overlayMessage.box = $("#overlay-message-box");
+      self.overlayMessage.message = $("#overlay-message");
 
       // ProgressPov
       self.progressPov = {};
-      self.progressPov.rate = $("#Holder_CurrentCompletionRate");
-      self.progressPov.bar = $("#Holder_CurrentCompletionBar");
-      self.progressPov.filler = $("#Holder_CurrentCompletionBarFiller");
+      self.progressPov.holder = $("#progress-pov-holder");
+      self.progressPov.holder.append("<div id='progress-pov-label' class='bold'>Observed area:</div>");
+      self.progressPov.holder.append("<div id='progress-pov-current-completion-bar'></div>");
+      self.progressPov.holder.append("<div id='progress-pov-current-completion-bar-filler'></div>");
+      self.progressPov.holder.append("<div id='progress-pov-current-completion-rate'>Hi</div>");
+      self.progressPov.rate = $("#progress-pov-current-completion-rate");
+      self.progressPov.bar = $("#progress-pov-current-completion-bar");
+      self.progressPov.filler = $("#progress-pov-current-completion-bar-filler");
 
       // Ribbon menu DOMs
       $divStreetViewHolder = $("#Holder_StreetView");
@@ -9444,19 +9585,28 @@ function UI ($, params) {
       self.ribbonMenu.bottonBottomBorders = $ribbonButtonBottomLines;
       self.ribbonMenu.connector = $ribbonConnector;
 
-      // ZoomControl DOMs
-      $buttonZoomIn = $("#ZoomControlZoomInButton");
-      $buttonZoomOut = $("#ZoomControlZoomOutButton");
-
+      // Zoom control
       self.zoomControl = {};
-      self.zoomControl.zoomIn = $buttonZoomIn;
-      self.zoomControl.zoomOut = $buttonZoomOut;
+      self.zoomControl.holder = $("#zoom-control-holder");
+      self.zoomControl.holder.append('<button id="zoom-in-button" class="button zoom-control-button"><img src="img/icons/ZoomIn.svg" class="zoom-button-icon" alt="Zoom in"><br /><small>Zoom In</small></button>');
+      self.zoomControl.holder.append('<button id="zoom-out-button" class="button zoom-control-button"><img src="img/icons/ZoomOut.svg" class="zoom-button-icon" alt="Zoom out"><br /><small>Zoom Out</small></button>');
+      self.zoomControl.zoomIn = $("#zoom-in-button");
+      self.zoomControl.zoomOut = $("#zoom-out-button");
+
+      // Form
+      self.form = {};
+      self.form.holder = $("#form-holder");
+      self.form.commentField = $("#comment-field");
+      self.form.skipButton = $("#skip-button");
+      self.form.submitButton = $("#submit-button");
+
+      self.onboarding = {};
+      self.onboarding.holder = $("#onboarding-holder");
+      if ("onboarding" in params && params.onboarding) {
+        self.onboarding.holder.append("<div id='Holder_OnboardingCanvas'><canvas id='onboardingCanvas' width='720px' height='480px'></canvas><div id='Holder_OnboardingMessageBox'><div id='Holder_OnboardingMessage'></div></div></div>");
+      }
 
     }
-
-    ////////////////////////////////////////
-    // Public Functions
-    ////////////////////////////////////////
 
     _init(params);
     return self;
@@ -9466,8 +9616,11 @@ var svl = svl || {};
 
 /**
  * Validator
- * @memberof svl
+ * @param param
+ * @param $
+ * @returns {{className: string}}
  * @constructor
+ * @memberof svl
  */
 function Validator (param, $) {
     var oPublic = {
@@ -9849,7 +10002,8 @@ function Validator (param, $) {
         hideDialogWindow();
         updateProgress();
 
-        $("#Holder_GoogleMap").css('visibility', 'hidden');
+        svl.ui.googleMaps.holder.css('visibility', 'hidden');
+        // $("#google-maps-holder").css('visibility', 'hidden');
     }
 
     function showDialogWindow (timelapse) {
@@ -10249,9 +10403,13 @@ function Validator (param, $) {
 
 var svl = svl || {};
 
-/** ValidationForm
- * @memberof svl
+/**
+ *
+ * @param param
+ * @param $
+ * @returns {{className: string}}
  * @constructor
+ * @memberof svl
  */
 function ValidatorForm (param, $) {
     var oPublic = {className: 'ValidatorForm'};
@@ -10423,6 +10581,11 @@ function ValidatorForm (param, $) {
 var svl = svl || {};
 
 /**
+ *
+ * @param $ jQuery object
+ * @param param Other parameters
+ * @returns {{className: string}}
+ * @constructor
  * @memberof svl
  */
 function ZoomControl ($, param) {
@@ -10574,6 +10737,11 @@ function ZoomControl ($, param) {
     ////////////////////////////////////////
     // Public Functions
     ////////////////////////////////////////
+    /**
+     * Disables zooming in
+     * @method
+     * @returns {self}
+     */
     self.disableZoomIn = function () {
         // Enable zoom in.
         if (!lock.disableZoomIn) {
@@ -10583,7 +10751,7 @@ function ZoomControl ($, param) {
             }
         }
         return this;
-    }
+    };
 
     self.disableZoomOut = function () {
         // Enable zoom out.

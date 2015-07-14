@@ -20,6 +20,14 @@ module.exports = function(grunt) {
                 dest: 'build/SVLabel.min.js'
             }
         },
+        concat_css: {
+            all: {
+                src: [
+                    'css/*.css'
+                    ],
+                dest: 'build/SVLabel.css'
+            }
+        },
         jsdoc : {
             dist : {
                 src: 'src/SVLabel/*.js'
@@ -29,6 +37,7 @@ module.exports = function(grunt) {
 
     // 3. Where we tell Grunt we plan to use this plug-in.
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-concat-css');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-jsdoc');
 
