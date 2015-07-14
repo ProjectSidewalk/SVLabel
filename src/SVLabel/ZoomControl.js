@@ -87,7 +87,6 @@ function ZoomControl ($, param) {
               svl.canvas.cancelDrawing();
             }
             if ('panorama' in svl) {
-                console.log("hi");
                 var currentPov = svl.panorama.getPov();
                 var currentZoomLevel = currentPov.zoom;
 
