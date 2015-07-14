@@ -1,58 +1,30 @@
-
-/******************************************
-* These styles are applied to the form area
-*/
-#Holder_Form {
+#form-holder {
     background: none;
     padding-top: 3px;
     /* Position */
     position: relative;
     left: 0px;
     top: 600px;
-    height: 110px;
     width: 960px;
-
 }
 
 
-#Holder_CommentField {
+#comment-field-holder {
     background: none;
     padding-top: 5px;
-    /* Position */
     position: relative;
     width: 932px;
 }
 
-#CommentField {
+#comment-field {
     height: 30px;
     width: 100%;
 }
 
-#Holder_FooterMessage {
+footer {
     color: rgba(100,100,100,1);
     font-size: 12px;
     height: 10px;
-    padding-top: 15px;
     text-align: center;
     width: 100%;
-}
-
-#Holder_SkipOptions {
-    background: rgba(255,255,255,0.5);
-    height: 720px;
-    left: 0;
-    position: absolute;
-    top: -600px;
-    visibility: hidden;
-    width: 100%;
-}
-
-#Holder_BusStopAbsenceBackground {
-    background: rgba(0,0,0,0.9);
-    color: white;
-    height: 120px;
-    left: 0;
-    position: absolute;
-    top: 600px;
-    width: 940px;
 }

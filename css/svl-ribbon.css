@@ -3,7 +3,7 @@
 * These styles are for the Ribbon Menu area.
 *************************************************************/
 /* This style is applied to a ribbon menu */
-#Holder_RibbonMenu {
+#ribbon-menu-holder {
     position: absolute;
     left: 0px;
     top: 0px;

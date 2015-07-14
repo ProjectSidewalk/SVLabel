@@ -91,6 +91,13 @@ function UI ($, params) {
       self.zoomControl.zoomIn = $("#zoom-in-button");
       self.zoomControl.zoomOut = $("#zoom-out-button");
 
+      // Form
+      self.form = {};
+      self.form.holder = $("#form-holder");
+      self.form.commentField = $("#comment-field");
+      self.form.skipButton = $("#skip-button");
+      self.form.submitButton = $("#submit-button");
+
       self.onboarding = {};
       self.onboarding.holder = $("#onboarding-holder");
       if ("onboarding" in params && params.onboarding) {

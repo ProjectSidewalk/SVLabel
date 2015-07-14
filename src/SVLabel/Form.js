@@ -88,9 +88,9 @@ function Form ($, params) {
         //
         // initiailze jQuery elements.
         $form = $("#BusStopLabelerForm");
-        $textieldComment = $("#CommentField");
-        $btnSubmit = $("#Button_Submit");
-        $btnSkip = $("#Button_Skip");
+        $textieldComment = svl.ui.form.commentField; //$("#CommentField");
+        $btnSubmit = svl.ui.form.submitButton;
+        $btnSkip = svl.ui.form.skipButton;
         $btnConfirmSkip = $("#BusStopAbsence_Submit");
         $btnCancelSkip = $("#BusStopAbsence_Cancel");
         $radioSkipReason = $('.Radio_BusStopAbsence');

@@ -16,8 +16,8 @@ th {
 
 }
 
+/*
 #Footer {
-    /* Position */
     position: absolute;
     top: 100%;
     width: 100%;
@@ -27,7 +27,7 @@ th {
     background: rgba(0, 161, 203, 0.9);
     color: white;
     font-size: 12px;
-    /* Position */
+
     position: absolute;
     top:-20px;
     height: 20px;
@@ -37,7 +37,7 @@ th {
 #FooterMessage {
     margin: 5px;
 }
-
+*/
 .highlight {
     color: orange;
     font-family: SegoeUISemiBold;
@@ -57,13 +57,6 @@ th {
     padding-right: 5px;
     padding-top: 2px;
     width: 200px;
-
-    /*
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-box-shadow: 1px 1px 2px #E7E7E7;
-    -moz-box-shadow: 1px 1px 2px #E7E7E7;
-    */
 }
 
 .bold {
@@ -131,11 +124,11 @@ input[type="radio"] {
     text-decoration: underline;
 }
 
-#Holder_Application {
+#svl-application-holder {
     background: rgba(255,255,255,1);
     margin: 0px auto;
     position: relative;
-    height: 720px;
+    height: 700px;
     width: 960px;
 }
 
