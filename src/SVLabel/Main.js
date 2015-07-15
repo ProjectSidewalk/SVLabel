@@ -51,7 +51,7 @@ function Main ($, param) {
       var SVLat;
       var SVLng;
       var currentProgress;
-      var panoId = '_AUz5cV_ofocoDbesxY3Kw';
+      var panoId = '2qA3s96oytB1GQxsIXrq1A'; //'_AUz5cV_ofocoDbesxY3Kw';
 
       var task = null;
       var nearbyPanoIds = [];

@@ -174,3 +174,17 @@ function getOperatingSystem () {
     if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
     return OSName;
 }
+
+/**
+ * Given an image coordinate (x, y), return a scaled coordinate. For example, to
+ * get the cooresponding coordinate in a smaller 512x256 image, use r = 1/26.
+ * @param x
+ * @param y
+ * @param r
+ */
+function scaleImageCoordinate(x, y, r) {
+    var x_ = x * r;
+    var y_ = (3328 - y) * r;
+    return {x: x_, y: y_};
+}
+svl.util.scaleImageCoordinate = scaleImageCoordinate;

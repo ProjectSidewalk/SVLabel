@@ -9,7 +9,7 @@ var svl = svl || {};
  * @memberof svl
  */
 function Label (pathIn, params) {
-    var oPublic = {
+    var self = {
         className: 'Label'
     };
 
@@ -100,14 +100,14 @@ function Label (pathIn, params) {
             }
 
             // Set belongs to of the path.
-            path.setBelongsTo(oPublic);
+            path.setBelongsTo(self);
 
             return true;
         } catch (e) {
-            console.error(oPublic.className, ':', 'Error initializing the Label object.', e);
+            console.error(self.className, ':', 'Error initializing the Label object.', e);
             return false;
         }
-    };
+    }
 
     function renderTag(ctx) {
         // This function renders a tag on a canvas to show a property of the label
@@ -234,7 +234,7 @@ function Label (pathIn, params) {
         ctx.restore();
 
         return;
-    };
+    }
 
     function showDelete() {
         if (status.tagVisibility !== 'hidden') {
@@ -250,13 +250,26 @@ function Label (pathIn, params) {
                 'top' : y
             });
         }
-    };
+    }
 
+    function toLatLng() {
+        var imageCoordinates = path.getImageCoordinates();
+
+
+        var lat = properties.panoramaLat;
+        var p = svl.util.scaleImageCoordinate(imageCoordinates[0].x, imageCoordinates[0].y, 1/26);
+        var idx = 3 * (Math.ceil(p.x) + 512 * Math.ceil(p.y));
+        var dx = svl.pointCloud.pointCloud[idx];
+        var dy = svl.pointCloud.pointCloud[idx + 1];
+        var delta = svl.util.math.latlngOffset(properties.panoramaLat, dx, dy);
+
+        return {lat: properties.panoramaLat + delta.dlat, lng: properties.panoramaLng + delta.dlng};
+    }
     ////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////
 
-    oPublic.blink = function (numberOfBlinks, fade) {
+    self.blink = function (numberOfBlinks, fade) {
         // Blink (highlight and fade) the color of this label. If fade is true, turn the label into gray;
         if (!numberOfBlinks) {
             numberOfBlinks = 3;
@@ -265,7 +278,7 @@ function Label (pathIn, params) {
         }
         var interval;
         var highlighted = true;
-        var path = oPublic.getPath();
+        var path = self.getPath();
         var points = path.getPoints();
 
         var i;
@@ -301,7 +314,7 @@ function Label (pathIn, params) {
                     svl.canvas.clear().render2();
                 }
 
-                oPublic.setAlpha(0.05);
+                self.setAlpha(0.05);
                 svl.canvas.clear().render2();
                 window.clearInterval(interval);
             }
@@ -310,9 +323,9 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.fadeFillStyle = function (mode) {
+    self.fadeFillStyle = function (mode) {
         // This method turn the associated Path and Points into gray.
-        var path = oPublic.getPath();
+        var path = self.getPath();
         var points = path.getPoints()
         var i = 0;
         var len = points.length;
@@ -337,13 +350,13 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.getBoundingBox = function (pov) {
+    self.getBoundingBox = function (pov) {
         // This method returns the boudning box of the label's outline.
-        var path = oPublic.getPath();
+        var path = self.getPath();
         return path.getBoundingBox(pov);
     };
 
-    oPublic.getCoordinate = function () {
+    self.getCoordinate = function () {
         // This function returns the coordinate of a point.
         if (path && path.points.length > 0) {
             var pov = path.getPOV();
@@ -352,14 +365,14 @@ function Label (pathIn, params) {
         return path;
     };
 
-    oPublic.getGSVImageCoordinate = function () {
+    self.getGSVImageCoordinate = function () {
         // This function return the coordinate of a point in the GSV image coordinate.
         if (path && path.points.length > 0) {
             return path.points[0].getGSVImageCoordinate();
         }
     };
 
-    oPublic.getImageCoordinates = function () {
+    self.getImageCoordinates = function () {
         // This function returns
         if (path) {
             return path.getImageCoordinates();
@@ -367,17 +380,17 @@ function Label (pathIn, params) {
         return false;
     };
 
-    oPublic.getLabelId = function () {
+    self.getLabelId = function () {
         // This function returns labelId property
         return properties.labelId;
     };
 
-    oPublic.getLabelType = function () {
+    self.getLabelType = function () {
         // This function returns labelType property
         return properties.labelType;
     };
 
-    oPublic.getPath = function (reference) {
+    self.getPath = function (reference) {
         // This function returns the coordinate of a point.
         // If reference is true, return a reference to the path instead of a copy of the path
         if (path) {
@@ -390,7 +403,7 @@ function Label (pathIn, params) {
         return false;
     };
 
-    oPublic.getPoint = function () {
+    self.getPoint = function () {
         // This function returns the coordinate of the first point in the path.
         if (path && path.points.length > 0) {
             return path.points[0];
@@ -398,7 +411,7 @@ function Label (pathIn, params) {
         return path;
     };
 
-    oPublic.getPoints = function (reference) {
+    self.getPoints = function (reference) {
         // This function returns the point objects that constitute the path
         // If reference is set to true, return the reference to the points
         if (path) {
@@ -408,13 +421,13 @@ function Label (pathIn, params) {
         }
     };
 
-    oPublic.getLabelPov = function () {
+    self.getLabelPov = function () {
         // Return the pov of this label
         var heading;//  = parseInt(properties.panoramaHeading, 10);
         var pitch = parseInt(properties.panoramaPitch, 10);
         var zoom = parseInt(properties.panoramaZoom, 10);
 
-        var points = oPublic.getPoints();
+        var points = self.getPoints();
         var svImageXs = points.map(function(point) {return point.svImageCoordinate.x;});
 
         if (svImageXs.max() - svImageXs.min() > (svl.svImageWidth / 2)) {
@@ -437,7 +450,7 @@ function Label (pathIn, params) {
         };
     };
 
-    oPublic.getProperties = function () {
+    self.getProperties = function () {
         // Return the deep copy of the properties object,
         // so the caller can only modify properties from
         // setProperties() (which I have not implemented.)
@@ -447,24 +460,24 @@ function Label (pathIn, params) {
         return $.extend(true, {}, properties);
     };
 
-    oPublic.getProperty = function (propName) {
+    self.getProperty = function (propName) {
         if (!(propName in properties)) {
             return false;
         }
         return properties[propName];
     };
 
-    oPublic.getstatus = function (key) {
+    self.getstatus = function (key) {
         return status[key];
     }
 
-    oPublic.getVisibility = function () {
+    self.getVisibility = function () {
         return status.visibility;
     };
 
-    oPublic.fill = function (fill) {
+    self.fill = function (fill) {
         // This method changes the fill color of the path and points that constitute the path.
-        var path = oPublic.getPath();
+        var path = self.getPath();
         var points = path.getPoints()
         var i = 0;
         var len = points.length;
@@ -476,18 +489,18 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.highlight = function () {
+    self.highlight = function () {
         // This method changes the fill color of the path and points to orange.
         var fillStyle = 'rgba(255,165,0,0.8)';
-        return oPublic.fill(fillStyle);
+        return self.fill(fillStyle);
     };
 
-    oPublic.isDeleted = function () {
+    self.isDeleted = function () {
         return status.deleted;
     };
 
 
-    oPublic.isOn = function (x, y) {
+    self.isOn = function (x, y) {
         // This function checks if a path is under a cursor
         if (status.deleted ||
             status.visibility === 'hidden') {
@@ -514,7 +527,7 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.isVisible = function () {
+    self.isVisible = function () {
         // This method returns the visibility of this label.
         if (status.visibility === 'visible') {
             return true;
@@ -523,40 +536,40 @@ function Label (pathIn, params) {
         }
     };
 
-    oPublic.lockTagVisibility = function () {
+    self.lockTagVisibility = function () {
         lock.tagVisibility = true;
         return this;
     };
 
 
-    oPublic.lockVisibility = function () {
+    self.lockVisibility = function () {
         lock.visibility = true;
         return this;
     };
 
-    oPublic.overlap = function (label, mode) {
+    self.overlap = function (label, mode) {
         // This method calculates the area overlap between this label and another label passed as an argument.
         if (!mode) {
             mode = "boundingbox";
         }
 
         if (mode !== "boundingbox") {
-            throw oPublic.className + ": " + mobede + " is not a valid option.";
+            throw self.className + ": " + mobede + " is not a valid option.";
         }
-        var path1 = oPublic.getPath();
+        var path1 = self.getPath();
         var path2 = label.getPath();
 
         return path1.overlap(path2, mode);
     };
 
-    oPublic.removePath = function () {
+    self.removePath = function () {
         // This function removes the path and points in the path.
         path.removePoints();
         path = undefined;
     };
 
 
-    oPublic.render = function (ctx, pov, evaluationMode) {
+    self.render = function (ctx, pov, evaluationMode) {
         if (!evaluationMode) {
             evaluationMode = false;
         }
@@ -583,9 +596,9 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.resetFillStyle = function () {
+    self.resetFillStyle = function () {
         // This method turn the fill color of associated Path and Points into their original color.
-        var path = oPublic.getPath();
+        var path = self.getPath();
         var points = path.getPoints()
         var i = 0;
         var len = points.length;
@@ -596,16 +609,16 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.resetTagCoordinate = function () {
+    self.resetTagCoordinate = function () {
         // This function sets properties.tag.x and properties.tag.y to 0
         properties.tagX = 0;
         properties.tagY = 0;
         return this;
     };
 
-    oPublic.setAlpha = function (alpha) {
+    self.setAlpha = function (alpha) {
         // This method changes the alpha channel of the fill color of the path and points that constitute the path.
-        var path = oPublic.getPath();
+        var path = self.getPath();
         var points = path.getPoints()
         var i = 0;
         var len = points.length;
@@ -620,7 +633,7 @@ function Label (pathIn, params) {
         return this;
     };
 
-    oPublic.setIconPath = function (iconPath) {
+    self.setIconPath = function (iconPath) {
         // This function sets the icon path of the point this label holds.
         if (path && path.points[0]) {
             var point = path.points[0];
@@ -631,21 +644,21 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.setLabelerId = function (labelerIdIn) {
+    self.setLabelerId = function (labelerIdIn) {
         properties.labelerId = labelerIdIn;
         return this;
     };
 
 
-    oPublic.setStatus = function (key, value) {
+    self.setStatus = function (key, value) {
         if (key in status) {
             if (key === 'visibility' &&
                 (value === 'visible' || value === 'hidden')) {
                 // status[key] = value;
-                oPublic.setVisibility(value);
+                self.setVisibility(value);
             } else if (key === 'tagVisibility' &&
                 (value === 'visible' || value === 'hidden')) {
-                oPublic.setTagVisibility(value);
+                self.setTagVisibility(value);
             } else if (key === 'deleted' && typeof value === 'boolean') {
                 status[key] = value;
             }
@@ -653,7 +666,7 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.setTagVisibility = function (visibility) {
+    self.setTagVisibility = function (visibility) {
         if (!lock.tagVisibility) {
             if (visibility === 'visible' ||
                 visibility === 'hidden') {
@@ -664,7 +677,7 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.setSubLabelDescription = function (labelType) {
+    self.setSubLabelDescription = function (labelType) {
         // This function sets the sub label type of this label.
         // E.g. for a bus stop there are StopSign_OneLeg
         var labelDescriptions = getLabelDescriptions();
@@ -674,7 +687,7 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.setVisibility = function (visibility) {
+    self.setVisibility = function (visibility) {
         if (!lock.visibility) {
             status.visibility = visibility;
         }
@@ -682,39 +695,39 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.setVisibilityBasedOnLocation = function (visibility, panoId) {
+    self.setVisibilityBasedOnLocation = function (visibility, panoId) {
         if (!status.deleted) {
             if (panoId === properties.panoId) {
-                // oPublic.setStatus('visibility', visibility);
-                oPublic.setVisibility(visibility);
+                // self.setStatus('visibility', visibility);
+                self.setVisibility(visibility);
             } else {
                 visibility = visibility === 'visible' ? 'hidden' : 'visible';
-                // oPublic.setStatus('visibility', visibility);
-                oPublic.setVisibility(visibility);
+                // self.setStatus('visibility', visibility);
+                self.setVisibility(visibility);
             }
         }
         return this;
     };
 
 
-    oPublic.setVisibilityBasedOnLabelerId = function (visibility, labelerIds, included) {
+    self.setVisibilityBasedOnLabelerId = function (visibility, labelerIds, included) {
         // if included is true and properties.labelerId is in labelerIds, then set this
         // label's visibility to the passed visibility
         if (included === undefined) {
             if (labelerIds.indexOf(properties.labelerId) !== -1) {
-                oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                self.unlockVisibility().setVisibility(visibility).lockVisibility();
             } else {
                 visibility = visibility === 'visible' ? 'hidden' : 'visible';
-                oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                self.unlockVisibility().setVisibility(visibility).lockVisibility();
             }
         } else {
             if (included) {
                 if (labelerIds.indexOf(properties.labelerId) !== -1) {
-                    oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                    self.unlockVisibility().setVisibility(visibility).lockVisibility();
                 }
             } else {
                 if (labelerIds.indexOf(properties.labelerId) === -1) {
-                    oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                    self.unlockVisibility().setVisibility(visibility).lockVisibility();
                 }
             }
         }
@@ -723,7 +736,7 @@ function Label (pathIn, params) {
     };
 
 
-    oPublic.setVisibilityBasedOnLabelerIdAndLabelTypes = function (visibility, tables, included) {
+    self.setVisibilityBasedOnLabelerIdAndLabelTypes = function (visibility, tables, included) {
         var i;
         var tablesLen = tables.length;
         var matched = false;
@@ -737,46 +750,38 @@ function Label (pathIn, params) {
         }
         if (included === undefined) {
             if (matched) {
-                oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                self.unlockVisibility().setVisibility(visibility).lockVisibility();
             } else {
                 visibility = visibility === 'visible' ? 'hidden' : 'visible';
-                oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                self.unlockVisibility().setVisibility(visibility).lockVisibility();
             }
         } else {
             if (included) {
                 if (matched) {
-                    oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                    self.unlockVisibility().setVisibility(visibility).lockVisibility();
                 }
             } else {
                 if (!matched) {
-                    oPublic.unlockVisibility().setVisibility(visibility).lockVisibility();
+                    self.unlockVisibility().setVisibility(visibility).lockVisibility();
                 }
             }
         }
     };
 
 
-    oPublic.unlockTagVisibility = function () {
+    self.unlockTagVisibility = function () {
         lock.tagVisibility = false;
         return this;
     };
 
 
-    oPublic.unlockVisibility = function () {
+    self.unlockVisibility = function () {
         lock.visibility = false;
         return this;
     };
 
-    ////////////////////////////////////////
-    // Tests
-    ////////////////////////////////////////
-    oPublic.runTestCases = function () {
-        module('Label tests');
 
-        test('functioning', function () {
-            ok(true, 'Test');
-        });
-    };
+    self.toLatLng = toLatLng;
 
     //
     // Initialize
@@ -784,5 +789,5 @@ function Label (pathIn, params) {
     if (!init(params, pathIn)) {
         return false;
     }
-    return oPublic;
+    return self;
 }
