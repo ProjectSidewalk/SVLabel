@@ -9,49 +9,52 @@ var svl = svl || {};
  * @constructor
  * @memberof svl
  */
-function Main ($, param) {
-    var self = {moduleName: 'MainUI'};
+function Main ($, params) {
+    var self = {moduleName: 'Main'};
     var properties = {};
     var status = {};
 
     ////////////////////////////////////////
     // Private Functions
     ////////////////////////////////////////
-    function _init (param) {
-      // Instantiate objects.
-      param = param || {};
-      svl.ui = new UI($);
-      svl.tracker = new Tracker();
-      svl.keyboard = new Keyboard($);
-      svl.canvas = new Canvas($);
-      svl.form = new Form($, param.form);
-      svl.examples = undefined;
-      svl.overlayMessageBox = new OverlayMessageBox($);
-      svl.missionDescription = new MissionDescription($, param.missionDescription);
-      svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
-      svl.qualificationBadges = undefined;
-      svl.progressFeedback = new ProgressFeedback($);
-      svl.actionStack = new ActionStack($);
-      svl.ribbon = new RibbonMenu($);
-      svl.messageBox = new MessageBox($);
-      svl.zoomControl = new ZoomControl($);
-      svl.tooltip = undefined;
-      svl.onboarding = undefined;
-      svl.progressPov = new ProgressPov($);
+    function _init (params) {
+        var SVLat;
+        var SVLng;
+        var currentProgress;
+        var panoId = params.panoId;
 
 
-      svl.form.disableSubmit();
-      svl.tracker.push('TaskStart');
+        // Instantiate objects
+        svl.ui = new UI($);
+        svl.tracker = new Tracker();
+        svl.keyboard = new Keyboard($);
+        svl.canvas = new Canvas($);
+        svl.form = new Form($, param.form);
+        svl.examples = undefined;
+        svl.overlayMessageBox = new OverlayMessageBox($);
+        svl.missionDescription = new MissionDescription($, param.missionDescription);
+        svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
+        svl.qualificationBadges = undefined;
+        svl.progressFeedback = new ProgressFeedback($);
+        svl.actionStack = new ActionStack($);
+        svl.ribbon = new RibbonMenu($);
+        svl.messageBox = new MessageBox($);
+        svl.zoomControl = new ZoomControl($);
+        svl.tooltip = undefined;
+        svl.onboarding = undefined;
+        svl.progressPov = new ProgressPov($);
+        svl.pointCloud = new PointCloud($, {panoIds: [panoId]});
+
+
+        svl.form.disableSubmit();
+        svl.tracker.push('TaskStart');
       //
       // Set map parameters and instantiate it.
       var mapParam = {};
       mapParam.canvas = svl.canvas;
       mapParam.overlayMessageBox = svl.overlayMessageBox;
 
-      var SVLat;
-      var SVLng;
-      var currentProgress;
-      var panoId = '2qA3s96oytB1GQxsIXrq1A'; //'_AUz5cV_ofocoDbesxY3Kw';
+
 
       var task = null;
       var nearbyPanoIds = [];
@@ -109,6 +112,6 @@ function Main ($, param) {
     // Public Functions
     ////////////////////////////////////////
 
-    _init(param);
+    _init(params);
     return self;
 }
