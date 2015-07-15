@@ -18,10 +18,11 @@ function Main ($, params) {
     // Private Functions
     ////////////////////////////////////////
     function _init (params) {
-        var SVLat;
-        var SVLng;
         var currentProgress;
         var panoId = params.panoId;
+        var SVLat = parseFloat(params.initLat);
+        var SVLng = parseFloat(params.initLng);
+        currentProgress = parseFloat(currentProgress);
 
 
         // Instantiate objects
@@ -29,10 +30,10 @@ function Main ($, params) {
         svl.tracker = new Tracker();
         svl.keyboard = new Keyboard($);
         svl.canvas = new Canvas($);
-        svl.form = new Form($, param.form);
+        svl.form = new Form($, params.form);
         svl.examples = undefined;
         svl.overlayMessageBox = new OverlayMessageBox($);
-        svl.missionDescription = new MissionDescription($, param.missionDescription);
+        svl.missionDescription = new MissionDescription($, params.missionDescription);
         svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
         svl.qualificationBadges = undefined;
         svl.progressFeedback = new ProgressFeedback($);
@@ -55,7 +56,6 @@ function Main ($, params) {
       mapParam.overlayMessageBox = svl.overlayMessageBox;
 
 
-
       var task = null;
       var nearbyPanoIds = [];
       var totalTaskCount = -1;
@@ -72,9 +72,7 @@ function Main ($, params) {
       svl.form.setTaskRemaining(taskRemaining);
       svl.form.setTaskDescription('TestTask');
       svl.form.setTaskPanoramaId(panoId);
-      SVLat = parseFloat(38.894799); // Todo
-      SVLng = parseFloat(-77.021906); // Todo
-      currentProgress = parseFloat(currentProgress);
+
 
       mapParam.Lat = SVLat;
       mapParam.Lng = SVLng;
@@ -107,10 +105,6 @@ function Main ($, params) {
       svl.map = new Map($, mapParam);
       //svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
-
-    ////////////////////////////////////////
-    // Public Functions
-    ////////////////////////////////////////
 
     _init(params);
     return self;

@@ -7,7 +7,7 @@ var svl = svl || {};
  */
 function PointCloud ($, params) {
     var self = {};
-    var _callbacks = [];
+    var _callbacks = {};
     var _pointClouds = {};
 
     function _init(params) {
@@ -26,14 +26,21 @@ function PointCloud ($, params) {
      * @param panoId
      */
     function createPointCloud(panoId) {
-        if (!(panoId in _pointCloud)) {
+        if (!(panoId in _pointClouds)) {
             // Download the depth data only if it hasn't been downloaded. First put null in _pointClouds[panoId] so
             // that even while processing the data we don't accidentally download the data again.
             var _pointCloudLoader = new GSVPANO.PanoPointCloudLoader();
             _pointClouds[panoId] = null;
             _pointCloudLoader.onPointCloudLoad = function () {
-                _pointCloud[panoId] = this.pointCloud;
-            };
+                _pointClouds[panoId] = this.pointCloud;
+
+                if (panoId in _callbacks) {
+                    for (var i = 0; i < _callbacks[panoId].length; i++) {
+                        _callbacks[panoId][i]();
+                    }
+                    _callbacks[panoId] = null;
+                }
+            }
             _pointCloudLoader.load(panoId);
         }
     }
@@ -47,13 +54,25 @@ function PointCloud ($, params) {
     function getPointCloud(panoId) {
         if (!(panoId in _pointClouds)) {
             createPointCloud(panoId);
+            return null;
         } else {
             return _pointClouds[panoId];
         }
     }
 
+    /**
+     * Push a callback function into _callbacks
+     * @param func
+     */
+    function ready(panoId, func) {
+        if (!(panoId in _callbacks)) { _callbacks[panoId] = []; }
+        _callbacks[panoId].push(func);
+    }
+
     self.createPointCloud = createPointCloud;
     self.getPointCloud = getPointCloud;
+    self.ready = ready;
 
+    _init(params);
     return self;
 }

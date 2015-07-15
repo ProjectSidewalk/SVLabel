@@ -259,11 +259,15 @@ function Label (pathIn, params) {
         var lat = properties.panoramaLat;
         var p = svl.util.scaleImageCoordinate(imageCoordinates[0].x, imageCoordinates[0].y, 1/26);
         var idx = 3 * (Math.ceil(p.x) + 512 * Math.ceil(p.y));
-        var dx = svl.pointCloud.pointCloud[idx];
-        var dy = svl.pointCloud.pointCloud[idx + 1];
-        var delta = svl.util.math.latlngOffset(properties.panoramaLat, dx, dy);
-
-        return {lat: properties.panoramaLat + delta.dlat, lng: properties.panoramaLng + delta.dlng};
+        var pc = svl.pointCloud.getPointCloud(properties.panoId);
+        if (pc) {
+            var dx = pc.pointCloud[idx];
+            var dy = pc.pointCloud[idx + 1];
+            var delta = svl.util.math.latlngOffset(properties.panoramaLat, dx, dy);
+            return {lat: properties.panoramaLat + delta.dlat, lng: properties.panoramaLng + delta.dlng};
+        } else {
+            return null;
+        }
     }
     ////////////////////////////////////////
     // Public functions

@@ -425,7 +425,6 @@ function Map ($, params) {
      * @returns {hideLinks} This object.
      */
     function hideLinks () {
-        console.debug("Debug")
         if (properties.browser === 'chrome') {
             // Somehow chrome does not allow me to select path
             // and fadeOut. Instead, I'm just manipulating path's style
@@ -438,6 +437,9 @@ function Map ($, params) {
         return this;
     }
 
+    /**
+     * This method brings the links (<, >) to the view control layer so that a user can click them to walk around
+     */
     function makeLinksClickable () {
         // Bring the layer with arrows forward.
         var $links = getLinkLayer();
@@ -451,6 +453,9 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * Initializes fog.
+     */
     function initFog () {
         // Initialize the fog on top of the map.
         if (current) {
@@ -465,6 +470,9 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * Initailize Street View
+     */
     function initStreetView () {
         // Initialize the Street View interface
         var numPath = $divViewControlLayer.find("path").length;
@@ -478,6 +486,9 @@ function Map ($, params) {
         //}
     }
 
+    /**
+     * Callback for pov update
+     */
     function povUpdated () {
         // This is a callback function that is fired when pov is changed
         if (svl.canvas) {
@@ -541,6 +552,10 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * Show links (<, >) for walking
+     * @param delay
+     */
     function showLinks (delay) {
         // Show links
 
@@ -594,6 +609,10 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * This is fired as a callback for pano_changed event (https://developers.google.com/maps/documentation/javascript/streetview).
+     * Update the map pane, and also query data for the new panorama.
+     */
     function updateMap () {
         // This function updates the map pane.
         if (svl.panorama) {
@@ -611,6 +630,20 @@ function Map ($, params) {
 
             if (fogSet) {
                 fogUpdate();
+            }
+
+            if ('pointCloud' in svl && svl.pointCloud) {
+                var panoId = svl.getPanoId();
+                var pointCloud = svl.pointCloud.getPointCloud(panoId);
+                if (pointCloud) {
+                    console.log("It is ready.", pointCloud);
+                } else {
+                    console.log("Download.");
+                    svl.pointCloud.createPointCloud(svl.getPanoId());
+                    svl.pointCloud.ready(panoId, function () {
+                        console.log(svl.pointCloud.getPointCloud(panoId));
+                    });
+                }
             }
         } else {
             throw self.className + ' updateMap(): panorama not defined.';
