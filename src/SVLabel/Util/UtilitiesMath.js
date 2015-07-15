@@ -41,29 +41,56 @@ function latlngOffset(lat, dx, dy) {
 svl.util.math.latlngOffset = latlngOffset;
 
 /**
- * This function takes two points of latlon coordinates, origin and current.
+ * This function takes two latlon coordinates and returns the angle that forms aroud the z-axis.
  *
- * @param latLngOrigin
- * @param latLngCurr
- * @returns {number}
+ * @param lat1
+ * @param lng1
+ * @param lat2
+ * @param lng2
+ * @param relativeToNorth If this is true, then measure it from north and clockwise.
+ * @returns {number} An angle in radians
  */
-function deltaLatLngToDegree (latLngOrigin, latLngCurr) {
-
+function latLngToAngle (lat1, lng1, lat2, lng2, relativeToNorth) {
     var deltaLat, deltaLng, theta;
 
-    deltaLat = latLngCurr.lat - latLngOrigin.lat;
-    deltaLng = latLngCurr.lng - latLngOrigin.lng;
+    deltaLat = lat2 - lat1;
+    deltaLng = lng2 - lng1;
+    theta = Math.atan2(deltaLng, deltaLat);
 
-    // Math.atan()
-    // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Math/atan
-    if (deltaLat > 0) {
-        theta = toDegrees(Math.atan(deltaLng/deltaLat));
-    } else {
-        theta = toDegrees(Math.PI + Math.atan(deltaLng/deltaLat));
+    if (relativeToNorth) {
+        theta = Math.PI / 2 - theta;
     }
-
-    return (360 + theta) % 360;
+    return theta;
 }
+svl.util.math.latLngToAngle = latLngToAngle;
+
+
+/**
+ * This function takes two pairs of latlng positions and returns distance in meters.
+ * http://rosettacode.org/wiki/Haversine_formula#JavaScript
+ *
+ * @param lat1
+ * @param lon1
+ * @param lat2
+ * @param lon2
+ * @returns {number} A distance in meters.
+ */
+function haversine(lat1, lon1, lat2, lon2) {
+    //var radians = Array.prototype.map.call(arguments, function(deg) { return deg/180.0 * Math.PI; });
+    //var lat1 = radians[0], lon1 = radians[1], lat2 = radians[2], lon2 = radians[3];
+    lat1 = toRadians(lat1);
+    lon1 = toRadians(lon1);
+    lat2 = toRadians(lat2);
+    lon2 = toRadians(lon2);
+    var R = 6372800; // m
+    var dLat = lat2 - lat1;
+    var dLon = lon2 - lon1;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat /2) + Math.sin(dLon / 2) * Math.sin(dLon /2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.asin(Math.sqrt(a));
+    return R * c;
+}
+svl.util.math.haversine = haversine;
+
 
 
 // http://clauswitt.com/simple-statistics-in-javascript.html
@@ -127,7 +154,6 @@ function Stats(arr) {
     };
 
 
-    // Added by Kotaro
     // http://stackoverflow.com/questions/1669190/javascript-min-max-array-values
     self.getMin = function () {
         return Math.min.apply(Math, theArray);
@@ -153,28 +179,3 @@ function Stats(arr) {
     return self;
 }
 
-function sleep(miliseconds) {
-    var end = false;
-}
-
-function shuffle(array) {
-    // This function returns a shuffled array.
-    // Code from http://bost.ocks.org/mike/shuffle/
-    var copy = [], n = array.length, i;
-
-    // While there remain elements to shuffle…
-    while (n) {
-
-        // Pick a remaining element…
-        i = Math.floor(Math.random() * array.length);
-
-        // If not already shuffled, move it to the new array.
-        if (i in array) {
-            copy.push(array[i]);
-            delete array[i];
-            n--;
-        }
-    }
-
-    return copy;
-}

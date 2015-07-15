@@ -120,6 +120,7 @@ function Map ($, params) {
             pitch : -10,
             zoom : 1
         },
+        map: null,
         maxPitch: 0,
         minPitch: -35,
         minHeading: undefined,
@@ -219,6 +220,7 @@ function Map ($, params) {
 
     var mapCanvas = document.getElementById("google-maps");
     map = new google.maps.Map(mapCanvas, mapOptions);
+    properties.map = map;
 
     // Styling google map.
     // http://stackoverflow.com/questions/8406636/how-to-remove-all-from-google-map
@@ -632,16 +634,16 @@ function Map ($, params) {
                 fogUpdate();
             }
 
+            // Attach listeners to svl.pointCloud
             if ('pointCloud' in svl && svl.pointCloud) {
                 var panoId = svl.getPanoId();
                 var pointCloud = svl.pointCloud.getPointCloud(panoId);
                 if (pointCloud) {
-                    console.log("It is ready.", pointCloud);
+                    // console.log("It is ready.", pointCloud);
                 } else {
-                    console.log("Download.");
                     svl.pointCloud.createPointCloud(svl.getPanoId());
                     svl.pointCloud.ready(panoId, function () {
-                        console.log(svl.pointCloud.getPointCloud(panoId));
+                        // console.log(svl.pointCloud.getPointCloud(panoId));
                     });
                 }
             }
@@ -650,8 +652,12 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * Update POV of Street View as a user drag a mouse cursor.
+     * @param dx
+     * @param dy
+     */
     function updatePov (dx, dy) {
-        // Update POV of Street View as a user drag a mouse cursor.
         if (svl.panorama) {
             var pov = svl.panorama.getPov(),
                 alpha = 0.25;
@@ -697,9 +703,12 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * This is a callback function that is fired with the mouse down event
+     * on the view control layer (where you control street view angle.)
+     * @param e
+     */
     function viewControlLayerMouseDown (e) {
-        // This is a callback function that is fired with the mouse down event
-        // on the view control layer (where you control street view angle.)
         mouseStatus.isLeftDown = true;
         mouseStatus.leftDownX = mouseposition(e, this).x;
         mouseStatus.leftDownY = mouseposition(e, this).y;
@@ -739,9 +748,12 @@ function Map ($, params) {
         svl.tracker.push('ViewControl_MouseDown', {x: mouseStatus.leftDownX, y:mouseStatus.leftDownY});
     }
 
+    /**
+     * This is a callback function that is called with mouse up event on
+     * the view control layer (where you change the Google Street view angle.
+     * @param e
+     */
     function viewControlLayerMouseUp (e) {
-        // This is a callback function that is called with mouse up event on
-        // the view control layer (where you change the Google Street view angle.
         var currTime;
 
         mouseStatus.isLeftDown = false;
@@ -787,9 +799,11 @@ function Map ($, params) {
         mouseStatus.prevMouseUpTime = currTime;
     }
 
+    /**
+     * This is a callback function that is fired when a user moves a mouse on the
+     * view control layer where you change the pov.
+     */
     function viewControlLayerMouseMove (e) {
-        // This is a callback function that is fired when a user moves a mouse on the
-        // view control layer where you change the pov.
         mouseStatus.currX = mouseposition(e, this).x;
         mouseStatus.currY = mouseposition(e, this).y;
 

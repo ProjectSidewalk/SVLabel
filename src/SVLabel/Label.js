@@ -21,6 +21,7 @@ function Label (pathIn, params) {
         canvasHeight: undefined,
         canvasDistortionAlphaX: undefined,
         canvasDistortionAlphaY: undefined,
+        distanceThreshold: 100,
         labelerId : 'DefaultValue',
         labelId: 'DefaultValue',
         labelType: undefined,
@@ -66,6 +67,7 @@ function Label (pathIn, params) {
             } else {
                 path = pathIn;
             }
+
             for (attrName in properties) {
                 // It is ok if some attributes are not passed as parameters
                 if ((attrName === 'tagHeight' ||
@@ -75,7 +77,8 @@ function Label (pathIn, params) {
                      attrName === 'labelerId' ||
                      attrName === 'photographerPov' ||
                      attrName === 'photographerHeading' ||
-                     attrName === 'photographerPitch'
+                     attrName === 'photographerPitch' ||
+                            attrName === 'distanceThreshold'
                     ) &&
                     !param[attrName]) {
                     continue;
@@ -252,10 +255,12 @@ function Label (pathIn, params) {
         }
     }
 
+    /**
+     * Get the label latlng position
+     * @returns {lat: labelLat, lng: labelLng}
+     */
     function toLatLng() {
         var imageCoordinates = path.getImageCoordinates();
-
-
         var lat = properties.panoramaLat;
         var p = svl.util.scaleImageCoordinate(imageCoordinates[0].x, imageCoordinates[0].y, 1/26);
         var idx = 3 * (Math.ceil(p.x) + 512 * Math.ceil(p.y));
@@ -573,29 +578,58 @@ function Label (pathIn, params) {
     };
 
 
+    /**
+     * This method renders this label on a canvas.
+     * @param ctx
+     * @param pov
+     * @param evaluationMode
+     * @returns {self}
+     */
     self.render = function (ctx, pov, evaluationMode) {
         if (!evaluationMode) {
             evaluationMode = false;
         }
 
-        if (!status.deleted &&
-            status.visibility === 'visible') {
-            // Render a tag
-            // Get a text to render (e.g, attribute type), and
-            // canvas coordinate to render the tag.
-            if(status.tagVisibility === 'visible') {
-                var labelType =  properties.labelDescription;
+        if (!status.deleted) {
+            if (status.visibility === 'visible') {
+                // Render a tag
+                // Get a text to render (e.g, attribute type), and
+                // canvas coordinate to render the tag.
+                if(status.tagVisibility === 'visible') {
+                    var labelType =  properties.labelDescription;
 
-                if (!evaluationMode) {
-                    renderTag(ctx);
-                    path.renderBoundingBox(ctx);
-                    showDelete();
-                    //showDelete(path);
+                    if (!evaluationMode) {
+                        renderTag(ctx);
+                        path.renderBoundingBox(ctx);
+                        showDelete();
+                        //showDelete(path);
+                    }
                 }
-            }
 
-            // Render a path
-            path.render2(ctx, pov);
+                // Render a path
+                path.render2(ctx, pov);
+            }
+            else {
+                // Render labels that are not in the current panorama but are close enough.
+                // Get the label's
+                var latLng = toLatLng();
+                var currLat = svl.panorama.location.latLng.lat(),
+                    currLng = svl.panorama.location.latLng.lng();
+                var d = svl.util.math.haversine(currLat, currLng, latLng.lat, latLng.lng);
+
+                if (d < properties.distanceThreshold) {
+                    var angle = svl.util.math.latLngToAngle(currLat, currLng, latLng.lat, latLng.lng);
+                    var dx = d * Math.cos(angle);
+                    var dy = d * Math.sin(angle);
+
+                    // Todo. This needs to be rewritten as a callback.
+                    console.debug("Debug");
+                    var ix = svl.pointCloud.search(svl.panorama.pano, dx, dy);
+
+
+                }
+
+            }
         }
         return this;
     };

@@ -188,3 +188,29 @@ function scaleImageCoordinate(x, y, r) {
     return {x: x_, y: y_};
 }
 svl.util.scaleImageCoordinate = scaleImageCoordinate;
+
+function sleep(miliseconds) {
+    var end = false;
+}
+
+function shuffle(array) {
+    // This function returns a shuffled array.
+    // Code from http://bost.ocks.org/mike/shuffle/
+    var copy = [], n = array.length, i;
+
+    // While there remain elements to shuffle…
+    while (n) {
+
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * array.length);
+
+        // If not already shuffled, move it to the new array.
+        if (i in array) {
+            copy.push(array[i]);
+            delete array[i];
+            n--;
+        }
+    }
+
+    return copy;
+}

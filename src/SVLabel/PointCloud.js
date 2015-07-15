@@ -69,9 +69,52 @@ function PointCloud ($, params) {
         _callbacks[panoId].push(func);
     }
 
+    /**
+     * Given the coordinate x, y (and z), return index of the data x
+     * @panoId
+     * @param x
+     * @param y
+     * @param param An object that could contain z-coordinate and a distance tolerance (r).
+     */
+    function search(panoId, x, y, param) {
+        if (panoId in _pointClouds && getPointCloud(panoId)){
+            var w = 512;
+            var h = 256;
+            var r2 = x * x + y * y;
+            var tolerance = 100; // m
+            var minR2 = 100;
+            var ix;
+            // var iy;
+
+            // Todo. Needs find the actual nearest using a data structure (e.g., kd-tree, octtree).
+            for (var piy = 0; piy < _pointClouds[panoId].pointCloud.length; i += 3) {
+                var px = _pointClouds[panoId].pointCloud[i];
+                var py = _pointClouds[panoId].pointCloud[i + 1];
+
+
+                if (!px || !py || px > tolerance || py > tolerance) {
+                    continue;
+                }
+
+                var pr2 = px * px + py + py;
+                if (pr2 < minR2) {
+                    minR2 = pr2;
+                    ix = i;
+                    // iy = i + 1;
+                    // console.log(px, py);
+                }
+            }
+
+            return ix;
+        } else {
+            return false;
+        }
+    }
+
     self.createPointCloud = createPointCloud;
     self.getPointCloud = getPointCloud;
     self.ready = ready;
+    self.search = search;
 
     _init(params);
     return self;

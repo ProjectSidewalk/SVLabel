@@ -136,6 +136,9 @@ function Canvas ($, param) {
         }
     }
 
+    /**
+     * Finish up labeling
+     */
     function closeLabelPath() {
         svl.tracker.push('LabelingCanvas_FinishLabeling');
         var labelType = svl.ribbon.getStatus('selectedLabelType');
@@ -185,6 +188,27 @@ function Canvas ($, param) {
         if (label) {
             status.currentLabel = new Label(path, param)
             labels.push(status.currentLabel);
+
+
+            //// Get the label's
+            //var latLng = status.currentLabel.toLatLng();
+            //var currLat = svl.panorama.location.latLng.lat(),
+            //    currLng = svl.panorama.location.latLng.lng();
+            //var d = svl.util.math.haversine(currLat, currLng, latLng.lat, latLng.lng);
+            //var angle = svl.util.math.latLngToAngle(currLat, currLng, latLng.lat, latLng.lng);
+            //var dx = d * Math.cos(angle);
+            //var dy = d * Math.sin(angle);
+
+
+
+            //var gLatLng = new google.maps.LatLng(latlng.lat, latlng.lng);
+            //var labelMarker = new google.maps.Marker({
+            //    position: gLatLng,
+            //    map: svl.map.getProperty('map'),
+            //    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=bus|FFFF00',
+            //    title: 'Label'
+            //});
+
             svl.actionStack.push('addLabel', status.currentLabel);
         } else {
             throw "Failed to add a new label.";
@@ -217,9 +241,9 @@ function Canvas ($, param) {
     }
 
     /**
+     * This function is fired when at the time of mouse-up
      */
     function drawingLayerMouseUp (e) {
-        // This function is fired when at the time of mouse-up
         var currTime;
 
         mouseStatus.isLeftDown = false;
@@ -420,7 +444,7 @@ function Canvas ($, param) {
     }
 
     /**
-     *
+     * Render a temporary path while the user is drawing.
      */
     function renderTempPath() {
         // This method renders a line from the last point in tempPath to current mouse point.
@@ -527,6 +551,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Disable labeling
      * @method
      */
     function disableLabeling () {
@@ -548,6 +573,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Enable deleting labels
      * @method
      */
     function enableLabelDelete () {
@@ -559,6 +585,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Enables editing labels
      * @method
      */
     function enableLabelEdit () {
@@ -570,6 +597,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Enables labeling
      * @method
      */
     function enableLabeling () {
@@ -584,6 +612,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Returns the label of the current focus
      * @method
      */
     function getCurrentLabel () {
@@ -591,6 +620,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Get labels stored in this canvas.
      * @method
      */
     function getLabels (target) {
@@ -609,6 +639,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Returns a lock that corresponds to the key.
      * @method
      */
     function getLock (key) {
@@ -616,6 +647,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Returns a number of labels in the current panorama.
      * @method
      */
     function getNumLabels () {
@@ -638,6 +670,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Returns a status
      * @method
      */
     function getStatus (key) {
@@ -648,11 +681,14 @@ function Canvas ($, param) {
     }
 
     /**
+     * This method returns system labels; the labels stored in our database (e.g., other users' labels and the user's
+     * previous labels) that are not from this auditing session.
+     * If refrence is true, then it returns reference to the labels.
+     * Otherwise it returns deepcopy of labels.
      * @method
      */
     function getSystemLabels (reference) {
-        // This method returns system labels. If refrence is true, then it returns reference to the labels.
-        // Otherwise it returns deepcopy of labels.
+
         if (!reference) {
             reference = false;
         }
@@ -676,6 +712,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Returns user labels (i.e., what the user labeled during this session.)
      * @method
      */
     function getUserLabels (reference) {
@@ -944,6 +981,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * Renders labels
      * @method
      */
     function render2 () {
