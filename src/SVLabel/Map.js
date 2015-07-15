@@ -257,13 +257,6 @@ function Map ($, params) {
             overlayMessageBox = params.overlayMessageBox;
         }
 
-        if ("disableWalking" in params) {
-            if (params.disableWalking) {
-                disableWalking();
-            } else {
-                enableWalking();
-            }
-        }
 
         // Set GSV panorama options
         // To not show StreetView controls, take a look at the following gpage
@@ -334,6 +327,11 @@ function Map ($, params) {
 
         _streetViewInit = setInterval(initStreetView, 100);
 
+        //if ("disableWalking" in params && params.disableWalking) {
+        //    disableWalking();
+        //} else {
+        //    enableWalking();
+        //}
         //
         // Set the fog parameters
         // Comment out to disable the fog feature.
@@ -376,6 +374,7 @@ function Map ($, params) {
      * @returns {disableWalking}
      */
     function disableWalking () {
+
         // This method hides links on SV and disables users from walking.
         if (!status.lockDisableWalking) {
             // Disable clicking links and changing POV
@@ -397,7 +396,6 @@ function Map ($, params) {
             $spanModeSwitchWalk.css('opacity', 1);
             status.disableWalking = false;
         }
-        return this;
     }
 
     function fogUpdate () {
@@ -427,6 +425,7 @@ function Map ($, params) {
      * @returns {hideLinks} This object.
      */
     function hideLinks () {
+        console.debug("Debug")
         if (properties.browser === 'chrome') {
             // Somehow chrome does not allow me to select path
             // and fadeOut. Instead, I'm just manipulating path's style
@@ -474,9 +473,9 @@ function Map ($, params) {
             window.clearTimeout(_streetViewInit);
         }
 
-        if (!status.svLinkArrowsLoaded && status.hideLinks) {
-            hideLinks();
-        }
+        //if (!status.svLinkArrowsLoaded) {
+        //    hideLinks();
+        //}
     }
 
     function povUpdated () {
@@ -590,7 +589,7 @@ function Map ($, params) {
                     delay = 0;
                 }
                 // $('path').show();
-                $('path').css('visibility', 'hidden');
+                $('path').css('visibility', 'visible');
             }
         }
     }
@@ -1140,9 +1139,6 @@ function Map ($, params) {
         return this;
     };
 
-    self.test = function () {
-        canvas.testCases.renderLabels();
-    };
 
     self.hideLinks = hideLinks;
     self.modeSwitchLabelClick = modeSwitchLabelClick;

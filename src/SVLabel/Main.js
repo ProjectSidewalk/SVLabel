@@ -25,7 +25,7 @@ function Main ($, param) {
       svl.keyboard = new Keyboard($);
       svl.canvas = new Canvas($);
       svl.form = new Form($, param.form);
-      svl.examples = undefined
+      svl.examples = undefined;
       svl.overlayMessageBox = new OverlayMessageBox($);
       svl.missionDescription = new MissionDescription($, param.missionDescription);
       svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
@@ -51,7 +51,7 @@ function Main ($, param) {
       var SVLat;
       var SVLng;
       var currentProgress;
-      var panoId = '_AUz5cV_ofocoDbesxY3Kw';
+      var panoId = '2qA3s96oytB1GQxsIXrq1A'; //'_AUz5cV_ofocoDbesxY3Kw';
 
       var task = null;
       var nearbyPanoIds = [];
@@ -102,7 +102,7 @@ function Main ($, param) {
 
       // Instantiation
       svl.map = new Map($, mapParam);
-      svl.map.setStatus('hideNonavailablePanoLinks', true);
+      //svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
 
     ////////////////////////////////////////

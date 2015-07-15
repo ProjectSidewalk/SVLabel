@@ -1,23 +1,54 @@
+var svl = svl || {};
+svl.util = svl.util || {};
+svl.util.math = {}
+
+/**
+ * This method takes an angle value in radian and returns a value in degree
+ * @param angleInRadian
+ * @returns {number}
+ */
 function toDegrees (angleInRadian) {
     // This function converts the angle from radian to degree.
     // http://stackoverflow.com/questions/9705123/how-can-i-get-sin-cos-and-tan-to-return-degrees-instead-of-radians
     return angleInRadian * (180 / Math.PI);
 }
+svl.util.math.toDegrees = toDegrees;
 
-
+/**
+ * This function takes an angle in degree and returns a value in radian
+ * @param angleInDegree
+ * @returns {number}
+ */
 function toRadians (angleInDegree) {
     // This function converts the angle from degree to radian.
     // http://stackoverflow.com/questions/9705123/how-can-i-get-sin-cos-and-tan-to-return-degrees-instead-of-radians
     return angleInDegree * (Math.PI / 180);
 }
+svl.util.math.toRadians = toRadians;
 
+/**
+ * Given a latlng point and a dx and dy (in meters), return a latlng offset (dlng, dlat) .
+ * I.e., the new point would be (lng + dlng, lat + dlat)
+ * @param lat Current latitude.
+ * @param dx Distance along the x-axis
+ * @param dy Distance along the y-axis
+ */
+function latlngOffset(lat, dx, dy) {
+    var dlat = dy / 111111;
+    var dlng = dx / (111111 * Math.cos(toRadians(lat)));
+    return {dlat: dlat, dlng: dlng};
+}
+svl.util.math.latlngOffset = latlngOffset;
 
+/**
+ * This function takes two points of latlon coordinates, origin and current.
+ *
+ * @param latLngOrigin
+ * @param latLngCurr
+ * @returns {number}
+ */
 function deltaLatLngToDegree (latLngOrigin, latLngCurr) {
-    // This function takes two points of latlon coordinates, origin and current.
-    // Returns which direction the current is relative to the origin, North begin 0 degree and the it
-    // will increase counter clockwise. For example, east is 90 degree (Wow, I need a better explanation.),
-    // south is 180 degree, west is 270 degree.
-    //
+
     var deltaLat, deltaLng, theta;
 
     deltaLat = latLngCurr.lat - latLngOrigin.lat;
