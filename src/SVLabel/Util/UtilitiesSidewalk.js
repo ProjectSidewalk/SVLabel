@@ -2,6 +2,28 @@
 var svl = svl || {};
 svl.misc = {};
 
+/**
+ *
+ * 0 for image y-axis is at *3328*! So the top-left corner of the image is (0, 3328).
+ * @param ix
+ * @param iy
+ * @param pov
+ * @param zoomFactor
+ * @returns {{x: number, y: number}}
+ */
+function imageCoordinateToCanvasCoordinate(ix, iy, pov, zoomFactor) {
+    if (!zoomFactor) {
+        zoomFactor = 1;
+    }
+    var canvasX = (ix - svl.svImageWidth * pov.heading / 360) * zoomFactor / svl.alpha_x + svl.canvasWidth / 2;
+    var canvasY = (iy - svl.svImageHeight * pov.pitch / 180) * zoomFactor / svl.alpha_y + svl.canvasHeight / 2;
+    return {x: canvasX, y: canvasY};
+}
+svl.misc.imageCoordinateToCanvasCoordinate = imageCoordinateToCanvasCoordinate;
+
+//self.svImageCoordinate.x = svImageWidth * pov.heading / 360 + (svl.alpha_x * (x - (svl.canvasWidth / 2)) / zoomFactor);
+//self.svImageCoordinate.y = (svImageHeight / 2) * pov.pitch / 90 + (svl.alpha_y * (y - (svl.canvasHeight / 2)) / zoomFactor);
+
 
 function getHeadingEstimate(SourceLat, SourceLng, TargetLat, TargetLng) {
     // This function takes a pair of lat/lng coordinates.

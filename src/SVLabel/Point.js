@@ -1,10 +1,11 @@
 var svl = svl || {};
 
 /**
+ * Point object
  *
- * @param x
- * @param y
- * @param pov
+ * @param x x-coordinate of the point on a canvas
+ * @param y y-coordinate of the point on a canvas
+ * @param pov Point of view that looks like {heading: h, pitch: p, zoom: z}
  * @param params
  * @returns {{className: string, svImageCoordinate: undefined, canvasCoordinate: undefined, originalCanvasCoordinate: undefined, pov: undefined, originalPov: undefined}}
  * @constructor
@@ -12,11 +13,7 @@ var svl = svl || {};
  */
 function Point (x, y, pov, params) {
   'use strict';
-    // Point object constructor.
-    //
-    // Parameters:
-    // - x: x-coordinate of the point on a canvas
-    // - y: y-coordinate of the point on a canvas
+
     if(params.fillStyle==undefined){
         params.fillStyle = 'rgba(255,255,255,0.5)';
     }
@@ -37,7 +34,7 @@ function Point (x, y, pov, params) {
         originalStrokeStyleOuterCircle: undefined,
         radiusInnerCircle: 4,
         radiusOuterCircle: 5,
-        strokeStyleOuterCircle: 'rgba(255,255,255,1)', // 'rgba(30,30,30,1)',
+        strokeStyleOuterCircle: 'rgba(255,255,255,1)',
         storedInDatabase: false
     };
     var unnessesaryProperties = ['originalFillStyleInnerCircle', 'originalStrokeStyleOuterCircle'];

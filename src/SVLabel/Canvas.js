@@ -137,7 +137,8 @@ function Canvas ($, param) {
     }
 
     /**
-     * Finish up labeling
+     * Finish up labeling.
+     * Clean this method when I get a chance.....
      */
     function closeLabelPath() {
         svl.tracker.push('LabelingCanvas_FinishLabeling');

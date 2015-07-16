@@ -262,13 +262,27 @@ function Label (pathIn, params) {
     function toLatLng() {
         var imageCoordinates = path.getImageCoordinates();
         var lat = properties.panoramaLat;
-        var p = svl.util.scaleImageCoordinate(imageCoordinates[0].x, imageCoordinates[0].y, 1/26);
-        var idx = 3 * (Math.ceil(p.x) + 512 * Math.ceil(p.y));
         var pc = svl.pointCloud.getPointCloud(properties.panoId);
         if (pc) {
-            var dx = pc.pointCloud[idx];
-            var dy = pc.pointCloud[idx + 1];
-            var delta = svl.util.math.latlngOffset(properties.panoramaLat, dx, dy);
+            var minDx = 1000;
+            var minDy = 1000;
+            var delta;
+            for (var i = 0; i < imageCoordinates.length; i ++) {
+                var p = svl.util.scaleImageCoordinate(imageCoordinates[i].x, imageCoordinates[i].y, 1/26);
+                var idx = 3 * (Math.ceil(p.x) + 512 * Math.ceil(p.y));
+                var dx = pc.pointCloud[idx];
+                var dy = pc.pointCloud[idx + 1];
+                var r = dx * dx + dy * dy;
+                var minR = minDx * minDx + minDy + minDy;
+
+                if ( r < minR) {
+                    minDx = dx;
+                    minDy = dy;
+
+                }
+            }
+            delta = svl.util.math.latlngOffset(properties.panoramaLat, dx, dy);
+
             return {lat: properties.panoramaLat + delta.dlat, lng: properties.panoramaLng + delta.dlng};
         } else {
             return null;
@@ -618,15 +632,32 @@ function Label (pathIn, params) {
                 var d = svl.util.math.haversine(currLat, currLng, latLng.lat, latLng.lng);
 
                 if (d < properties.distanceThreshold) {
-                    var angle = svl.util.math.latLngToAngle(currLat, currLng, latLng.lat, latLng.lng);
-                    var dx = d * Math.cos(angle);
-                    var dy = d * Math.sin(angle);
+                    var delta = svl.util.math.latlngInverseOffset(currLat, latLng.lat - currLat, latLng.lng - currLng);
+                    var dx = delta.dx;
+                    var dy = delta.dy;
 
                     // Todo. This needs to be rewritten as a callback.
-                    console.debug("Debug");
-                    svl.pointCloud.search(svl.panorama.pano, dx, dy, 0);
+                    //console.debug("Debug");
+                    var idx = svl.pointCloud.search(svl.panorama.pano, dx, dy, 0);
+                    var ix = idx / 3 % 512;
+                    var iy = (idx / 3 - ix) / 512;
+                    var imageCoordinateX = ix * 26;
+                    var imageCoordinateY = 3328 - iy * 26;
+                    var canvasPoint = svl.misc.imageCoordinateToCanvasCoordinate(imageCoordinateX, imageCoordinateY, pov);
 
+                    console.log(canvasPoint);
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255,255,255,1)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(canvasPoint.x, canvasPoint.y, 10, 2 * Math.PI, 0, true);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; // changeAlphaRGBA(properties.fillStyleInnerCircle, 0.5);
+                    ctx.restore();
 
+                    //new Point(tempPath[i].x, tempPath[i].y, pov, pointParameters)
+                    //new Label(new Path(), params)
                 }
 
             }
