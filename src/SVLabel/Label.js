@@ -624,7 +624,7 @@ function Label (pathIn, params) {
 
                     // Todo. This needs to be rewritten as a callback.
                     console.debug("Debug");
-                    var ix = svl.pointCloud.search(svl.panorama.pano, dx, dy);
+                    svl.pointCloud.search(svl.panorama.pano, dx, dy, 0);
 
 
                 }

@@ -91,6 +91,14 @@ function haversine(lat1, lon1, lat2, lon2) {
 }
 svl.util.math.haversine = haversine;
 
+function distance3d(a, b) {
+    var dx = a.x - b.x;
+    var dy = a.y - b.y;
+    var dz = a.z - b.z;
+    return dx * dx + dy * dy + dz * dz;
+}
+svl.util.math.distance3d = distance3d;
+
 
 
 // http://clauswitt.com/simple-statistics-in-javascript.html

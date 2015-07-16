@@ -40,7 +40,7 @@ function PointCloud ($, params) {
                     }
                     _callbacks[panoId] = null;
                 }
-            }
+            };
             _pointCloudLoader.load(panoId);
         }
     }
@@ -70,11 +70,17 @@ function PointCloud ($, params) {
     }
 
     /**
-     * Given the coordinate x, y (and z), return index of the data x
+     * Given the coordinate x, y (and z), return index of the point cloud data.
+     * To further calculate the x- and y-coordinates, do as follows:
+     *
+     * ix = idx / 3 % w
+     * iy = (idx / 3 - ix) / w
+     *
      * @panoId
      * @param x
      * @param y
      * @param param An object that could contain z-coordinate and a distance tolerance (r).
+     * @return idx
      */
     function search(panoId, x, y, param) {
         if (panoId in _pointClouds && getPointCloud(panoId)){
@@ -84,31 +90,21 @@ function PointCloud ($, params) {
             var tolerance = 100; // m
             var minR2 = 100;
             var ix;
-            // var iy;
 
-            // Todo. Needs find the actual nearest using a data structure (e.g., kd-tree, octtree).
-            for (var piy = 0; piy < _pointClouds[panoId].pointCloud.length; i += 3) {
-                var px = _pointClouds[panoId].pointCloud[i];
-                var py = _pointClouds[panoId].pointCloud[i + 1];
+            console.debug(getPointCloud(panoId));
 
-
-                if (!px || !py || px > tolerance || py > tolerance) {
-                    continue;
-                }
-
-                var pr2 = px * px + py + py;
-                if (pr2 < minR2) {
-                    minR2 = pr2;
-                    ix = i;
-                    // iy = i + 1;
-                    // console.log(px, py);
-                }
+            // kd-tree. It's slooooooow. I'll try Three.js later.
+            // https://github.com/ubilabs/kd-tree-javascript
+            var point = pc.tree.nearest({x: x, y: y, z:0}, 1, 100);
+            if (point) {
+                var idx = point[0][0].id;
+                return idx;
+                //var ix = idx / 3 % w;
+                //var iy = (idx / 3 - ix) / w;
+                //return {ix: ix, iy: iy};
             }
-
-            return ix;
-        } else {
-            return false;
         }
+        return null;
     }
 
     self.createPointCloud = createPointCloud;
