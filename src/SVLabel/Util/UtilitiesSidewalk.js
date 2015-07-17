@@ -5,6 +5,8 @@ svl.misc = {};
 /**
  *
  * 0 for image y-axis is at *3328*! So the top-left corner of the image is (0, 3328).
+
+ * Note: I realized I wrote a function in Point.js. (gsvImageCoordinate2CanvasCoordinate()).
  * @param ix
  * @param iy
  * @param pov

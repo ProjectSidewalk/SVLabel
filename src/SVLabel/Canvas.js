@@ -134,6 +134,15 @@ function Canvas ($, param) {
         if ($labelDeleteIcon) {
           $labelDeleteIcon.bind("click", labelDeleteIconClick);
         }
+
+        // Point radius
+        if (properties.drawingMode == 'path') {
+            properties.pointInnerCircleRadius = 5;
+            properties.pointOuterCircleRadius = 6;
+        } else {
+            properties.pointInnerCircleRadius = 13;
+            properties.pointOuterCircleRadius = 14;
+        }
     }
 
     /**
@@ -149,6 +158,8 @@ function Canvas ($, param) {
 
         pointParameters.fillStyleInnerCircle = labelColor.fillStyle;
         pointParameters.iconImagePath = iconImagePath;
+        pointParameters.radiusInnerCircle = properties.pointInnerCircleRadius;
+        pointParameters.radiusOuterCircle = properties.pointOuterCircleRadius;
 
         var pathLen = tempPath.length;
         var points = [];
@@ -419,8 +430,6 @@ function Canvas ($, param) {
      * Render a temporary path while the user is drawing.
      */
     function renderTempPath() {
-        // This method renders a line from the last point in tempPath to current mouse point.
-
         if (!svl.ribbon) {
             // return if the ribbon menu is not correctly loaded.
             return false;
@@ -675,7 +684,7 @@ function Canvas ($, param) {
         var labels = self.getUserLabels();
         labels = labels.filter(function (label) {
             return !label.isDeleted() && label.isVisible();
-        })
+        });
         return labels.length;
     }
 
@@ -748,7 +757,9 @@ function Canvas ($, param) {
                 x: parseInt(pointData.svImageX, 10),
                 y: parseInt(pointData.svImageY, 10)
             });
-            point.resetProperties({
+
+
+            point.setProperties({
                 fillStyleInnerCircle : labelColors[pointData.LabelType].fillStyle,
                 lineWidthOuterCircle : 2,
                 iconImagePath : iconImagePaths[pointData.LabelType].iconImagePath,
@@ -757,8 +768,8 @@ function Canvas ($, param) {
                 originalPitch: pointData.originalPitch,
                 originalZoom: pointData.originalZoom,
                 pov: pov,
-                radiusInnerCircle : 5, // 13,
-                radiusOuterCircle : 6, // 14,
+                radiusInnerCircle : properties.pointInnerCircleRadius,
+                radiusOuterCircle : properties.pointOuterCircleRadius,
                 strokeStyleOuterCircle : 'rgba(255,255,255,1)',
                 storedInDatabase : false
             });

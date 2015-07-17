@@ -204,12 +204,11 @@ function Point (x, y, pov, params) {
 
 
     /**
-     *
+     * Renders this point
      * @param pov
      * @param ctx
      */
     self.render = function (pov, ctx) {
-        // Render points
         if (status.visibility === 'visible') {
             var coord;
             var x;
@@ -236,52 +235,84 @@ function Point (x, y, pov, params) {
 
     };
 
-    self.resetFillStyle = function () {
-        // This method reverts the fillStyle property to its original value
+    /**
+     * This method reverts the fillStyle property to its original value
+     * @returns {resetFillStyle}
+     */
+    function resetFillStyle () {
         properties.fillStyleInnerCircle = properties.originalFillStyleInnerCircle;
         return this;
-    };
+    }
+    self.resetFillStyle = resetFillStyle;
 
-    self.resetSVImageCoordinate = function (coord) {
-        // Set the svImageCoordinate
+    /**
+     * Set the svImageCoordinate
+     * @param coord
+     * @returns {self}
+     */
+    function resetSVImageCoordinate (coord) {
         self.svImageCoordinate = coord;
         self.canvasCoordinate = {x : 0, y: 0};
         return this;
-    };
+    }
+    self.resetSVImageCoordinate = resetSVImageCoordinate;
 
-    self.resetStrokeStyle = function () {
-        // This method resets the strokeStyle to its original value
+    /**
+     * This method resets the strokeStyle to its original value
+     * @returns {self}
+     */
+    function resetStrokeStyle () {
         properties.strokeStyleOuterCircle = properties.originalStrokeStyleOuterCircle;
         return this;
-    };
+    }
+    self.resetStrokeStyle = resetStrokeStyle;
 
-    self.setBelongsTo = function (obj) {
-        // This function sets which object (Path)
-        // The point belongs to.
+    /**
+     * This function sets which object (Path)
+     * @param obj
+     * @returns {self}
+     */
+    function setBelongsTo (obj) {
         belongsTo = obj;
         return this;
-    };
+    }
+    self.setBelongsTo = setBelongsTo;
 
-    self.setFillStyle = function (value) {
-        // This method sets the fill style of inner circle to the specified value
+    /**
+     * This method sets the fill style of inner circle to the specified value
+     * @param value
+     * @returns {self}
+     */
+    function setFillStyle (value) {
         properties.fillStyleInnerCircle = value;
         return this;
-    };
+    }
+    self.setFillStyle = setFillStyle;
 
-    self.setIconPath = function (iconPath) {
+    function setIconPath (iconPath) {
         properties.iconImagePath = iconPath;
         return this;
-    };
+    }
+    self.setIconPath = setIconPath;
 
+    /**
+     * this method sets the photographerHeading and photographerPitch
+     * @param heading
+     * @param pitch
+     * @returns {self}
+     */
     self.setPhotographerPov = function (heading, pitch) {
-        // this method sets the photographerHeading and photographerPitch
         properties.photographerHeading = heading;
         properties.photographerPitch = pitch;
         return this;
     };
 
+    /**
+     * This function resets all the properties specified in params.
+     * @param params
+     * @returns {self}
+     */
     self.setProperties = function (params) {
-        // This function resets all the properties specified in params.
         for (var key in params) {
             if (key in properties) {
                 properties[key] = params[key];
@@ -295,37 +326,16 @@ function Point (x, y, pov, params) {
         //
         // Set pov parameters
         self.pov = self.pov || {};
-        if ('pov' in params) {
-            self.pov = params.pov;
-        }
+        if ('pov' in params) { self.pov = params.pov; }
+        if ('heading' in params) { self.pov.heading = params.heading; }
+        if ('pitch' in params) { self.pov.pitch = params.pitch; }
+        if ('zoom' in params) { self.pov.zoom = params.zoom; }
 
-        if ('heading' in params) {
-            self.pov.heading = params.heading;
-        }
-
-        if ('pitch' in params) {
-            self.pov.pitch = params.pitch;
-        }
-
-        if ('zoom' in params) {
-            self.pov.zoom = params.zoom;
-        }
-
-        //
         // Set original pov parameters
         self.originalPov = self.originalPov || {};
-        if ('originalHeading' in params) {
-            self.originalPov.heading = params.originalHeading;
-        }
-
-        if ('originalPitch' in params) {
-            self.originalPov.pitch = params.originalPitch;
-        }
-
-        if ('originalZoom' in params) {
-            self.originalPov.zoom = params.originalZoom;
-        }
-
+        if ('originalHeading' in params) { self.originalPov.heading = params.originalHeading; }
+        if ('originalPitch' in params) { self.originalPov.pitch = params.originalPitch; }
+        if ('originalZoom' in params) { self.originalPov.zoom = params.originalZoom; }
 
         if (!properties.originalFillStyleInnerCircle) {
             properties.originalFillStyleInnerCircle = properties.fillStyleInnerCircle;
@@ -370,9 +380,7 @@ function Point (x, y, pov, params) {
 svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     // This function takes the current pov of the Street View as a parameter
     // and returns a canvas coordinate of a point (xIn, yIn).
-    var x;
-    var y;
-    var zoom = pov.zoom;
+    var x, y, zoom = pov.zoom;
     var svImageWidth = svl.svImageWidth * svl.zoomFactor[zoom];
     var svImageHeight = svl.svImageHeight * svl.zoomFactor[zoom];
 
@@ -403,15 +411,6 @@ svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
 
     y = yIn - (svImageHeight / 2) * (pov.pitch / 90);
     y = y / svl.alpha_y + svl.canvasHeight / 2;
-
-
-    //
-    // Adjust the zoom level
-    //
-    //var zoomFactor = svl.zoomFactor[zoom];
-    //x = x * zoomFactor;
-    //y = y * zoomFactor;
-
 
     return {x : x, y : y};
 };
