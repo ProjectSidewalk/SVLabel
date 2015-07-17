@@ -13,8 +13,8 @@ function Label (pathIn, params) {
         className: 'Label'
     };
 
-    // Path
-    var path = undefined;
+    var path;
+    var goolgeMarker;
 
     var properties = {
         canvasWidth: undefined,
@@ -105,11 +105,13 @@ function Label (pathIn, params) {
             // Set belongs to of the path.
             path.setBelongsTo(self);
 
+            goolgeMarker = renderOnMap();
             return true;
         } catch (e) {
             console.error(self.className, ':', 'Error initializing the Label object.', e);
             return false;
         }
+
     }
 
     function renderTag(ctx) {
@@ -630,7 +632,6 @@ function Label (pathIn, params) {
         if (!evaluationMode) {
             evaluationMode = false;
         }
-
         if (!status.deleted) {
             if (status.visibility === 'visible') {
                 // Render a tag
@@ -699,7 +700,30 @@ function Label (pathIn, params) {
             }
         }
         return this;
+    };
+
+    /**
+     * This method renders a marker on a map.
+     * @returns {google.maps.Marker}
+     */
+    function renderOnMap () {
+        var latlng = toLatLng();
+        var googleLatLng = new google.maps.LatLng(latlng.lat, latlng.lng);
+
+        var image = {
+            url: "img/icons/Sidewalk/Icon_CurbRamp.png",
+            size: new google.maps.Size(20, 20),
+            origin: new google.maps.Point(latlng.lat, latlng.lng)
+
+        };
+        return new google.maps.Marker({
+            position: googleLatLng,
+            map: svl.map.getMap(),
+            title: "Hi!",
+            icon: "img/icons/Sidewalk/Icon_CurbRampSmall.png"
+        });
     }
+    self.renderOnMap = renderOnMap;
 
     self.resetFillStyle = function () {
         // This method turn the fill color of associated Path and Points into their original color.

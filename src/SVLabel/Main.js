@@ -103,6 +103,7 @@ function Main ($, params) {
 
       // Instantiation
       svl.map = new Map($, mapParam);
+        svl.map.disableClickZoom();
       //svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
 

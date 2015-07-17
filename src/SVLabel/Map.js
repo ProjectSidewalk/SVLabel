@@ -132,6 +132,7 @@ function Map ($, params) {
         availablePanoIds : undefined,
         currentPanoId: undefined,
         disableWalking : false,
+        disableClickZoom: false,
         hideNonavailablePanoLinks : false,
         lockDisableWalking : false,
         panoLinkListenerSet: false,
@@ -372,6 +373,13 @@ function Map ($, params) {
     // Private functions
     ////////////////////////////////////////
     /**
+     * This method disables zooming by double click.
+     */
+    function disableClickZoom () {
+        status.disableClickZoom = true;
+    }
+
+    /**
      * This method disables walking by hiding links towards other Street View panoramas.
      * @returns {disableWalking}
      */
@@ -385,6 +393,13 @@ function Map ($, params) {
             status.disableWalking = true;
         }
         return this;
+    }
+
+    /**
+     * This method enables zooming by double click.
+     */
+    function enableClickZoom () {
+        status.disableClickZoom = false;
     }
 
     /**
@@ -410,13 +425,26 @@ function Map ($, params) {
         }
     }
 
+    /**
+     * Get a map
+     */
+    function getMap() {
+        return properties.map;
+    }
+
+    /**
+     * Returns a panorama dom element that is dynamically created by GSV API
+     * @returns {*}
+     */
     function getPanoramaLayer () {
-        // Returns a panorama dom element that is dynamically created by GSV API
         return $divPano.children(':first').children(':first').children(':first').children(':eq(5)');
     }
 
+    /**
+     * Get svg element (arrows) in Street View.
+     * @returns {*}
+     */
     function getLinkLayer () {
-        // Get svg element (arrows) in Street View.
         return $divPano.find('svg').parent();
     }
 
@@ -781,17 +809,20 @@ function Map ($, params) {
         if (currTime - mouseStatus.prevMouseUpTime < 300) {
             // Double click
             // canvas.doubleClickOnCanvas(mouseStatus.leftUpX, mouseStatus.leftDownY);
-            svl.tracker.push('ViewControl_DoubleClick');
-            if (svl.keyboard.isShiftDown()) {
-                // If Shift is down, then zoom out with double click.
-                svl.zoomControl.zoomOut();
-                svl.tracker.push('ViewControl_ZoomOut');
-            } else {
-                // If Shift is up, then zoom in wiht double click.
-                // svl.zoomControl.zoomIn();
-                svl.zoomControl.pointZoomIn(mouseStatus.leftUpX, mouseStatus.leftUpY);
-                svl.tracker.push('ViewControl_ZoomIn');
+            if (!status.disableClickZoom) {
+                svl.tracker.push('ViewControl_DoubleClick');
+                if (svl.keyboard.isShiftDown()) {
+                    // If Shift is down, then zoom out with double click.
+                    svl.zoomControl.zoomOut();
+                    svl.tracker.push('ViewControl_ZoomOut');
+                } else {
+                    // If Shift is up, then zoom in wiht double click.
+                    // svl.zoomControl.zoomIn();
+                    svl.zoomControl.pointZoomIn(mouseStatus.leftUpX, mouseStatus.leftUpY);
+                    svl.tracker.push('ViewControl_ZoomIn');
+                }
             }
+
         }
 
 
@@ -925,15 +956,24 @@ function Map ($, params) {
         return properties.initialPanoId;
     };
 
-    self.getMaxPitch = function () {
-        // This method returns a max pitch
-        return properties.maxPitch;
-    };
+    self.getMap = getMap;
 
-    self.getMinPitch = function () {
-        // This method returns a min pitch
+    /**
+     * This method returns a max pitch
+     */
+    function getMaxPitch () {
+        return properties.maxPitch;
+    }
+    self.getMaxPitch = getMaxPitch;
+
+    /**
+     * This method returns a min pitch
+     * @returns {*}
+     */
+    function getMinPitch () {
         return properties.minPitch;
-    };
+    }
+    self.getMinPitch = getMinPitch;
 
     self.getProperty = function (prop) {
         // This method returns a value of a specified property.
@@ -943,9 +983,6 @@ function Map ($, params) {
             return false;
         }
     };
-
-
-
 
     self.lockDisableWalking = function () {
         // This method locks status.disableWalking
@@ -1186,7 +1223,8 @@ function Map ($, params) {
         return this;
     };
 
-
+    self.disableClickZoom = disableClickZoom;
+    self.enableClickZoom = enableClickZoom;
     self.hideLinks = hideLinks;
     self.modeSwitchLabelClick = modeSwitchLabelClick;
 
