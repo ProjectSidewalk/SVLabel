@@ -9,7 +9,7 @@ var svl = svl || {};
  * @memberof svl
  */
 function RibbonMenu ($, params) {
-    var self = {className: 'RibbonMenu'};
+    var self = { className: 'RibbonMenu' };
     var properties = {
         borderWidth : "3px",
         modeSwitchDefaultBorderColor : "rgba(200,200,200,0.75)",

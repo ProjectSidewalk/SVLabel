@@ -212,7 +212,7 @@ function ZoomControl ($, param) {
             var errMsg = 'You cannot access a property "' + name + '".';
             throw errMsg;
         }
-    }
+    };
 
     self.getStatus = function (name) {
         if (name in status) {
@@ -221,7 +221,7 @@ function ZoomControl ($, param) {
             var errMsg = 'You cannot access a property "' + name + '".';
             throw errMsg;
         }
-    }
+    };
 
     self.getProperties = function (name) {
         if (name in properties) {
@@ -230,7 +230,7 @@ function ZoomControl ($, param) {
             var errMsg = 'You cannot access a property "' + name + '".';
             throw errMsg;
         }
-    }
+    };
 
     self.lockDisableZoomIn = function () {
         // Lock zoom in

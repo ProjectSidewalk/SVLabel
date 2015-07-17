@@ -15,10 +15,7 @@ function Path (points, params) {
     // For canvas properties, take a look at:
     // https://developer.mozilla.org/en-US/docs/HTML/Canvas/Tutorial/Applying_styles_and_colors
     //
-    var self = {
-         className : 'Path',
-         points : undefined
-    };
+    var self = { className : 'Path', points : undefined };
     var belongsTo;
     var properties = {
         fillStyle: 'rgba(255,255,255,0.5)',
@@ -35,9 +32,6 @@ function Path (points, params) {
         visibility: 'visible'
     };
 
-    ////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////
     function _init(points, params) {
         var lenPoints;
         var i;
@@ -47,77 +41,84 @@ function Path (points, params) {
         // Set belongs to of the points
         for (i = 0; i < lenPoints; i += 1) {
             points[i].setBelongsTo(self);
-        };
+        }
 
         if (params) {
             for (var attr in params) {
                 if (attr in properties) {
                     properties[attr] = params[attr];
-                };
-            };
-        };
+                }
+            }
+        }
 
         properties.fillStyle = changeAlphaRGBA(points[0].getProperty('fillStyleInnerCircle'), 0.5);
         properties.originalFillStyle = properties.fillStyle;
         properties.originalStrokeStyle = properties.strokeStyle;
     }
 
+    /**
+     * Returns the line width
+     * @returns {string}
+     */
     function getLineWidth () {
-      // return line width
       return properties.lineWidth;
     }
+
+    /**
+     * Returns fill color of the path
+     * @returns {string}
+     */
     function getFill() {
-      // get fill
       return properties.fillStyle;
     }
 
+    /**
+     * Sets fill color of the path
+     * @param fill
+     */
     function setFill(fill) {
       properties.fillStyle = fill;
     }
 
+    /**
+     * This function checks if a mouse cursor is on any of a points and return
+     * @param povIn
+     * @returns {{x: number, y: number, width: number, height: number}}
+     */
     function getBoundingBox(povIn) {
-      // This function checks if a mouse cursor is on any of a points and return
-      var j;
-      var len;
-      var canvasCoords;
-      var pov = povIn ? povIn : getPOV(); // Todo. Get rid of the getPOV() global function.
-      var xMax = -1;
-      var xMin = 1000000;
-      var yMax = -1;
-      var yMin = 1000000;
+        var pov = povIn ? povIn : svl.getPOV();
+        var canvasCoords = getCanvasCoordinates(pov);
+        var xMin, xMax, yMin, yMax, width, height;
+        if (points.length > 2) {
+            xMax = -1;
+            xMin = 1000000;
+            yMax = -1;
+            yMin = 1000000;
 
-      //
-      // Check on points
-      canvasCoords = getCanvasCoordinates(pov);
-      len = canvasCoords.length;
+            for (var j = 0; j < canvasCoords.length; j += 1) {
+                var coord = canvasCoords[j];
+                if (coord.x < xMin) { xMin = coord.x; }
+                if (coord.x > xMax) { xMax = coord.x; }
+                if (coord.y < yMin) { yMin = coord.y; }
+                if (coord.y > yMax) { yMax = coord.y; }
+            }
+            width = xMax - xMin;
+            height = yMax - yMin;
+        } else {
+            xMin = canvasCoords[0].x;
+            yMin = canvasCoords[0].y;
+            width = 0;
+            height = 0;
+        }
 
-      for (j = 0; j < len; j += 1) {
-        var coord = canvasCoords[j];
-
-        if (coord.x < xMin) {
-          xMin = coord.x;
-        }
-        if (coord.x > xMax) {
-          xMax = coord.x;
-        }
-        if (coord.y < yMin) {
-          yMin = coord.y;
-        }
-        if (coord.y > yMax) {
-          yMax = coord.y;
-        }
-      }
-
-      return {
-        x: xMin,
-        y: yMin,
-        width: xMax - xMin,
-        height: yMax - yMin
-      };
+        return { x: xMin, y: yMin, width: width, height: height };
     }
 
+    /**
+     * this method returns a bounding box in terms of svImage coordinates.
+     * @returns {{x: number, y: number, width: number, height: number, boundary: boolean}}
+     */
     function getSvImageBoundingBox() {
-      // this method returns a bounding box in terms of svImage coordinates.
       var i;
       var coord;
       var coordinates = getImageCoordinates();
@@ -186,6 +187,11 @@ function Path (points, params) {
       }
     }
 
+    /**
+     * Get canvas coordinate
+     * @param pov
+     * @returns {Array}
+     */
     function getCanvasCoordinates (pov) {
         // Get canvas coordinates of points that constitute the path.
         var imCoords = getImageCoordinates();
@@ -228,22 +234,30 @@ function Path (points, params) {
     }
 
 
+    /**
+     * This method returns an array of image coordinates of points
+     * @returns {Array}
+     */
     function getImageCoordinates() {
-        var i;
-        var len = self.points.length;
-        var coords = [];
+        var i, len = self.points.length, coords = [];
         for (i = 0; i < len; i += 1) {
             coords.push(self.points[i].getGSVImageCoordinate());
                 }
         return coords;
     }
 
+    /**
+     * Returns points
+     * @returns {*}
+     */
     function getPoints() {
         return points;
-      // return point objects in this path
-      // Todo
     }
 
+    /**
+     * This method renders a bounding box around a path.
+     * @param ctx
+     */
     function renderBoundingBox (ctx) {
         // This function takes a bounding box returned by a method getBoundingBox()
         var boundingBox = getBoundingBox();
@@ -260,8 +274,6 @@ function Path (points, params) {
         ctx.stroke();
         ctx.closePath();
         ctx.restore();
-
-        return;
     }
 
     ////////////////////////////////////////
@@ -279,7 +291,7 @@ function Path (points, params) {
 
     self.getPOV = function() {
         return points[0].getPOV();
-    }
+    };
 
     self.getBoundingBox = function (pov) {
         // Get a bounding box of this path
@@ -313,19 +325,22 @@ function Path (points, params) {
     };
 
 
+    /**
+     * This function returns points.
+     */
     self.getPoints = function (reference) {
-        // This function returns self.points.
+        //
         if (!reference) {
             reference = false;
         }
 
         if (reference) {
-            return self.points;
+            // return self.points;
+            return points;
         } else {
-            return $.extend(true, [], self.points);
+            // return $.extend(true, [], self.points);
+            return $.extend(true, [], points);
         }
-
-        // return self.points;
     };
 
     self.getProperty = function (key) {
@@ -370,8 +385,14 @@ function Path (points, params) {
         }
     };
 
+    /**
+     * This method calculates the area overlap between bouding boxes of this path and
+     * another path passed as an argument.
+     * @param path
+     * @param mode
+     * @returns {number}
+     */
     self.overlap = function (path, mode) {
-        // This method calculates the area overlap between this path and another pathpassed as an argument.
         if (!mode) {
             mode = "boundingbox";
         }
@@ -417,11 +438,11 @@ function Path (points, params) {
             boundingbox1.y -= yOffset;
             boundingbox2.y -= yOffset;
 
-            var b1x1 = boundingbox1.x
+            var b1x1 = boundingbox1.x;
             var b1x2 = boundingbox1.x + boundingbox1.width;
             var b1y1 = boundingbox1.y;
             var b1y2 = boundingbox1.y + boundingbox1.height;
-            var b2x1 = boundingbox2.x
+            var b2x1 = boundingbox2.x;
             var b2x2 = boundingbox2.x + boundingbox2.width;
             var b2y1 = boundingbox2.y;
             var b2y2 = boundingbox2.y + boundingbox2.height;
@@ -452,8 +473,10 @@ function Path (points, params) {
         return overlap;
     };
 
+    /**
+     * This method remove all the points in the list points.
+     */
     self.removePoints = function () {
-        // This method remove all the points in the list points.
         self.points = undefined;
     };
 
@@ -461,10 +484,12 @@ function Path (points, params) {
         return self.render(pov, ctx);
     };
 
+    /**
+     * This method renders a path.
+     * @param pov
+     * @param ctx
+     */
     self.render = function (pov, ctx) {
-        // This method renders a path.
-        //
-        // Deprecated: Use render2
         if (status.visibility === 'visible') {
             var pathLen;
             var point;
@@ -475,11 +500,10 @@ function Path (points, params) {
             // Get canvas coordinates to render a path.
             var canvasCoords = getCanvasCoordinates(pov);
 
-            // Render fills
+            // Set the fill color
             point = self.points[0];
             ctx.save();
             ctx.beginPath();
-
             if (!properties.fillStyle) {
                 properties.fillStyle = changeAlphaRGBA(point.getProperty('fillStyleInnerCircle'), 0.5);
                 properties.originalFillStyle = properties.fillStyle;
@@ -488,18 +512,17 @@ function Path (points, params) {
                 ctx.fillStyle = properties.fillStyle;
             }
 
-            // ctx.moveTo(point.getCanvasCoordinate(pov).x, point.getCanvasCoordinate(pov).y);
-            ctx.moveTo(canvasCoords[0].x, canvasCoords[0].y);
-            for (j = 1; j < pathLen; j += 1) {
-                // ctx.lineTo(point.getCanvasCoordinate(pov).x, point.getCanvasCoordinate(pov).y);
-                ctx.lineTo(canvasCoords[j].x, canvasCoords[j].y);
+            if (pathLen > 1) {
+                // Render fill
+                ctx.moveTo(canvasCoords[0].x, canvasCoords[0].y);
+                for (j = 1; j < pathLen; j += 1) {
+                    ctx.lineTo(canvasCoords[j].x, canvasCoords[j].y);
+                }
+                ctx.lineTo(canvasCoords[0].x, canvasCoords[0].y);
+                ctx.fill();
+                ctx.closePath();
+                ctx.restore();
             }
-            // point = self.points[0];
-            // ctx.lineTo(point.getCanvasCoordinate(pov).x, point.getCanvasCoordinate(pov).y);
-            ctx.lineTo(canvasCoords[0].x, canvasCoords[0].y);
-            ctx.fill();
-            ctx.closePath();
-            ctx.restore();
 
             // Render points
             for (j = 0; j < pathLen; j += 1) {
@@ -507,36 +530,42 @@ function Path (points, params) {
                 point.render(pov, ctx);
             }
 
-            // Render lines
-            for (j = 0; j < pathLen; j += 1) {
-                if (j > 0) {
-                    var currCoord = canvasCoords[j];
-                    var prevCoord = canvasCoords[j - 1];
-                } else {
-                    var currCoord = canvasCoords[j];
-                    var prevCoord = canvasCoords[pathLen - 1];
+            if (pathLen > 1) {
+                // Render segments
+                for (j = 0; j < pathLen; j += 1) {
+                    if (j > 0) {
+                        var currCoord = canvasCoords[j];
+                        var prevCoord = canvasCoords[j - 1];
+                    } else {
+                        var currCoord = canvasCoords[j];
+                        var prevCoord = canvasCoords[pathLen - 1];
+                    }
+                    var r = point.getProperty('radiusInnerCircle');
+                    ctx.save();
+                    ctx.strokeStyle = properties.strokeStyle;
+                    svl.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
+                    ctx.restore();
                 }
-                var r = point.getProperty('radiusInnerCircle');
-                ctx.save();
-                ctx.strokeStyle = properties.strokeStyle;
-                svl.util.shape.lineWithRoundHead(ctx, prevCoord.x, prevCoord.y, r, currCoord.x, currCoord.y, r);
-                ctx.restore();
             }
         }
     };
 
-    self.renderBoundingBox = function (ctx) {
-        renderBoundingBox(ctx);
-    };
+    self.renderBoundingBox = renderBoundingBox;
 
+    /**
+     * This method changes the value of fillStyle to its original fillStyle value
+     * @returns {self}
+     */
     self.resetFillStyle = function () {
-        // This method changes the value of fillStyle to its original fillStyle value
         properties.fillStyle = properties.originalFillStyle;
         return this;
     };
 
+    /**
+     * This method resets the strokeStyle to its original value
+     * @returns {self}
+     */
     self.resetStrokeStyle = function () {
-        // This method resets the strokeStyle to its original value
         properties.strokeStyle = properties.originalStrokeStyle;
         return this;
     };

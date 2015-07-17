@@ -8,7 +8,7 @@ var svl = svl || {};
  * @memberof svl
  */
 function Keyboard ($) {
-    var oPublic = {
+    var self = {
             className : 'Keyboard'
         };
     var status = {
@@ -44,7 +44,6 @@ function Keyboard ($) {
 
         $(document).bind('keyup', documentKeyUp);
         $(document).bind('keydown', documentKeyDown);
-        $(document).bind('mouseup', mouseUp);
     }
 
     function documentKeyDown(e) {
@@ -62,6 +61,10 @@ function Keyboard ($) {
         }
     }
 
+    /**
+     * This method is fired with keyup.
+     * @param e
+     */
     function documentKeyUp (e) {
         // console.log(e.keyCode);
 
@@ -77,7 +80,11 @@ function Keyboard ($) {
                     break;
                 case 27:
                     // "Escape"
-                    svl.canvas.cancelDrawing();
+                    if (svl.canvas.getStatus('drawing')) {
+                        svl.canvas.cancelDrawing();
+                    } else {
+                        svl.ribbon.backToWalk();
+                    }
                     break;
                 case 67:
                     // "c" for CurbRamp. Switch the mode to the CurbRamp labeling mode.
@@ -107,22 +114,6 @@ function Keyboard ($) {
         }
     }
 
-    function mouseUp (e) {
-        // A call back method for mouseup. Capture a right click and do something.
-        // Capturing right click in javascript.
-        // http://stackoverflow.com/questions/2405771/is-right-click-a-javascript-event
-        var isRightMB;
-        e = e || window.event;
-
-        if ("which" in e)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-            isRightMB = e.which == 3;
-        else if ("button" in e)  // IE, Opera
-            isRightMB = e.button == 2;
-
-        if (isRightMB) {
-            oPublic.clearShiftDown();
-        }
-    }
 
     function textFieldBlur () {
         // This is a callback function called when any of the text field is blurred.
@@ -134,28 +125,19 @@ function Keyboard ($) {
         status.focusOnTextField = true;
     }
 
-    ////////////////////////////////////////
-    // Public methods
-    ////////////////////////////////////////
-    oPublic.clearShiftDown = function () {
-        // This method turn status.shiftDown to false.
-        status.shiftDown = false;
-        return this;
-    };
-
-    oPublic.getStatus = function (key) {
+    self.getStatus = function (key) {
         if (!(key in status)) {
           console.warn("You have passed an invalid key for status.")
         }
         return status[key];
     };
 
-    oPublic.isShiftDown = function () {
+    self.isShiftDown = function () {
         // This method returns whether a shift key is currently pressed or not.
         return status.shiftDown;
     };
 
-    oPublic.setStatus = function (key, value) {
+    self.setStatus = function (key, value) {
       if (key in status) {
         status[key] = value;
       }
@@ -163,5 +145,5 @@ function Keyboard ($) {
     };
 
     init();
-    return oPublic;
+    return self;
 }

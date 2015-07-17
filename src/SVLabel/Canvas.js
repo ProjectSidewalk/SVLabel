@@ -27,14 +27,12 @@ svl.getLabelCounter = function () {
  * A canvas module
  * @param $ {object} jQuery object
  * @param param {object} Other parameters
- * @returns {{className: string, testCases: {}}}
+ * @returns {{className: string}}
  * @constructor
  * @memberof svl
  */
 function Canvas ($, param) {
-    var self = {
-            className : 'Canvas',
-            testCases: {}};
+    var self = { className : 'Canvas' };
 
         // Mouse status and mouse event callback functions
     var mouseStatus = {
@@ -52,6 +50,7 @@ function Canvas ($, param) {
         };
         // Properties
     var properties = {
+        drawingMode: "point",
         evaluationMode: false,
         radiusThresh: 7,
         showDeleteMenuTimeOutToken : undefined,
@@ -69,16 +68,17 @@ function Canvas ($, param) {
     };
 
     var status = {
-        'currentLabel' : null,
-        'disableLabelDelete' : false,
-        'disableLabelEdit' : false,
-        'disableLabeling' : false,
-        'disableWalking' : false,
-        'drawing' : false,
-        'lockCurrentLabel' : false,
-        'lockDisableLabelDelete' : false,
-        'lockDisableLabelEdit' : false,
-        'lockDisableLabeling' : false,
+        currentLabel : null,
+        disableLabelDelete : false,
+        disableLabelEdit : false,
+        disableLabeling : false,
+        disableWalking : false,
+        drawing : false,
+
+        lockCurrentLabel : false,
+        lockDisableLabelDelete : false,
+        lockDisableLabelEdit : false,
+        lockDisableLabeling : false,
         svImageCoordinatesAdjusted: false,
         totalLabelCount: 0,
         'visibilityMenu' : 'hidden'
@@ -185,35 +185,17 @@ function Canvas ($, param) {
             param.photographerPitch = photographerPov.pitch;
         }
 
-        var label = Label(path, param);
-        if (label) {
-            status.currentLabel = new Label(path, param)
-            labels.push(status.currentLabel);
-
-
-            //// Get the label's
-            //var latLng = status.currentLabel.toLatLng();
-            //var currLat = svl.panorama.location.latLng.lat(),
-            //    currLng = svl.panorama.location.latLng.lng();
-            //var d = svl.util.math.haversine(currLat, currLng, latLng.lat, latLng.lng);
-            //var angle = svl.util.math.latLngToAngle(currLat, currLng, latLng.lat, latLng.lng);
-            //var dx = d * Math.cos(angle);
-            //var dy = d * Math.sin(angle);
-
-
-
-            //var gLatLng = new google.maps.LatLng(latlng.lat, latlng.lng);
-            //var labelMarker = new google.maps.Marker({
-            //    position: gLatLng,
-            //    map: svl.map.getProperty('map'),
-            //    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=bus|FFFF00',
-            //    title: 'Label'
-            //});
-
-            svl.actionStack.push('addLabel', status.currentLabel);
-        } else {
-            throw "Failed to add a new label.";
-        }
+        status.currentLabel = new Label(path, param)
+        labels.push(status.currentLabel);
+        svl.actionStack.push('addLabel', status.currentLabel);
+        //var label = Label(path, param);
+        //if (label) {
+        //    status.currentLabel = new Label(path, param)
+        //    labels.push(status.currentLabel);
+        //    svl.actionStack.push('addLabel', status.currentLabel);
+        //} else {
+        //    throw "Failed to add a new label.";
+        //}
 
         // Initialize the tempPath
         tempPath = [];
@@ -254,75 +236,63 @@ function Canvas ($, param) {
         currTime = new Date().getTime();
 
         if (!properties.evaluationMode) {
-            if (!status.disableLabeling &&
-                currTime - mouseStatus.prevMouseUpTime > 300) {
-                // currTime - mouseStatus.prevMouseDownTime < 400) {
-                ///!isOn(mouseStatus.leftUpX, mouseStatus.leftUpY)) {
-                // This part is executed by a single click
-                var iconImagePath;
-                var label;
-                var latlng;
-                var pointParameters;
-                var labelColor;
-                var labelDescription;
+            if (!status.disableLabeling && currTime - mouseStatus.prevMouseUpTime > 300) {
+                var labelType = svl.ribbon.getStatus('selectedLabelType');
+                var labelDescription = svl.misc.getLabelDescriptions()[labelType];
+                if (properties.drawingMode == "point") {
+                    // Point labeling. Simply push a single point and call closeLabelPath.
+                    var iconImagePath = getLabelIconImagePath()[labelDescription.id].iconImagePath;
+                    tempPath.push({x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
+                    closeLabelPath();
+                } else if (properties.drawingMode == "path") {
+                    // Path labeling.
 
-                if (svl.ribbon) {
-                    // labelColor = getLabelColors()[svl.ribbon.getStatus('selectedLabelType')];
-                    var labelType = svl.ribbon.getStatus('selectedLabelType');
-                    var labelDescriptions = getLabelDescriptions();
-                    labelDescription = labelDescriptions[labelType];
-                    // iconImagePath = getLabelIconImagePath()[labelDescription.id].iconImagePath;
+                    if ('ribbon' in svl && svl.ribbon) {
+                        // Define point parameters to draw
+                        if (!status.drawing) {
+                            // Start drawing a path if a user hasn't started to do so.
+                            status.drawing = true;
+                            if ('tracker' in svl && svl.tracker) {
+                                svl.tracker.push('LabelingCanvas_StartLabeling');
+                            }
+                            tempPath.push({x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
+                        } else {
+                            // Close the current path if there are more than 2 points in the tempPath and
+                            // the user clicks on a point near the initial point.
+                            var closed = false;
+                            if (tempPath.length > 2) {
+                                var r = Math.sqrt(Math.pow((tempPath[0].x - mouseStatus.leftUpX), 2) + Math.pow((tempPath[0].y - mouseStatus.leftUpY), 2));
+                                if (r < properties.radiusThresh) {
+                                    closed = true;
+                                    status.drawing = false;
+                                    closeLabelPath();
+                                }
+                            }
 
-                    // Define point parameters to draw
-
-                    if (!status.drawing) {
-                        // Start drawing a path if a user hasn't started to do so.
-                        status.drawing = true;
-                        if ('tracker' in svl && svl.tracker) {
-                            svl.tracker.push('LabelingCanvas_StartLabeling');
-                        }
-
-                        var point = {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY};
-                        tempPath.push(point);
-                    } else {
-                        // Close the current path if there are more than 2 points in the tempPath and
-                        // the user clicks on a point near the initial point.
-                        var closed = false;
-                        var pathLen = tempPath.length;
-                        if (pathLen > 2) {
-                            var r = Math.sqrt(Math.pow((tempPath[0].x - mouseStatus.leftUpX), 2) + Math.pow((tempPath[0].y - mouseStatus.leftUpY), 2));
-                            if (r < properties.radiusThresh) {
-                                closed = true;
-                                status.drawing = false;
-                                closeLabelPath();
+                            // Otherwise add a new point
+                            if (!closed) {
+                                tempPath.push({x: mouseStatus.leftUpX, y: mouseStatus.leftUpY});
                             }
                         }
-
-                        //
-                        // Otherwise add a new point
-                        if (!closed) {
-                            var point = {x: mouseStatus.leftUpX, y: mouseStatus.leftUpY};
-                            tempPath.push(point);
-                        }
                     }
-                } else {
-                    throw self.className + ' drawingLayerMouseUp(): ribbon not defined.';
                 }
 
                 self.clear();
                 self.setVisibilityBasedOnLocation('visible', getPanoId());
                 self.render2();
             } else if (currTime - mouseStatus.prevMouseUpTime < 400) {
-                // This part is executed for a double click event
-                // If the current status.drawing = true, then close the current path.
-                var pathLen = tempPath.length;
-                if (status.drawing && pathLen > 2) {
-                    status.drawing = false;
+                if (properties.drawingMode == "path") {
+                    // This part is executed for a double click event
+                    // If the current status.drawing = true, then close the current path.
+                    var pathLen = tempPath.length;
+                    if (status.drawing && pathLen > 2) {
+                        status.drawing = false;
 
-                    closeLabelPath();
-                    self.clear();
-                    self.setVisibilityBasedOnLocation('visible', getPanoId());
-                    self.render2();
+                        closeLabelPath();
+                        self.clear();
+                        self.setVisibilityBasedOnLocation('visible', getPanoId());
+                        self.render2();
+                    }
                 }
             }
         } else {
@@ -335,6 +305,7 @@ function Canvas ($, param) {
     }
 
     /**
+     * This is called on mouse move
      */
     function drawingLayerMouseMove (e) {
         // This function is fired when mouse cursor moves
@@ -399,7 +370,7 @@ function Canvas ($, param) {
     }
 
     /**
-      *
+      * This is called when a user clicks a delete icon.
       */
     function labelDeleteIconClick () {
         // Deletes the current label
@@ -491,19 +462,15 @@ function Canvas ($, param) {
         } else {
             svl.util.shape.lineWithRoundHead(ctx, tempPath[pathLen-1].x, tempPath[pathLen-1].y, properties.tempPointRadius, mouseStatus.currX, mouseStatus.currY, properties.tempPointRadius, 'both', 'rgba(255,255,255,1)', pointFill, 'stroke', 'rgba(255,255,255,1)', pointFill);
         }
-        return;
     }
 
-    ////////////////////////////////////////
-    // Public methods
-    ////////////////////////////////////////
     /**
      * Cancel drawing while use is drawing a label
      * @method
      */
     function cancelDrawing () {
         // This method clears a tempPath and cancels drawing. This method is called by Keyboard when esc is pressed.
-        if ('tracker' in svl && svl.tracker) {
+        if ('tracker' in svl && svl.tracker && status.drawing) {
             svl.tracker.push("LabelingCanvas_CancelLabeling");
         }
 
