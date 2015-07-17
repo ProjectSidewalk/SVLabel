@@ -82,13 +82,14 @@ function PointCloud ($, params) {
      * @param param An object that could contain z-coordinate and a distance tolerance (r).
      * @return idx
      */
-    function search(panoId, x, y, param) {
+    function search(panoId, param) {
         if (panoId in _pointClouds && getPointCloud(panoId)){
             var pc = getPointCloud(panoId);
 
             // kd-tree. It's slooooooow. I'll try Three.js later.
             // https://github.com/ubilabs/kd-tree-javascript
-            var point = pc.tree.nearest({x: x, y: y, z:0}, 1, 100);
+            //var point = pc.tree.nearest({x: param.x, y: param.y, z: param.z}, 1, 100);
+            var point = pc.tree.nearest({x: param.x, y: param.y, z: param.z}, 1, 40);
             if (point && point[0]) {
                 var idx = point[0][0].id;
                 return idx;

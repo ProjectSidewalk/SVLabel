@@ -15,7 +15,7 @@ function Path (points, params) {
     // For canvas properties, take a look at:
     // https://developer.mozilla.org/en-US/docs/HTML/Canvas/Tutorial/Applying_styles_and_colors
     //
-    var oPublic = {
+    var self = {
          className : 'Path',
          points : undefined
     };
@@ -41,12 +41,12 @@ function Path (points, params) {
     function _init(points, params) {
         var lenPoints;
         var i;
-        oPublic.points = points;
+        self.points = points;
         lenPoints = points.length;
 
         // Set belongs to of the points
         for (i = 0; i < lenPoints; i += 1) {
-            points[i].setBelongsTo(oPublic);
+            points[i].setBelongsTo(self);
         };
 
         if (params) {
@@ -230,10 +230,10 @@ function Path (points, params) {
 
     function getImageCoordinates() {
         var i;
-        var len = oPublic.points.length;
+        var len = self.points.length;
         var coords = [];
         for (i = 0; i < len; i += 1) {
-            coords.push(oPublic.points[i].getGSVImageCoordinate());
+            coords.push(self.points[i].getGSVImageCoordinate());
                 }
         return coords;
     }
@@ -265,9 +265,9 @@ function Path (points, params) {
     }
 
     ////////////////////////////////////////
-    // oPublic functions
+    // self functions
     ////////////////////////////////////////
-    oPublic.belongsTo = function () {
+    self.belongsTo = function () {
         // This function returns which object (i.e. Label) this Path
         // belongs to.
         if (belongsTo) {
@@ -277,59 +277,63 @@ function Path (points, params) {
         }
     };
 
-    oPublic.getPOV = function() {
+    self.getPOV = function() {
         return points[0].getPOV();
     }
 
-    oPublic.getBoundingBox = function (pov) {
+    self.getBoundingBox = function (pov) {
         // Get a bounding box of this path
         return getBoundingBox(pov);
     };
 
-    oPublic.getLineWidth = function () {
+    self.getLineWidth = function () {
       // get line width
       return getLineWidth();
     };
 
-    oPublic.getFill = function () {
+    self.getFill = function () {
       return getFill();
     };
 
-    oPublic.getFillStyle = function () {
+    self.getFillStyle = function () {
         // Get the fill style.
         return properties.fillStyle;
     };
 
 
-    oPublic.getSvImageBoundingBox = function () {
+    self.getSvImageBoundingBox = function () {
         // Get a boudning box
         return getSvImageBoundingBox();
     };
 
 
-    oPublic.getImageCoordinates = function () {
+    self.getImageCoordinates = function () {
         // Get the image coordinates of the path.
         return getImageCoordinates();
     };
 
 
-    oPublic.getPoints = function (reference) {
-        // This function returns oPublic.points.
+    self.getPoints = function (reference) {
+        // This function returns self.points.
         if (!reference) {
             reference = false;
         }
 
         if (reference) {
-            return oPublic.points;
+            return self.points;
         } else {
-            return $.extend(true, [], oPublic.points);
+            return $.extend(true, [], self.points);
         }
 
-        // return oPublic.points;
+        // return self.points;
+    };
+
+    self.getProperty = function (key) {
+        return properties[key];
     };
 
 
-    oPublic.isOn = function (x, y) {
+    self.isOn = function (x, y) {
         // This function checks if a mouse cursor is on any of a points and return
         // a point if the cursor is indeed on the point.
         // Otherwise, this function checks if the mouse cursor is on a bounding box
@@ -344,9 +348,9 @@ function Path (points, params) {
 
         //
         // Check if the passed point (x, y) is on any of points.
-        pointsLen = oPublic.points.length;
+        pointsLen = self.points.length;
         for (j = 0; j < pointsLen; j += 1) {
-            point = oPublic.points[j];
+            point = self.points[j];
             result = point.isOn(x, y);
             if (result) {
                 return result;
@@ -366,7 +370,7 @@ function Path (points, params) {
         }
     };
 
-    oPublic.overlap = function (path, mode) {
+    self.overlap = function (path, mode) {
         // This method calculates the area overlap between this path and another pathpassed as an argument.
         if (!mode) {
             mode = "boundingbox";
@@ -448,16 +452,16 @@ function Path (points, params) {
         return overlap;
     };
 
-    oPublic.removePoints = function () {
+    self.removePoints = function () {
         // This method remove all the points in the list points.
-        oPublic.points = undefined;
+        self.points = undefined;
     };
 
-    oPublic.render2 = function (ctx, pov) {
-        return oPublic.render(pov, ctx);
+    self.render2 = function (ctx, pov) {
+        return self.render(pov, ctx);
     };
 
-    oPublic.render = function (pov, ctx) {
+    self.render = function (pov, ctx) {
         // This method renders a path.
         //
         // Deprecated: Use render2
@@ -466,13 +470,13 @@ function Path (points, params) {
             var point;
             var j;
 
-            pathLen = oPublic.points.length;
+            pathLen = self.points.length;
 
             // Get canvas coordinates to render a path.
             var canvasCoords = getCanvasCoordinates(pov);
 
             // Render fills
-            point = oPublic.points[0];
+            point = self.points[0];
             ctx.save();
             ctx.beginPath();
 
@@ -490,7 +494,7 @@ function Path (points, params) {
                 // ctx.lineTo(point.getCanvasCoordinate(pov).x, point.getCanvasCoordinate(pov).y);
                 ctx.lineTo(canvasCoords[j].x, canvasCoords[j].y);
             }
-            // point = oPublic.points[0];
+            // point = self.points[0];
             // ctx.lineTo(point.getCanvasCoordinate(pov).x, point.getCanvasCoordinate(pov).y);
             ctx.lineTo(canvasCoords[0].x, canvasCoords[0].y);
             ctx.fill();
@@ -499,7 +503,7 @@ function Path (points, params) {
 
             // Render points
             for (j = 0; j < pathLen; j += 1) {
-                point = oPublic.points[j];
+                point = self.points[j];
                 point.render(pov, ctx);
             }
 
@@ -521,23 +525,23 @@ function Path (points, params) {
         }
     };
 
-    oPublic.renderBoundingBox = function (ctx) {
+    self.renderBoundingBox = function (ctx) {
         renderBoundingBox(ctx);
     };
 
-    oPublic.resetFillStyle = function () {
+    self.resetFillStyle = function () {
         // This method changes the value of fillStyle to its original fillStyle value
         properties.fillStyle = properties.originalFillStyle;
         return this;
     };
 
-    oPublic.resetStrokeStyle = function () {
+    self.resetStrokeStyle = function () {
         // This method resets the strokeStyle to its original value
         properties.strokeStyle = properties.originalStrokeStyle;
         return this;
     };
 
-    oPublic.setFill = function(fill) {
+    self.setFill = function(fill) {
         // console.log(fill[1]);
         // console.log(fill.substring(4, fill.length-1));
         if(fill.substring(0,4)=='rgba'){
@@ -549,19 +553,19 @@ function Path (points, params) {
         return this;
     };
 
-    oPublic.setBelongsTo = function (obj) {
+    self.setBelongsTo = function (obj) {
         belongsTo = obj;
         return this;
     };
 
-    oPublic.setLineWidth = function (lineWidth) {
+    self.setLineWidth = function (lineWidth) {
         if(!isNaN(lineWidth)){
             properties.lineWidth  = ''+lineWidth;
         }
         return this;
     };
 
-    oPublic.setFillStyle = function (fill) {
+    self.setFillStyle = function (fill) {
         // This method sets the fillStyle of the path
         if(fill!=undefined){
             properties.fillStyle = fill;
@@ -569,13 +573,13 @@ function Path (points, params) {
         return this;
     };
 
-    oPublic.setStrokeStyle = function (stroke) {
+    self.setStrokeStyle = function (stroke) {
         // This method sets the strokeStyle of the path
         properties.strokeStyle = stroke;
         return this;
     };
 
-    oPublic.setVisibility = function (visibility) {
+    self.setVisibility = function (visibility) {
         // This method sets the visibility of a path (and points that cons
         if (visibility === 'visible' || visibility === 'hidden') {
             status.visibility = visibility;
@@ -586,5 +590,5 @@ function Path (points, params) {
     // Initialize
     _init(points, params);
 
-    return oPublic;
+    return self;
 }

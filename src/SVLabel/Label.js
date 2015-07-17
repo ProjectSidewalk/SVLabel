@@ -255,6 +255,33 @@ function Label (pathIn, params) {
         }
     }
 
+    function toOffset() {
+        var imageCoordinates = path.getImageCoordinates();
+        var lat = properties.panoramaLat;
+        var pc = svl.pointCloud.getPointCloud(properties.panoId);
+        if (pc) {
+            var minDx = 1000;
+            var minDy = 1000;
+            var minDz = 1000;
+            for (var i = 0; i < imageCoordinates.length; i++) {
+                var p = svl.util.scaleImageCoordinate(imageCoordinates[i].x, imageCoordinates[i].y, 1 / 26);
+                var idx = 3 * (Math.ceil(p.x) + 512 * Math.ceil(p.y));
+                var dx = pc.pointCloud[idx];
+                var dy = pc.pointCloud[idx + 1];
+                var dz = pc.pointCloud[idx + 2];
+                var r = dx * dx + dy * dy;
+                var minR = minDx * minDx + minDy + minDy;
+
+                if (r < minR) {
+                    minDx = dx;
+                    minDy = dy;
+                    minDz = dz;
+                }
+            }
+            return {dx: minDx, dy: minDy, dz: minDz};
+        }
+    }
+
     /**
      * Get the label latlng position
      * @returns {lat: labelLat, lng: labelLng}
@@ -622,23 +649,32 @@ function Label (pathIn, params) {
 
                 // Render a path
                 path.render2(ctx, pov);
-            }
-            else {
+            } else if (false) {
                 // Render labels that are not in the current panorama but are close enough.
-                // Get the label's
-                var latLng = toLatLng();
+                // Get the label'svar latLng = toLatLng();
                 var currLat = svl.panorama.location.latLng.lat(),
                     currLng = svl.panorama.location.latLng.lng();
                 var d = svl.util.math.haversine(currLat, currLng, latLng.lat, latLng.lng);
 
-                if (d < properties.distanceThreshold) {
-                    var delta = svl.util.math.latlngInverseOffset(currLat, latLng.lat - currLat, latLng.lng - currLng);
-                    var dx = delta.dx;
-                    var dy = delta.dy;
+                var offset = toOffset();
 
-                    // Todo. This needs to be rewritten as a callback.
+
+                if (d < properties.distanceThreshold) {
+
+                    var dPosition = svl.util.math.latlngInverseOffset(currLat, currLat - latLng.lat, currLng - latLng.lng);
+                    //var dx = dPosition.dx;
+                    //var dy = dPosition.dy;
+                    //var dz = 0;
+
+
+                    var dx = offset.dx - dPosition.dx;
+                    var dy = offset.dy - dPosition.dy;
+                    var dz = offset.dz;
+
+
+                    //
                     //console.debug("Debug");
-                    var idx = svl.pointCloud.search(svl.panorama.pano, dx, dy, 0);
+                    var idx = svl.pointCloud.search(svl.panorama.pano, {x: dx, y: dy, z: dz});
                     var ix = idx / 3 % 512;
                     var iy = (idx / 3 - ix) / 512;
                     var imageCoordinateX = ix * 26;
@@ -653,17 +689,17 @@ function Label (pathIn, params) {
                     ctx.arc(canvasPoint.x, canvasPoint.y, 10, 2 * Math.PI, 0, true);
                     ctx.closePath();
                     ctx.stroke();
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; // changeAlphaRGBA(properties.fillStyleInnerCircle, 0.5);
+                    ctx.fillStyle = path.getProperty('fillStyle'); // changeAlphaRGBA(properties.fillStyleInnerCircle, 0.5);
+                    ctx.fill();
                     ctx.restore();
 
                     //new Point(tempPath[i].x, tempPath[i].y, pov, pointParameters)
                     //new Label(new Path(), params)
                 }
-
             }
         }
         return this;
-    };
+    }
 
     self.resetFillStyle = function () {
         // This method turn the fill color of associated Path and Points into their original color.
