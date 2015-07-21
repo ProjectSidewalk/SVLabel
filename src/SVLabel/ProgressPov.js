@@ -173,38 +173,38 @@ function ProgressPov ($, param) {
                 // Added Aug 28th.
                 // Todo. The part above is redundunt. Fix it later.
                 // Fill in gaps in surveyedAngles
-                var indexCenter = Math.floor(heading / 360 * 100);
-                var previousHeading = status.previousHeading;
-                if (heading !== previousHeading) {
-                    var previousIndex = Math.floor(previousHeading / 360 * 100);
-                    var delta = heading - previousHeading;
-                    // if ((delta > 0 && delta < 359) || delta < -359) {
-                    if ((delta > 0 && delta < 300) || delta < -300) {
-                        // Fill in the gap from left to right
-                        for (i = previousIndex;;i++) {
-                            if (i == status.surveyedAngles.length) {
-                                i = 0;
-                            }
-                            status.surveyedAngles[i] = 1;
-                            if (i == indexCenter) {
-                                break;
-                            }
-
-                        }
-                    } else {
-                        // Fill in the gap from right to left.
-                        for (i = previousIndex;;i--) {
-                            if (i == -1) {
-                                i = status.surveyedAngles.length - 1;
-                            }
-                            status.surveyedAngles[i] = 1;
-                            if (i == indexCenter) {
-                                break;
-                            }
-
-                        }
-                    }
-                }
+//                var indexCenter = Math.floor(heading / 360 * 100);
+//                var previousHeading = status.previousHeading;
+//                if (heading !== previousHeading) {
+//                    var previousIndex = Math.floor(previousHeading / 360 * 100);
+//                    var delta = heading - previousHeading;
+//                    // if ((delta > 0 && delta < 359) || delta < -359) {
+//                    if ((delta > 0 && delta < 300) || delta < -300) {
+//                        // Fill in the gap from left to right
+//                        for (i = previousIndex;;i++) {
+//                            if (i == status.surveyedAngles.length) {
+//                                i = 0;
+//                            }
+//                            status.surveyedAngles[i] = 1;
+//                            if (i == indexCenter) {
+//                                break;
+//                            }
+//
+//                        }
+//                    } else {
+//                        // Fill in the gap from right to left.
+//                        for (i = previousIndex;;i--) {
+//                            if (i == -1) {
+//                                i = status.surveyedAngles.length - 1;
+//                            }
+//                            status.surveyedAngles[i] = 1;
+//                            if (i == indexCenter) {
+//                                break;
+//                            }
+//
+//                        }
+//                    }
+//                }
 
                 // status.surveyedAngles = oneDimensionalMorphology(status.surveyedAngles);
 
