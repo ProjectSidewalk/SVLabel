@@ -36,8 +36,8 @@
     display: inline-block;
 
     position: relative;
-    height: 65px;
-    width:65px;
+    height: 71px;
+    width:71px;
 
     border-radius: 3px 3px 0px 0px;
     -webkit-border-radius: 3px 3px 0px 0px;
@@ -69,14 +69,23 @@
     width: 100%;
 }
 
-.RibbonModeSwitchHorizontalLine {
+#modeSwitchWalk {
+    width: 56px;
+    border: 3px solid rgba(0, 0, 0, 1);
+    background: rgb(204, 204, 204);
+}
 
+.RibbonModeSwitchHorizontalLine {
     background: black;
     position: absolute;
     left: -3px;
-    bottom: -5px;
+    bottom: -4px;
     height: 3px;
     width: 71px;
+}
+
+#ribbon-mode-switch-horizontal-line-walk {
+    left: -3px;
 }
 
 /*****************************************
@@ -118,11 +127,11 @@
 /*****************************************
 * Ribbon Menu Landmark Column
 */
-#Holder_Landmark {
+#landmark-holder {
     background: transparent;
 
     position: absolute;
-    left: 75px;
+    left: 64px;
     top: 0px;
     height: 100px;
     width: 470px;
@@ -163,7 +172,7 @@
     border-left: 5px solid black;
     position: absolute;
     left: 25px;
-    top: -20px;
-    height: 16px;
+    top: -24px;
+    height: 20px;
     width: 0px;
 }

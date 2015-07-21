@@ -1,20 +1,14 @@
+.svl-container {
+    background: rgba(255,255,255,1);
+    padding: 0px;
+    margin: 0px;
+    font-family: SegoeUILight, 'Mono Sans', Helvetica, Arial;
+}
+
 text {
     visibility: hidden;
 }
 
-* {
-    font-family: SegoeUILight, 'Mono Sans', Helvetica, Arial;
-    padding: 0px;
-    margin: 0px;
-}
-
-body {
-    background: rgba(255,255,255,1);
-}
-
-th {
-
-}
 
 /*
 #Footer {

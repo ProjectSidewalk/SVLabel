@@ -1,16 +1,18 @@
 #zoom-control-holder {
     background: transparent;
+
     position: absolute;
-    left: 400px;
-    top: 53px;
+    left: 453px;
+    top: 56px;
     height: 50px;
     width: 200px;
 }
 
 .zoom-control-button {
     color: rgba(0,0,0,1);
+    font-size: 11px;
     height: 40px;
-    width: 80px;
+    width: 72px;
 }
 
 .zoom-button-icon {

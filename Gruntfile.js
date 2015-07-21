@@ -25,6 +25,7 @@ module.exports = function(grunt) {
         concat_css: {
             all: {
                 src: [
+                    'css/svl.css',
                     'css/*.css'
                     ],
                 dest: 'build/SVLabel.css'

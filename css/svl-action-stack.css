@@ -1,9 +1,9 @@
 #action-stack-control-holder {
-    /* Holder_ActionStackControl { */
+    font-size: 11px;
     background: transparent;
     position: absolute;
-    left: 580px;
-    top: 53px;
+    left: 600px;
+    top: 56px;
     height: 50px;
     width: 160px;
 }

@@ -9951,8 +9951,8 @@ function UI ($, params) {
       // Zoom control
       self.zoomControl = {};
       self.zoomControl.holder = $("#zoom-control-holder");
-      self.zoomControl.holder.append('<button id="zoom-in-button" class="button zoom-control-button"><img src="img/icons/ZoomIn.svg" class="zoom-button-icon" alt="Zoom in"><br /><small>Zoom In</small></button>');
-      self.zoomControl.holder.append('<button id="zoom-out-button" class="button zoom-control-button"><img src="img/icons/ZoomOut.svg" class="zoom-button-icon" alt="Zoom out"><br /><small>Zoom Out</small></button>');
+      self.zoomControl.holder.append('<button id="zoom-in-button" class="button zoom-control-button"><img src="' + svl.rootDirectory + 'img/icons/ZoomIn.svg" class="zoom-button-icon" alt="Zoom in"><br />Zoom In</button>');
+      self.zoomControl.holder.append('<button id="zoom-out-button" class="button zoom-control-button"><img src="' + svl.rootDirectory + 'img/icons/ZoomOut.svg" class="zoom-button-icon" alt="Zoom out"><br />Zoom Out</button>');
       self.zoomControl.zoomIn = $("#zoom-in-button");
       self.zoomControl.zoomOut = $("#zoom-out-button");
 
@@ -12668,6 +12668,10 @@ function getLabelCursorImagePath() {
           id: 'SurfaceProblem',
           cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
+        Other: {
+            id: 'Other',
+            cursorImagePath: svl.rootDirectory + 'img/cursors/pen.png'
+        }
     }
 }
 svl.misc.getLabelCursorImagePath = getLabelCursorImagePath;
@@ -12697,6 +12701,10 @@ function getLabelIconImagePath(labelType) {
         SurfaceProblem: {
           id: 'SurfaceProblem',
           iconImagePath: null
+        },
+        Other: {
+            id: 'Other',
+            iconImagePath: null
         },
         Void: {
             id: 'Void',
@@ -12776,6 +12784,11 @@ function getLabelInstructions () {
           instructionalText: 'Label mode: Locate and draw an outline around a <span class="underline">obstacle in path</span>',
           textColor: 'rgba(255,255,255,1)'
         },
+        Other: {
+            id: 'Other',
+            instructionalText: 'Label mode',
+            textColor: 'rgba(255,255,255,1)'
+        },
         SurfaceProblem: {
           id: 'SurfaceProblem',
           instructionalText: 'Label mode: Locate and draw an outline around a <span class="underline">sidewalk surface problem</span>',
@@ -12853,6 +12866,10 @@ function getRibbonConnectionPositions () {
           id: 'SurfaceProblem',
           labelRibbonConnection: '340px'
         },
+        Other: {
+            id: 'Other',
+            labelRibbonConnection: '416px'
+        },
         'StopSign' : {
             'id' : 'StopSign',
             'text' : 'Stop Sign',
@@ -12917,6 +12934,10 @@ function getLabelDescriptions () {
         Obstacle: {
           id: 'Obstacle',
           text: 'Obstacle in a Path'
+        },
+        Other: {
+            id: 'Other',
+            text: 'Other'
         },
         SurfaceProblem: {
           id: 'SurfaceProblem',
@@ -12998,6 +13019,10 @@ function SidewalkColorScheme () {
         Obstacle: {
           id: 'Obstacle',
           fillStyle: 'rgba(0, 161, 203, 0.9)'
+        },
+        Other: {
+            id: 'Other',
+            fillStyle: 'rgba(204, 204, 204, 0.9)'
         },
         SurfaceProblem: {
           id: 'SurfaceProblem',
