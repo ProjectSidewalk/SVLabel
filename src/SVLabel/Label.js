@@ -711,7 +711,7 @@ function Label (pathIn, params) {
         var googleLatLng = new google.maps.LatLng(latlng.lat, latlng.lng);
 
         var image = {
-            url: "img/icons/Sidewalk/Icon_CurbRamp.png",
+            url: svl.rootDirectory + "img/icons/Sidewalk/Icon_CurbRamp.png",
             size: new google.maps.Size(20, 20),
             origin: new google.maps.Point(latlng.lat, latlng.lng)
 
@@ -720,7 +720,7 @@ function Label (pathIn, params) {
             position: googleLatLng,
             map: svl.map.getMap(),
             title: "Hi!",
-            icon: "img/icons/Sidewalk/Icon_CurbRampSmall.png"
+            icon: svl.rootDirectory + "img/icons/Sidewalk/Icon_CurbRampSmall.png"
         });
     }
     self.renderOnMap = renderOnMap;

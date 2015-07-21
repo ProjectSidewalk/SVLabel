@@ -12,9 +12,9 @@ function QualificationBadges ($, params) {
     var self = { className : 'QualificationBadges' };
     var properties = {
         badgeClassName : 'Badge',
-        badgePlaceHolderImagePath : "public/img/badges/EmptyBadge.png",
-        busStopAuditorImagePath : "public/img/badges/Onboarding_BusStopExplorerBadge_Orange.png",
-        busStopExplorerImagePath : "public/img/badges/Onboarding_BusStopInspector_Green.png"
+        badgePlaceHolderImagePath : svl.rootDirectory + "/img/badges/EmptyBadge.png",
+        busStopAuditorImagePath : svl.rootDirectory + "/img/badges/Onboarding_BusStopExplorerBadge_Orange.png",
+        busStopExplorerImagePath : svl.rootDirectory + "/img/badges/Onboarding_BusStopInspector_Green.png"
     };
     var status = {};
 

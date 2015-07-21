@@ -569,13 +569,13 @@ function Map ($, params) {
     function setViewControlLayerCursor(type) {
         switch(type) {
             case 'ZoomOut':
-                $divViewControlLayer.css("cursor", "url(img/cursors/Cursor_ZoomOut.png) 4 4, move");
+                $divViewControlLayer.css("cursor", "url(" + svl.rootDirectory + "img/cursors/Cursor_ZoomOut.png) 4 4, move");
                 break;
             case 'OpenHand':
-                $divViewControlLayer.css("cursor", "url(img/cursors/openhand.cur) 4 4, move");
+                $divViewControlLayer.css("cursor", "url(" + svl.rootDirectory + "img/cursors/openhand.cur) 4 4, move");
                 break;
             case 'ClosedHand':
-                $divViewControlLayer.css("cursor", "url(img/cursors/closedhand.cur) 4 4, move");
+                $divViewControlLayer.css("cursor", "url(" + svl.rootDirectory + "img/cursors/closedhand.cur) 4 4, move");
                 break;
             default:
                 $divViewControlLayer.css("cursor", "default");

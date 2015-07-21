@@ -65,19 +65,19 @@ function getLabelCursorImagePath() {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            cursorImagePath : 'img/cursors/pen.png'
+            cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            cursorImagePath : 'img/cursors/pen.png'
+            cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
         Obstacle: {
           id: 'Obstacle',
-          cursorImagePath : 'img/cursors/pen.png'
+          cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
         SurfaceProblem: {
           id: 'SurfaceProblem',
-          cursorImagePath : 'img/cursors/pen.png'
+          cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
     }
 }
@@ -95,11 +95,11 @@ function getLabelIconImagePath(labelType) {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            iconImagePath : '../../img/Icon_CurbRamp.svg'
+            iconImagePath : svl.rootDirectory + 'img/Icon_CurbRamp.svg'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            iconImagePath : 'public/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
+            iconImagePath : svl.rootDirectory + '/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
         },
         Obstacle: {
           id: 'Obstacle',
@@ -119,43 +119,43 @@ function getLabelIconImagePath(labelType) {
         },
         'StopSign' : {
             'id' : 'StopSign',
-            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStop.png'
         },
         'StopSign_OneLeg' : {
             'id' : 'StopSign_OneLeg',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_SingleLeg.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopSign_SingleLeg.png'
         },
         'StopSign_TwoLegs' : {
             'id' : 'StopSign_TwoLegs',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_TwoLegged.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopSign_TwoLegged.png'
         },
         'StopSign_Column' : {
             'id' : 'StopSign_Column',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_Column.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopSign_Column.png'
         },
         'StopSign_None' : {
             'id' : 'StopSign_None',
-            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStop.png'
         },
         'Landmark_Shelter' : {
             'id' : 'Landmark_Shelter',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopShelter.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopShelter.png'
         },
         'Landmark_Bench' : {
             'id' : 'Landmark_Bench',
-            'iconImagePath' : 'public/img/icons/Icon_Bench.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_Bench.png'
         },
         'Landmark_TrashCan' : {
             'id' : 'Landmark_TrashCan',
-            'iconImagePath' : 'public/img/icons/Icon_TrashCan2.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_TrashCan2.png'
         },
         'Landmark_MailboxAndNewsPaperBox' : {
             'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'iconImagePath' : 'public/img/icons/Icon_Mailbox2.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_Mailbox2.png'
         },
         'Landmark_OtherPole' : {
             'id' : 'Landmark_OtherPole',
-            'iconImagePath' : 'public/img/icons/Icon_OtherPoles.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_OtherPoles.png'
         }
     }
 }

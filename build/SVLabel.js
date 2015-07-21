@@ -1,3 +1,321 @@
+/**
+ * Fog.js
+ *
+ * @Author: Ruofei Du
+ * @InitialCreator: Sean Panella and Vicki Le & Kotaro (Aug 12th, 2013.)
+ * @Date: Sep 17, 2013
+ * @Comment: we don't need Fog/Clipper.js now
+ *
+ **/
+
+ /** @namespace */
+ var svl = svl || {};
+ 
+/** Google Maps Fog API
+ *
+ * @ Requirements:
+ *   Google Maps JavaScript V3 API (https://developers.google.com/maps/documentation/javascript/)
+ *   Javascript Clipper (http://sourceforge.net/projects/jsclipper/)
+ * @ Public Functions:
+ *   updateFromPOV: Updates the fog based on the new POV
+ *   clearMap: Clears all of the fog
+
+ * Creates a new GMFog Object
+ *
+ * @ Required Parameters
+ * map: google.maps.Map object for the map that the fog will overlay (should already be loaded)
+ * center: google.maps.LatLng object for the center of the circle
+ * radius: Radius of the fog (decimal)
+ * @ Optional Parameters
+ * strokeColor: String of hex color representing the outline of the fog ("#080A17" for example)
+ * strokeOpacity: Opacity of the outline of the fog (decimal)
+ * strokeWeight: Weight of the outline of the fog (decimal)
+ * fillColor: Color of the fog (same format as strokeColor)
+ * fillOpacity: Opacity of the fog (decimal)
+ **/
+// function Fog(map, center, radius, max, strokeColor, strokeOpacity, strokeWeight, fillColor, fillOpacity) {
+function Fog(mapIn, params) {
+    var oPublic = {className: 'Fog'};
+    var properties = {};
+    var pointerVisitedLeft = 0;
+    var pointerVisitedRight = 0;
+    var dirCurrentLeft = 0;
+    var dirCurrentRight = 0;
+    var dirCurrentMid = 0;
+    var dirVisitedMid = 0;
+    var dirVisitedMidLeftHandside = 0;
+    var dirVisitedMidRightHandside = 0;
+    var polygonVisitedLeft = null;
+    var polygonVisitedRight = null;
+    var polygonFog = null;
+    var pathVisitedLeft = null;
+    var pathVisitedRight = null;
+    var pathFog = null;
+    var deltaHeading = 0;
+    var rotateThreshold = 1.0;
+    var m_firstRun = true;
+    var m_isCompleted = false;
+    var m_completionRate = 0;
+    var m_completionRate2 = 0;
+
+    var map = mapIn;
+
+    ////////////////////////////////////////////////////////////
+    // Private functions
+    ////////////////////////////////////////////////////////////
+    function _init(params) {
+        // This method initializes the object properties.
+        if (!("center" in params) || !params.center) {
+            throw "Center cannot be null when constructing a GMFog!";
+        } else {
+            properties.center = params.center;
+        }
+        if (!("radius" in params) || !params.radius) {
+            throw "Radius cannot be null when constructing a GMFog!";
+        } else {
+            properties.radius = params.radius;
+        }
+        if (!("max" in params) || params.max) {
+            properties.max = 700;
+        } else {
+            properties.max = 360;
+        }
+        if (!("strokeColor" in params) || params.strokeColor) {
+            properties.strokeColor = "#080A17";
+        } else {
+            properties.strokeColor = params.strokeColor;
+        }
+        if (!("fillColor" in params) || params.fillColor) {
+            properties.fillColor = "#080A17";
+        } else {
+            properties.fillColor = params.fillColor;
+        }
+        if (!("strokeOpacity" in params) || params.strokeOpacity) {
+            properties.strokeOpacity = 0.7;
+        } else {
+            properties.strokeOpacity = params.strokeOpacity;
+        }
+        if (!("fillOpacity" in params) || params.fillOpacity) {
+            properties.fillOpacity = 0.7;
+        } else {
+            properties.fillOpacity = params.fillOpacity;
+        }
+        if (!("strokeWeight" in params) || params.strokeWeight) {
+            properties.strokeWeight = 0.7;
+        } else {
+            properties.strokeWeight = params.strokeWeight;
+        }
+
+        //
+        // Initialize the zoom view angle
+        if ("zoomViewAngles" in params && params.zoomViewAngles) {
+            properties.zoomviewAngle = params.zoomViewAngles;
+        } else {
+            properties.zoomviewAngle    = [];
+            properties.zoomviewAngle[1] = Math.PI / 6; // Math.PI / 4;
+            properties.zoomviewAngle[2] = Math.PI / 10; // Math.PI / 6;
+            properties.zoomviewAngle[3] = Math.PI / 14; //Math.PI / 8;
+        }
+
+        properties.visitedColor = "#66c2a5";
+        properties.visitedOpacity = 0.3;
+        properties.infiniteDistance = 1;        // 1 in latitude is enough.
+    }
+
+    //
+    // Unify the angel between 0 and 2PI
+    function unifyAngel(radius) {
+        var ans = radius;
+        while (ans < 0) ans += Math.PI * 2;
+        while (ans > Math.PI * 2) ans -= Math.PI * 2;
+        return ans;
+    }
+
+    //
+    // Calculate the angular bisector between 2 rays with directions.
+    function midAngel(left, right, clockwise) {
+        clockwise = typeof clockwise !== 'undefined' ? clockwise : true;
+
+        var ans = (left + right) / 2;
+        if (left < Math.PI) {
+            if (right < Math.PI) {
+                if (right < left) {
+                    ans += Math.PI;
+                }
+            }
+        } else {
+            if (right < Math.PI) {
+                ans += Math.PI;
+            } else {
+                if (left > right) {
+                    ans += Math.PI;
+                }
+            }
+        }
+
+        return unifyAngel(ans);
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Public:
+    ////////////////////////////////////////////////////////////
+    oPublic.completionRate = function (strategy) {
+        strategy = typeof strategy !== 'undefined' ? strategy : 0;
+        return strategy == 0 ? m_completionRate : m_completionRate2;
+    };
+
+    oPublic.updateFromPOV = function(current, povRadius, dir, arc) {
+        /**
+         * Main iterative method updates the fog according to the new direction & zoom level.
+         *
+         * current: new position in google latlng
+         * povRadius: line of sight
+         * dir: direction in radians
+         * arc: arc size in radians
+         *
+         * TODO: when zooming in, updateFromPOV is not called.
+         **/
+        var lat = current.lat();
+        var lng = current.lng();
+
+        // 1. remember the delta, make the left pointer to 2PI and the right 0
+        if (m_firstRun) {
+            deltaHeading = dir;
+        }
+
+        var pov = getPOV();
+        var deltaViewAngel = properties.zoomviewAngle[pov.zoom];
+
+        var heading = unifyAngel(dir - deltaHeading);
+        dirCurrentLeft = unifyAngel(heading - deltaViewAngel);
+        dirCurrentRight = unifyAngel(heading + deltaViewAngel);
+
+        // 2. calculate current pointer and update visited pointer
+        if (m_firstRun) {
+            pointerVisitedLeft = dirCurrentLeft;
+            pointerVisitedRight = dirCurrentRight;
+        } else {
+            if (dirCurrentLeft < pointerVisitedLeft && Math.abs(dirCurrentLeft - pointerVisitedLeft) < rotateThreshold) pointerVisitedLeft = dirCurrentLeft;
+            if (dirCurrentRight > pointerVisitedRight && Math.abs(dirCurrentRight - pointerVisitedRight) < rotateThreshold) pointerVisitedRight = dirCurrentRight;
+            if (pointerVisitedLeft < pointerVisitedRight && !m_isCompleted) m_isCompleted = true;
+        }
+
+        // 3. update the completion rate
+        m_completionRate = (pointerVisitedRight + Math.PI * 2 - pointerVisitedLeft) / (Math.PI * 2);
+        m_completionRate2 = (pointerVisitedRight + Math.PI * 2 - pointerVisitedLeft - properties.zoomviewAngle[1]) / (Math.PI * 2);
+
+        if (m_completionRate > 1.0) m_completionRate = 1.0;
+        if (m_completionRate2 > 1.0) m_completionRate2 = 1.0;
+
+        dirCurrentLeft = unifyAngel(dirCurrentLeft + deltaHeading);
+        dirCurrentRight = unifyAngel(dirCurrentRight + deltaHeading);
+
+        // 4. calculate the angular bisector
+        if (!m_isCompleted)
+        {
+            dirCurrentMid = midAngel(dirCurrentLeft, dirCurrentRight, true);
+            var dirVisitedLeft = unifyAngel(pointerVisitedLeft + deltaHeading);
+            var dirVisitedRight = unifyAngel(pointerVisitedRight + deltaHeading);
+            dirVisitedMidLeftHandside = midAngel(dirVisitedLeft, dirCurrentLeft, true);
+            dirVisitedMidRightHandside = midAngel(dirCurrentRight, dirVisitedRight, true);
+            dirVisitedMid = midAngel(dirVisitedRight, dirVisitedLeft, true);
+
+            // 5. calculate the polygons
+            pathFog = [
+                new google.maps.LatLng(lat, lng),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedRight), lng + Math.sin(dirVisitedRight)),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedMid), lng + Math.sin(dirVisitedMid)),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedLeft), lng + Math.sin(dirVisitedLeft))
+            ];
+
+            pathVisitedLeft = [
+                new google.maps.LatLng(lat, lng),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedLeft), lng + Math.sin(dirVisitedLeft)),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedMidLeftHandside), lng + Math.sin(dirVisitedMidLeftHandside)),
+                new google.maps.LatLng(lat + Math.cos(dirCurrentLeft), lng + Math.sin(dirCurrentLeft))
+            ];
+
+            pathVisitedRight = [
+                new google.maps.LatLng(lat, lng),
+                new google.maps.LatLng(lat + Math.cos(dirCurrentRight), lng + Math.sin(dirCurrentRight)),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedMidRightHandside), lng + Math.sin(dirVisitedMidRightHandside)),
+                new google.maps.LatLng(lat + Math.cos(dirVisitedRight), lng + Math.sin(dirVisitedRight))
+            ];
+        } else {
+            dirCurrentMid = unifyAngel(midAngel(dirCurrentLeft, dirCurrentRight, false) + Math.PI);
+            pathVisitedLeft = [
+                new google.maps.LatLng(lat, lng),
+                new google.maps.LatLng(lat + Math.cos(dirCurrentRight), lng + Math.sin(dirCurrentRight)),
+                new google.maps.LatLng(lat + Math.cos(dirCurrentMid), lng + Math.sin(dirCurrentMid)),
+                new google.maps.LatLng(lat + Math.cos(dirCurrentLeft), lng + Math.sin(dirCurrentLeft))
+            ];
+
+            // TODO: Hide the following 2 polygons by API.
+            pathFog = [
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance),
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance),
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance),
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance)
+            ];
+
+            pathVisitedRight = [
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance),
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance),
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance),
+                new google.maps.LatLng(lat + properties.infiniteDistance, lng + properties.infiniteDistance)
+            ];
+        }
+
+        if (m_firstRun) {
+            polygonVisitedLeft = new google.maps.Polygon({
+                paths: pathVisitedLeft,
+                strokeColor: properties.strokeColor,
+                strokeOpacity: properties.strokeOpacity,
+                strokeWeight: properties.strokeWeight,
+                fillColor: properties.visitedColor,
+                fillOpacity: properties.visitedOpacity,
+                map: map
+            });
+
+            polygonVisitedRight = new google.maps.Polygon({
+                paths: pathVisitedRight,
+                strokeColor: properties.strokeColor,
+                strokeOpacity: properties.strokeOpacity,
+                strokeWeight: properties.strokeWeight,
+                fillColor: properties.visitedColor,
+                fillOpacity: properties.visitedOpacity,
+                map: map
+            });
+
+            polygonFog = new google.maps.Polygon({
+                paths: pathFog,
+                strokeColor: properties.strokeColor,
+                strokeOpacity: properties.strokeOpacity,
+                strokeWeight: properties.strokeWeight,
+                fillColor: properties.fillColor,
+                fillOpacity: properties.fillOpacity,
+                map: map
+            });
+
+            m_firstRun = false;
+        } else {
+            polygonVisitedLeft.setPath(pathVisitedLeft);
+            polygonVisitedRight.setPath(pathVisitedRight);
+            polygonFog.setPath(pathFog);
+        }
+        return;
+    };
+
+    oPublic.setProperty = function (key, val) {
+        // This method sets the property
+        properties[key] = val;
+        return;
+    };
+
+    _init(params);
+    return oPublic;
+}
+
 var GSVPANO = GSVPANO || {};
 GSVPANO.PanoLoader = function (parameters) {
 
@@ -741,574 +1059,6 @@ function ActionStack ($, params) {
     init(params);
 
     return self;
-}
-
-function getBusStopPositionLabel() {
-    return {
-        'NextToCurb' : {
-            'id' : 'NextToCurb',
-            'label' : 'Next to curb'
-        },
-        'AwayFromCurb' : {
-            'id' : 'AwayFromCurb',
-            'label' : 'Away from curb'
-        },
-        'None' : {
-            'id' : 'None',
-            'label' : 'Not provided'
-        }
-    }
-}
-
-
-function getHeadingEstimate(SourceLat, SourceLng, TargetLat, TargetLng) {
-    // This function takes a pair of lat/lng coordinates.
-    //
-    if (typeof SourceLat !== 'number') {
-        SourceLat = parseFloat(SourceLat);
-    }
-    if (typeof SourceLng !== 'number') {
-        SourceLng = parseFloat(SourceLng);
-    }
-    if (typeof TargetLng !== 'number') {
-        TargetLng = parseFloat(TargetLng);
-    }
-    if (typeof TargetLat !== 'number') {
-        TargetLat = parseFloat(TargetLat);
-    }
-
-    var dLng = TargetLng - SourceLng;
-    var dLat = TargetLat - SourceLat;
-
-    if (dLat === 0 || dLng === 0) {
-        return 0;
-    }
-
-    var angle = toDegrees(Math.atan(dLng / dLat));
-    //var angle = toDegrees(Math.atan(dLat / dLng));
-
-    return 90 - angle;
-}
-
-
-function getLabelCursorImagePath() {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'cursorImagePath' : undefined
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
-        },
-        'StopSign_None' : {
-            'id' : 'StopSign_None',
-            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'cursorImagePath' : 'public/img/cursors/Cursor_BusStopShelter2.png'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'cursorImagePath' : 'public/img/cursors/Cursor_Bench2.png'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'cursorImagePath' : 'public/img/cursors/Cursor_TrashCan3.png'
-        },
-        'Landmark_MailboxAndNewsPaperBox' : {
-            'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'cursorImagePath' : 'public/img/cursors/Cursor_Mailbox2.png'
-        },
-        'Landmark_OtherPole' : {
-            'id' : 'Landmark_OtherPole',
-            'cursorImagePath' : 'public/img/cursors/Cursor_OtherPole.png'
-        }
-    }
-}
-
-
-//
-// Returns image paths corresponding to each label type.
-//
-function getLabelIconImagePath(labelType) {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'iconImagePath' : undefined
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_SingleLeg.png'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_TwoLegged.png'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_Column.png'
-        },
-        'StopSign_None' : {
-            'id' : 'StopSign_None',
-            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopShelter.png'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'iconImagePath' : 'public/img/icons/Icon_Bench.png'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'iconImagePath' : 'public/img/icons/Icon_TrashCan2.png'
-        },
-        'Landmark_MailboxAndNewsPaperBox' : {
-            'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'iconImagePath' : 'public/img/icons/Icon_Mailbox2.png'
-        },
-        'Landmark_OtherPole' : {
-            'id' : 'Landmark_OtherPole',
-            'iconImagePath' : 'public/img/icons/Icon_OtherPoles.png'
-        }
-    }
-}
-
-
-//
-// This function is used in OverlayMessageBox.js.
-//
-function getLabelInstructions () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'instructionalText' : 'Explore mode: Find the closest bus stop and label surrounding landmarks',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">stop sign</span>',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'instructionalText' :'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
-            'textColor' :'rgba(255,255,255,1)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus shelter</span>',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bench</span> nearby a bus stop',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">trash can</span> nearby a bus stop',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'Landmark_MailboxAndNewsPaperBox' : {
-            'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">mailbox or news paper box</span> nearby a bus stop',
-            'textColor' : 'rgba(255,255,255,1)'
-        },
-        'Landmark_OtherPole' : {
-            'id' : 'Landmark_OtherPole',
-            'instructionalText' : 'Label mode: Locate and click at the bottom of poles such as <span class="underline bold">traffic sign, traffic light, and light pole</span> nearby a bus stop',
-            'textColor' : 'rgba(255,255,255,1)'
-        }
-    }
-}
-
-function getRibbonConnectionPositions () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'text' : 'Walk',
-            'labelRibbonConnection' : '25px'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'text' : 'Stop Sign',
-            'labelRibbonConnection' : '112px'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'text' : 'One-leg Stop Sign',
-            'labelRibbonConnection' : '112px'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'text' : 'Two-leg Stop Sign',
-            'labelRibbonConnection' : '112px'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'text' : 'Column Stop Sign',
-            'labelRibbonConnection' : '112px'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'text' : 'Bus Shelter',
-            'labelRibbonConnection' : '188px'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'text' : 'Bench',
-            'labelRibbonConnection' : '265px'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'text' : 'Trash Can',
-            'labelRibbonConnection' : '338px'
-        },
-        'Landmark_MailboxAndNewsPaperBox' : {
-            'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'labelRibbonConnection' : '411px'
-        },
-        'Landmark_OtherPole' : {
-            'id' : 'Landmark_OtherPole',
-            'labelRibbonConnection' : '484px'
-        }
-    }
-}
-
-// Colors selected from
-// http://colorbrewer2.org/
-// - Number of data classes: 4
-// - The nature of data: Qualitative
-// - Color scheme 1: Paired - (166, 206, 227), (31, 120, 180), (178, 223, 138), (51, 160, 44)
-// - Color scheme 2: Set2 - (102, 194, 165), (252, 141, 98), (141, 160, 203), (231, 138, 195)
-// I'm currently using Set 2
-function getLabelDescriptions () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'text' : 'Walk'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'text' : 'Bus Stop Sign'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'text' : 'One-leg Stop Sign'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'text' : 'Two-leg Stop Sign'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'text' : 'Column Stop Sign'
-        },
-        'StopSign_None' : {
-            'id' : 'StopSign_None',
-            'text' : 'Not provided'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'text' : 'Bus Stop Shelter'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'text' : 'Bench'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'text' : 'Trash Can / Recycle Can'
-        },
-        'Landmark_MailboxAndNewsPaperBox' : {
-            'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'text' : 'Mailbox / News Paper Box'
-        },
-        'Landmark_OtherPole' : {
-            'id' : 'Landmark_OtherPole',
-            'text' : 'Traffic Sign / Pole'
-        }
-    }
-}
-
-function getLabelColors () {
-    return colorScheme2();
-}
-
-function colorScheme1 () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
-        },
-        'StopSign_None' : {
-            'id' : 'StopSign_None',
-            'fillStyle' : 'rgba(102, 194, 165, 0.9'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'fillStyle' : 'rgba(252, 141, 98, 0.9)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'fillStyle' : 'rgba(141, 160, 203, 0.9)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'fillStyle' : 'rgba(231, 138, 195, 0.9)'
-        }
-    }
-}
-
-//
-// http://www.colourlovers.com/business/trends/branding/7880/Papeterie_Haute-Ville_Logo
-function colorScheme2 () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'fillStyle' : 'rgba(215, 0, 96, 0.9)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            // 'fillStyle' : 'rgba(229, 64, 40, 0.9)' // Kind of hard to distinguish from pink
-            // 'fillStyle' : 'rgba(209, 209, 2, 0.9)' // Puke-y
-            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'fillStyle' : 'rgba(97, 174, 36, 0.9)'
-        },
-        'Landmark_MailboxAndNewsPaperBox' : {
-            'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'fillStyle' : 'rgba(67, 113, 190, 0.9)'
-        },
-        'Landmark_OtherPole' : {
-            'id' : 'Landmark_OtherPole',
-            'fillStyle' : 'rgba(249, 79, 101, 0.9)'
-        }
-    }
-}
-
-//
-//http://www.colourlovers.com/fashion/trends/street-fashion/7896/Floral_Much
-function colorScheme3 () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'fillStyle' : 'rgba(237, 20, 111, 0.9)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'fillStyle' : 'rgba(237, 222, 69, 0.9)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'fillStyle' : 'rgba(155, 240, 233, 0.9)'
-        }
-    }
-}
-
-//
-// http://www.colourlovers.com/business/trends/branding/7884/Small_Garden_Logo
-function colorScheme4 () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'fillStyle' : 'rgba(229, 59, 81, 0.9)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'fillStyle' : 'rgba(60, 181, 181, 0.9)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'fillStyle' : 'rgba(236, 108, 32, 0.9)'
-        }
-    }
-}
-
-//
-// http://www.colourlovers.com/business/trends/branding/7874/ROBAROV_WEBDESIGN
-function colorScheme5 () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'fillStyle' : 'rgba(152, 199, 61, 0.9)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'fillStyle' : 'rgba(0, 169, 224, 0.9)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'fillStyle' : 'rgba(103, 205, 220, 0.9)'
-        }
-    }
-}
-
-//
-//http://www.colourlovers.com/print/trends/magazines/7834/Print_Design_Annual_2010
-function colorScheme6 () {
-    return {
-        'Walk' : {
-            'id' : 'Walk',
-            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
-        },
-        'StopSign' : {
-            'id' : 'StopSign',
-            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
-        },
-        'StopSign_OneLeg' : {
-            'id' : 'StopSign_OneLeg',
-            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
-        },
-        'StopSign_TwoLegs' : {
-            'id' : 'StopSign_TwoLegs',
-            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
-        },
-        'StopSign_Column' : {
-            'id' : 'StopSign_Column',
-            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
-        },
-        'Landmark_Shelter' : {
-            'id' : 'Landmark_Shelter',
-            'fillStyle' : 'rgba(188, 160, 0, 0.9)'
-        },
-        'Landmark_Bench' : {
-            'id' : 'Landmark_Bench',
-            'fillStyle' : 'rgba(207, 49, 4, 0.9)'
-        },
-        'Landmark_TrashCan' : {
-            'id' : 'Landmark_TrashCan',
-            'fillStyle' : 'rgba(1, 142, 74, 0.9)'
-        }
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3808,22 +3558,22 @@ function GoldenInsertion (param, $) {
                 // status.boxMessage = "You did not label this <b>curb ramp</b>. Please draw an outline around it by clicking the <b>Curb Ramp</b> button.";
                 if (overlap > 0) {
                     status.boxMessage = "This label does not precisely outline the <b>curb ramp</b>. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 } else {
                     status.boxMessage = "There does not appear to be a curb ramp to label here. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 }
             } else {
                 // status.boxMessage = "You did not label this <b>missing curb ramp</b>. Please draw an outline around it by clicking the <b>Missing Curb Ramp</b> button.";
                 if (overlap > 0) {
                     status.boxMessage = "Your label is not on a <b>missing curb ramp</b>. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 } else {
                     status.boxMessage = "There does not appear to be any missing curb ramp to label here. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 }
             }
@@ -4154,7 +3904,7 @@ function GoldenInsertion (param, $) {
         }
 
         var domSpacer = "<div style='height: 10px'></div>"
-        var message = "<img src=\"public/img/icons/Icon_WarningSign.svg\" class=\"MessageBoxIcons\" style=\"height:30px; width:30px; top:6px;\"/> " +
+        var message = "<img src=\"" + svl.rootDirectory + "/img/icons/Icon_WarningSign.svg\" class=\"MessageBoxIcons\" style=\"height:30px; width:30px; top:6px;\"/> " +
             "Uh oh, looks like there is a problem with your labels. Let's see if we can fix this. <br />" + domSpacer + domOKButton;
         var messageBoxX = 0;
         var messageBoxY = 320;
@@ -5155,7 +4905,7 @@ function Label (pathIn, params) {
         var googleLatLng = new google.maps.LatLng(latlng.lat, latlng.lng);
 
         var image = {
-            url: "img/icons/Sidewalk/Icon_CurbRamp.png",
+            url: svl.rootDirectory + "img/icons/Sidewalk/Icon_CurbRamp.png",
             size: new google.maps.Size(20, 20),
             origin: new google.maps.Point(latlng.lat, latlng.lng)
 
@@ -5164,7 +4914,7 @@ function Label (pathIn, params) {
             position: googleLatLng,
             map: svl.map.getMap(),
             title: "Hi!",
-            icon: "img/icons/Sidewalk/Icon_CurbRampSmall.png"
+            icon: svl.rootDirectory + "img/icons/Sidewalk/Icon_CurbRampSmall.png"
         });
     }
     self.renderOnMap = renderOnMap;
@@ -5466,6 +5216,7 @@ function Main ($, params) {
         var SVLng = parseFloat(params.initLng);
         currentProgress = parseFloat(currentProgress);
 
+        svl.rootDirectory = ('rootDirectory' in params) ? params.rootDirectory : '/';
 
         // Instantiate objects
         svl.ui = new UI($);
@@ -6124,13 +5875,13 @@ function Map ($, params) {
     function setViewControlLayerCursor(type) {
         switch(type) {
             case 'ZoomOut':
-                $divViewControlLayer.css("cursor", "url(img/cursors/Cursor_ZoomOut.png) 4 4, move");
+                $divViewControlLayer.css("cursor", "url(" + svl.rootDirectory + "img/cursors/Cursor_ZoomOut.png) 4 4, move");
                 break;
             case 'OpenHand':
-                $divViewControlLayer.css("cursor", "url(img/cursors/openhand.cur) 4 4, move");
+                $divViewControlLayer.css("cursor", "url(" + svl.rootDirectory + "img/cursors/openhand.cur) 4 4, move");
                 break;
             case 'ClosedHand':
-                $divViewControlLayer.css("cursor", "url(img/cursors/closedhand.cur) 4 4, move");
+                $divViewControlLayer.css("cursor", "url(" + svl.rootDirectory + "img/cursors/closedhand.cur) 4 4, move");
                 break;
             default:
                 $divViewControlLayer.css("cursor", "default");
@@ -8620,9 +8371,9 @@ function QualificationBadges ($, params) {
     var self = { className : 'QualificationBadges' };
     var properties = {
         badgeClassName : 'Badge',
-        badgePlaceHolderImagePath : "public/img/badges/EmptyBadge.png",
-        busStopAuditorImagePath : "public/img/badges/Onboarding_BusStopExplorerBadge_Orange.png",
-        busStopExplorerImagePath : "public/img/badges/Onboarding_BusStopInspector_Green.png"
+        badgePlaceHolderImagePath : svl.rootDirectory + "/img/badges/EmptyBadge.png",
+        busStopAuditorImagePath : svl.rootDirectory + "/img/badges/Onboarding_BusStopExplorerBadge_Orange.png",
+        busStopExplorerImagePath : svl.rootDirectory + "/img/badges/Onboarding_BusStopInspector_Green.png"
     };
     var status = {};
 
@@ -9243,7 +8994,7 @@ function RightClickMenu (params) {
     // Private Functions (Bus stop label menu)
     ////////////////////////////////////////
     function menuBarEnter () {
-        $(this).css('cursor', 'url(public/img/cursors/openhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/openhand.cur) 4 4, move");
     }
 
 
@@ -9315,13 +9066,13 @@ function RightClickMenu (params) {
     //
     function divBusStopLabelMenuBarMouseDown () {
         mouseStatus.mouseDownOnBusStopLabelMenuBar = true;
-        $(this).css('cursor', 'url(public/img/cursors/closedhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/closedhand.cur) 4 4, move");
     }
 
 
     function divBusStopLabelMenuBarMouseUp () {
         mouseStatus.mouseDownOnBusStopLabelMenuBar = false;
-        $(this).css('cursor', 'url(public/img/cursors/openhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/openhand.cur) 4 4, move");
     }
 
 
@@ -9493,13 +9244,13 @@ function RightClickMenu (params) {
     //
     function divBusStopPositionMenuBarMouseDown (e) {
         mouseStatus.mouseDownOnBusStopPositionMenuBar = true;
-        $(this).css('cursor', 'url(public/img/cursors/closedhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/closedhand.cur) 4 4, move");
     }
 
 
     function divBusStopPositionMenuBarMouseUp (e) {
         mouseStatus.mouseDownOnBusStopPositionMenuBar = false;
-        $(this).css('cursor', 'url(public/img/cursors/openhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/openhand.cur) 4 4, move");
     }
 
 
@@ -10135,8 +9886,8 @@ function UI ($, params) {
 
       self.actionStack = {};
       self.actionStack.holder = $("#action-stack-control-holder");
-      self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
-      self.actionStack.holder.append('<button id="redo-button" class="button action-stack-button" value="Redo"><img src="img/icons/Icon_Redo.png" class="action-stack-icons" alt="Redo" /><br /><small>Redo</small></button>');
+      self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="' + svl.rootDirectory + 'img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
+      self.actionStack.holder.append('<button id="redo-button" class="button action-stack-button" value="Redo"><img src="' + svl.rootDirectory + 'img/icons/Icon_Redo.png" class="action-stack-icons" alt="Redo" /><br /><small>Redo</small></button>');
       self.actionStack.redo = $("#redo-button");
       self.actionStack.undo = $("#undo-button");
 
@@ -11750,6 +11501,574 @@ function shuffle(array) {
 
     return copy;
 }
+function getBusStopPositionLabel() {
+    return {
+        'NextToCurb' : {
+            'id' : 'NextToCurb',
+            'label' : 'Next to curb'
+        },
+        'AwayFromCurb' : {
+            'id' : 'AwayFromCurb',
+            'label' : 'Away from curb'
+        },
+        'None' : {
+            'id' : 'None',
+            'label' : 'Not provided'
+        }
+    }
+}
+
+
+function getHeadingEstimate(SourceLat, SourceLng, TargetLat, TargetLng) {
+    // This function takes a pair of lat/lng coordinates.
+    //
+    if (typeof SourceLat !== 'number') {
+        SourceLat = parseFloat(SourceLat);
+    }
+    if (typeof SourceLng !== 'number') {
+        SourceLng = parseFloat(SourceLng);
+    }
+    if (typeof TargetLng !== 'number') {
+        TargetLng = parseFloat(TargetLng);
+    }
+    if (typeof TargetLat !== 'number') {
+        TargetLat = parseFloat(TargetLat);
+    }
+
+    var dLng = TargetLng - SourceLng;
+    var dLat = TargetLat - SourceLat;
+
+    if (dLat === 0 || dLng === 0) {
+        return 0;
+    }
+
+    var angle = toDegrees(Math.atan(dLng / dLat));
+    //var angle = toDegrees(Math.atan(dLat / dLng));
+
+    return 90 - angle;
+}
+
+
+function getLabelCursorImagePath() {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'cursorImagePath' : undefined
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
+        },
+        'StopSign_None' : {
+            'id' : 'StopSign_None',
+            'cursorImagePath' : 'public/img/cursors/Cursor_BusStop2.png'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'cursorImagePath' : 'public/img/cursors/Cursor_BusStopShelter2.png'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'cursorImagePath' : 'public/img/cursors/Cursor_Bench2.png'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'cursorImagePath' : 'public/img/cursors/Cursor_TrashCan3.png'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'cursorImagePath' : 'public/img/cursors/Cursor_Mailbox2.png'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'cursorImagePath' : 'public/img/cursors/Cursor_OtherPole.png'
+        }
+    }
+}
+
+
+//
+// Returns image paths corresponding to each label type.
+//
+function getLabelIconImagePath(labelType) {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'iconImagePath' : undefined
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_SingleLeg.png'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_TwoLegged.png'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_Column.png'
+        },
+        'StopSign_None' : {
+            'id' : 'StopSign_None',
+            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'iconImagePath' : 'public/img/icons/Icon_BusStopShelter.png'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'iconImagePath' : 'public/img/icons/Icon_Bench.png'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'iconImagePath' : 'public/img/icons/Icon_TrashCan2.png'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'iconImagePath' : 'public/img/icons/Icon_Mailbox2.png'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'iconImagePath' : 'public/img/icons/Icon_OtherPoles.png'
+        }
+    }
+}
+
+
+//
+// This function is used in OverlayMessageBox.js.
+//
+function getLabelInstructions () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'instructionalText' : 'Explore mode: Find the closest bus stop and label surrounding landmarks',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">stop sign</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'instructionalText' :'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
+            'textColor' :'rgba(255,255,255,1)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus stop sign</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bus shelter</span>',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">bench</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">trash can</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of the <span class="underline">mailbox or news paper box</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'instructionalText' : 'Label mode: Locate and click at the bottom of poles such as <span class="underline bold">traffic sign, traffic light, and light pole</span> nearby a bus stop',
+            'textColor' : 'rgba(255,255,255,1)'
+        }
+    }
+}
+
+function getRibbonConnectionPositions () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'text' : 'Walk',
+            'labelRibbonConnection' : '25px'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'text' : 'Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'text' : 'One-leg Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'text' : 'Two-leg Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'text' : 'Column Stop Sign',
+            'labelRibbonConnection' : '112px'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'text' : 'Bus Shelter',
+            'labelRibbonConnection' : '188px'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'text' : 'Bench',
+            'labelRibbonConnection' : '265px'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'text' : 'Trash Can',
+            'labelRibbonConnection' : '338px'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'labelRibbonConnection' : '411px'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'labelRibbonConnection' : '484px'
+        }
+    }
+}
+
+// Colors selected from
+// http://colorbrewer2.org/
+// - Number of data classes: 4
+// - The nature of data: Qualitative
+// - Color scheme 1: Paired - (166, 206, 227), (31, 120, 180), (178, 223, 138), (51, 160, 44)
+// - Color scheme 2: Set2 - (102, 194, 165), (252, 141, 98), (141, 160, 203), (231, 138, 195)
+// I'm currently using Set 2
+function getLabelDescriptions () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'text' : 'Walk'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'text' : 'Bus Stop Sign'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'text' : 'One-leg Stop Sign'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'text' : 'Two-leg Stop Sign'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'text' : 'Column Stop Sign'
+        },
+        'StopSign_None' : {
+            'id' : 'StopSign_None',
+            'text' : 'Not provided'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'text' : 'Bus Stop Shelter'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'text' : 'Bench'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'text' : 'Trash Can / Recycle Can'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'text' : 'Mailbox / News Paper Box'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'text' : 'Traffic Sign / Pole'
+        }
+    }
+}
+
+function getLabelColors () {
+    return colorScheme2();
+}
+
+function colorScheme1 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(102, 194, 165, 0.9)'
+        },
+        'StopSign_None' : {
+            'id' : 'StopSign_None',
+            'fillStyle' : 'rgba(102, 194, 165, 0.9'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(252, 141, 98, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'fillStyle' : 'rgba(141, 160, 203, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(231, 138, 195, 0.9)'
+        }
+    }
+}
+
+//
+// http://www.colourlovers.com/business/trends/branding/7880/Papeterie_Haute-Ville_Logo
+function colorScheme2 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(0, 161, 203, 0.9)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(215, 0, 96, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            // 'fillStyle' : 'rgba(229, 64, 40, 0.9)' // Kind of hard to distinguish from pink
+            // 'fillStyle' : 'rgba(209, 209, 2, 0.9)' // Puke-y
+            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(97, 174, 36, 0.9)'
+        },
+        'Landmark_MailboxAndNewsPaperBox' : {
+            'id' : 'Landmark_MailboxAndNewsPaperBox',
+            'fillStyle' : 'rgba(67, 113, 190, 0.9)'
+        },
+        'Landmark_OtherPole' : {
+            'id' : 'Landmark_OtherPole',
+            'fillStyle' : 'rgba(249, 79, 101, 0.9)'
+        }
+    }
+}
+
+//
+//http://www.colourlovers.com/fashion/trends/street-fashion/7896/Floral_Much
+function colorScheme3 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(97, 210, 214, 0.9)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(237, 20, 111, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'fillStyle' : 'rgba(237, 222, 69, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(155, 240, 233, 0.9)'
+        }
+    }
+}
+
+//
+// http://www.colourlovers.com/business/trends/branding/7884/Small_Garden_Logo
+function colorScheme4 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(252, 217, 32, 0.9)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(229, 59, 81, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'fillStyle' : 'rgba(60, 181, 181, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(236, 108, 32, 0.9)'
+        }
+    }
+}
+
+//
+// http://www.colourlovers.com/business/trends/branding/7874/ROBAROV_WEBDESIGN
+function colorScheme5 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(208, 221, 43, 0.9)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(152, 199, 61, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'fillStyle' : 'rgba(0, 169, 224, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(103, 205, 220, 0.9)'
+        }
+    }
+}
+
+//
+//http://www.colourlovers.com/print/trends/magazines/7834/Print_Design_Annual_2010
+function colorScheme6 () {
+    return {
+        'Walk' : {
+            'id' : 'Walk',
+            'fillStyle' : 'rgba(0, 0, 0, 0.9)'
+        },
+        'StopSign' : {
+            'id' : 'StopSign',
+            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
+        },
+        'StopSign_OneLeg' : {
+            'id' : 'StopSign_OneLeg',
+            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
+        },
+        'StopSign_TwoLegs' : {
+            'id' : 'StopSign_TwoLegs',
+            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
+        },
+        'StopSign_Column' : {
+            'id' : 'StopSign_Column',
+            'fillStyle' : 'rgba(210, 54, 125, 0.9)'
+        },
+        'Landmark_Shelter' : {
+            'id' : 'Landmark_Shelter',
+            'fillStyle' : 'rgba(188, 160, 0, 0.9)'
+        },
+        'Landmark_Bench' : {
+            'id' : 'Landmark_Bench',
+            'fillStyle' : 'rgba(207, 49, 4, 0.9)'
+        },
+        'Landmark_TrashCan' : {
+            'id' : 'Landmark_TrashCan',
+            'fillStyle' : 'rgba(1, 142, 74, 0.9)'
+        }
+    }
+}
+
 var svl = svl || {};
 svl.util = svl.util || {};
 svl.util.color = {};
@@ -12335,19 +12654,19 @@ function getLabelCursorImagePath() {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            cursorImagePath : 'img/cursors/pen.png'
+            cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            cursorImagePath : 'img/cursors/pen.png'
+            cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
         Obstacle: {
           id: 'Obstacle',
-          cursorImagePath : 'img/cursors/pen.png'
+          cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
         SurfaceProblem: {
           id: 'SurfaceProblem',
-          cursorImagePath : 'img/cursors/pen.png'
+          cursorImagePath : svl.rootDirectory + 'img/cursors/pen.png'
         },
     }
 }
@@ -12365,11 +12684,11 @@ function getLabelIconImagePath(labelType) {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            iconImagePath : '../../img/Icon_CurbRamp.svg'
+            iconImagePath : svl.rootDirectory + 'img/Icon_CurbRamp.svg'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            iconImagePath : 'public/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
+            iconImagePath : svl.rootDirectory + '/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
         },
         Obstacle: {
           id: 'Obstacle',
@@ -12389,43 +12708,43 @@ function getLabelIconImagePath(labelType) {
         },
         'StopSign' : {
             'id' : 'StopSign',
-            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStop.png'
         },
         'StopSign_OneLeg' : {
             'id' : 'StopSign_OneLeg',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_SingleLeg.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopSign_SingleLeg.png'
         },
         'StopSign_TwoLegs' : {
             'id' : 'StopSign_TwoLegs',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_TwoLegged.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopSign_TwoLegged.png'
         },
         'StopSign_Column' : {
             'id' : 'StopSign_Column',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopSign_Column.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopSign_Column.png'
         },
         'StopSign_None' : {
             'id' : 'StopSign_None',
-            'iconImagePath' : 'public/img/icons/Icon_BusStop.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStop.png'
         },
         'Landmark_Shelter' : {
             'id' : 'Landmark_Shelter',
-            'iconImagePath' : 'public/img/icons/Icon_BusStopShelter.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_BusStopShelter.png'
         },
         'Landmark_Bench' : {
             'id' : 'Landmark_Bench',
-            'iconImagePath' : 'public/img/icons/Icon_Bench.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_Bench.png'
         },
         'Landmark_TrashCan' : {
             'id' : 'Landmark_TrashCan',
-            'iconImagePath' : 'public/img/icons/Icon_TrashCan2.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_TrashCan2.png'
         },
         'Landmark_MailboxAndNewsPaperBox' : {
             'id' : 'Landmark_MailboxAndNewsPaperBox',
-            'iconImagePath' : 'public/img/icons/Icon_Mailbox2.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_Mailbox2.png'
         },
         'Landmark_OtherPole' : {
             'id' : 'Landmark_OtherPole',
-            'iconImagePath' : 'public/img/icons/Icon_OtherPoles.png'
+            'iconImagePath' : svl.rootDirectory + '/img/icons/Icon_OtherPoles.png'
         }
     }
 }

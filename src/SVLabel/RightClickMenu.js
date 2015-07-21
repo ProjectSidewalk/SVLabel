@@ -183,7 +183,7 @@ function RightClickMenu (params) {
     // Private Functions (Bus stop label menu)
     ////////////////////////////////////////
     function menuBarEnter () {
-        $(this).css('cursor', 'url(public/img/cursors/openhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/openhand.cur) 4 4, move");
     }
 
 
@@ -255,13 +255,13 @@ function RightClickMenu (params) {
     //
     function divBusStopLabelMenuBarMouseDown () {
         mouseStatus.mouseDownOnBusStopLabelMenuBar = true;
-        $(this).css('cursor', 'url(public/img/cursors/closedhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/closedhand.cur) 4 4, move");
     }
 
 
     function divBusStopLabelMenuBarMouseUp () {
         mouseStatus.mouseDownOnBusStopLabelMenuBar = false;
-        $(this).css('cursor', 'url(public/img/cursors/openhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/openhand.cur) 4 4, move");
     }
 
 
@@ -433,13 +433,13 @@ function RightClickMenu (params) {
     //
     function divBusStopPositionMenuBarMouseDown (e) {
         mouseStatus.mouseDownOnBusStopPositionMenuBar = true;
-        $(this).css('cursor', 'url(public/img/cursors/closedhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/closedhand.cur) 4 4, move");
     }
 
 
     function divBusStopPositionMenuBarMouseUp (e) {
         mouseStatus.mouseDownOnBusStopPositionMenuBar = false;
-        $(this).css('cursor', 'url(public/img/cursors/openhand.cur) 4 4, move');
+        $(this).css('cursor', 'url(' + svl.rootDirectory + "/img/cursors/openhand.cur) 4 4, move");
     }
 
 

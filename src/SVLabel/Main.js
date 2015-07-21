@@ -24,6 +24,7 @@ function Main ($, params) {
         var SVLng = parseFloat(params.initLng);
         currentProgress = parseFloat(currentProgress);
 
+        svl.rootDirectory = ('rootDirectory' in params) ? params.rootDirectory : '/';
 
         // Instantiate objects
         svl.ui = new UI($);

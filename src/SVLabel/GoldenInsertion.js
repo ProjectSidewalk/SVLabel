@@ -156,22 +156,22 @@ function GoldenInsertion (param, $) {
                 // status.boxMessage = "You did not label this <b>curb ramp</b>. Please draw an outline around it by clicking the <b>Curb Ramp</b> button.";
                 if (overlap > 0) {
                     status.boxMessage = "This label does not precisely outline the <b>curb ramp</b>. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 } else {
                     status.boxMessage = "There does not appear to be a curb ramp to label here. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 }
             } else {
                 // status.boxMessage = "You did not label this <b>missing curb ramp</b>. Please draw an outline around it by clicking the <b>Missing Curb Ramp</b> button.";
                 if (overlap > 0) {
                     status.boxMessage = "Your label is not on a <b>missing curb ramp</b>. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 } else {
                     status.boxMessage = "There does not appear to be any missing curb ramp to label here. Mouse over the label and click " +
-                        "<img src=\"public/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
+                        "<img src=\"" + svl.rootDirectory + "/img/icons/Sidewalk/Icon_Delete.svg\" class=\"MessageBoxIcons\"/> " +
                         "to delete.";
                 }
             }
@@ -502,7 +502,7 @@ function GoldenInsertion (param, $) {
         }
 
         var domSpacer = "<div style='height: 10px'></div>"
-        var message = "<img src=\"public/img/icons/Icon_WarningSign.svg\" class=\"MessageBoxIcons\" style=\"height:30px; width:30px; top:6px;\"/> " +
+        var message = "<img src=\"" + svl.rootDirectory + "/img/icons/Icon_WarningSign.svg\" class=\"MessageBoxIcons\" style=\"height:30px; width:30px; top:6px;\"/> " +
             "Uh oh, looks like there is a problem with your labels. Let's see if we can fix this. <br />" + domSpacer + domOKButton;
         var messageBoxX = 0;
         var messageBoxY = 320;

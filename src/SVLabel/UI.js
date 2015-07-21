@@ -21,8 +21,8 @@ function UI ($, params) {
 
       self.actionStack = {};
       self.actionStack.holder = $("#action-stack-control-holder");
-      self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
-      self.actionStack.holder.append('<button id="redo-button" class="button action-stack-button" value="Redo"><img src="img/icons/Icon_Redo.png" class="action-stack-icons" alt="Redo" /><br /><small>Redo</small></button>');
+      self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="' + svl.rootDirectory + 'img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
+      self.actionStack.holder.append('<button id="redo-button" class="button action-stack-button" value="Redo"><img src="' + svl.rootDirectory + 'img/icons/Icon_Redo.png" class="action-stack-icons" alt="Redo" /><br /><small>Redo</small></button>');
       self.actionStack.redo = $("#redo-button");
       self.actionStack.undo = $("#undo-button");
 
