@@ -7,7 +7,8 @@ module.exports = function(grunt) {
         concat: {
             dist: {
                 src: [
-                    'lib/*.js',
+                    'lib/gsv/GSVPano.js',
+                    'lib/gsv/GSVPanoPointCloud.js',
                     'src/SVLabel/*.js',
                     'src/SVLabel/Util/*.js'
                 ],
