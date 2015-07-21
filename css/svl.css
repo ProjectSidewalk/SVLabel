@@ -3,7 +3,7 @@ text {
 }
 
 * {
-    font-family: SegoeUILight, Helvetica, Arial;
+    font-family: SegoeUILight, 'Mono Sans', Helvetica, Arial;
     padding: 0px;
     margin: 0px;
 }
@@ -40,7 +40,7 @@ th {
 */
 .highlight {
     color: orange;
-    font-family: SegoeUISemiBold;
+    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
     font-weight: bold;
 }
 
@@ -60,12 +60,12 @@ th {
 }
 
 .bold {
-    font-family: SegoeUISemiBold;
+    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
     font-weight: bold;
 }
 
 b {
-    font-family: SegoeUISemiBold;
+    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
     font-weight: bold;
 }
 

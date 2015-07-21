@@ -41,7 +41,7 @@
 .LabeledLandmark_Count {
     color: #484848;
     font-size: 1.4em;
-    font-family: SegoeUISemiBold;
+    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
     visibility: visible;
     /* position */
     position: absolute;
