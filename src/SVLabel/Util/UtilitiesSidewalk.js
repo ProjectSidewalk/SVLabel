@@ -263,23 +263,23 @@ function getRibbonConnectionPositions () {
         },
         CurbRamp: {
             id: 'CurbRamp',
-            labelRibbonConnection: '112px'
+            labelRibbonConnection: '100px'
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            labelRibbonConnection: '188px'
+            labelRibbonConnection: '174px'
         },
         Obstacle: {
           id: 'Obstacle',
-          labelRibbonConnection: '264px'
+          labelRibbonConnection: '248px'
         },
         SurfaceProblem: {
           id: 'SurfaceProblem',
-          labelRibbonConnection: '340px'
+          labelRibbonConnection: '322px'
         },
         Other: {
             id: 'Other',
-            labelRibbonConnection: '416px'
+            labelRibbonConnection: '396px'
         },
         'StopSign' : {
             'id' : 'StopSign',
