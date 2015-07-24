@@ -35,7 +35,7 @@
  **/
 // function Fog(map, center, radius, max, strokeColor, strokeOpacity, strokeWeight, fillColor, fillOpacity) {
 function Fog(mapIn, params) {
-    var oPublic = {className: 'Fog'};
+    var self = {className: 'Fog'};
     var properties = {};
     var pointerVisitedLeft = 0;
     var pointerVisitedRight = 0;
@@ -159,12 +159,12 @@ function Fog(mapIn, params) {
     ////////////////////////////////////////////////////////////
     // Public:
     ////////////////////////////////////////////////////////////
-    oPublic.completionRate = function (strategy) {
+    self.completionRate = function (strategy) {
         strategy = typeof strategy !== 'undefined' ? strategy : 0;
         return strategy == 0 ? m_completionRate : m_completionRate2;
     };
 
-    oPublic.updateFromPOV = function(current, povRadius, dir, arc) {
+    self.updateFromPOV = function(current, povRadius, dir, arc) {
         /**
          * Main iterative method updates the fog according to the new direction & zoom level.
          *
@@ -306,12 +306,12 @@ function Fog(mapIn, params) {
         return;
     };
 
-    oPublic.setProperty = function (key, val) {
+    self.setProperty = function (key, val) {
         // This method sets the property
         properties[key] = val;
         return;
     };
 
     _init(params);
-    return oPublic;
+    return self;
 }
