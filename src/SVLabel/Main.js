@@ -104,7 +104,11 @@ function Main ($, params) {
 
       // Instantiation
       svl.map = new Map($, mapParam);
-        svl.map.disableClickZoom();
+      svl.map.disableClickZoom();
+      if ('task' in svl) {
+        google.maps.event.addDomListener(window, 'load', svl.task.render);
+      }
+
       //svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
 

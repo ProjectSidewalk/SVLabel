@@ -35,7 +35,7 @@
  **/
 // function Fog(map, center, radius, max, strokeColor, strokeOpacity, strokeWeight, fillColor, fillOpacity) {
 function Fog(mapIn, params) {
-    var oPublic = {className: 'Fog'};
+    var self = {className: 'Fog'};
     var properties = {};
     var pointerVisitedLeft = 0;
     var pointerVisitedRight = 0;
@@ -159,12 +159,12 @@ function Fog(mapIn, params) {
     ////////////////////////////////////////////////////////////
     // Public:
     ////////////////////////////////////////////////////////////
-    oPublic.completionRate = function (strategy) {
+    self.completionRate = function (strategy) {
         strategy = typeof strategy !== 'undefined' ? strategy : 0;
         return strategy == 0 ? m_completionRate : m_completionRate2;
     };
 
-    oPublic.updateFromPOV = function(current, povRadius, dir, arc) {
+    self.updateFromPOV = function(current, povRadius, dir, arc) {
         /**
          * Main iterative method updates the fog according to the new direction & zoom level.
          *
@@ -306,14 +306,14 @@ function Fog(mapIn, params) {
         return;
     };
 
-    oPublic.setProperty = function (key, val) {
+    self.setProperty = function (key, val) {
         // This method sets the property
         properties[key] = val;
         return;
     };
 
     _init(params);
-    return oPublic;
+    return self;
 }
 
 var GSVPANO = GSVPANO || {};
@@ -5296,7 +5296,11 @@ function Main ($, params) {
 
       // Instantiation
       svl.map = new Map($, mapParam);
-        svl.map.disableClickZoom();
+      svl.map.disableClickZoom();
+      if ('task' in svl) {
+        google.maps.event.addDomListener(window, 'load', svl.task.render);
+      }
+
       //svl.map.setStatus('hideNonavailablePanoLinks', true);
     }
 
@@ -5588,7 +5592,7 @@ function Map ($, params) {
                 pov: properties.panoramaPov
             };
 
-            throw self.className + ' init(): Specifying a dropping point with a latlng coordinate is no longer a good idea. It does not drop the pegman on the specified position.';
+            // throw self.className + ' init(): Specifying a dropping point with a latlng coordinate is no longer a good idea. It does not drop the pegman on the specified position.';
         } else {
             throw self.className + ' init(): The pano id nor panorama position is give. Cannot initialize the panorama.';
         }
@@ -9594,6 +9598,68 @@ function RightClickMenu (params) {
     ////////////////////////////////////////
     init(params);
     return oPublic;
+}
+
+var svl = svl || {};
+
+/**
+ * Task constructor
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
+function Task ($) {
+    var self = {className: 'Task'},
+        properties = {},
+        status = {},
+        taskSetting;
+
+
+    /**
+     * Returns the starting location
+     */
+    function initialLocation() {
+        if (taskSetting) {
+            return {
+                lat: taskSetting.features[0].properties.y1,
+                lng: taskSetting.features[0].properties.x1
+            }
+        }
+    }
+
+    /**
+     *
+     * Reference: https://developers.google.com/maps/documentation/javascript/shapes#polyline_add
+     */
+    function render() {
+        if ('map' in svl && google) {
+            var gCoordinates = taskSetting.features[0].geometry.coordinates.map(function (coord) {
+                return new google.maps.LatLng(coord[1], coord[0]);
+            });
+            var path = new google.maps.Polyline({
+                path: gCoordinates,
+                geodesic: true,
+                strokeColor: '#00FF00',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            path.setMap(svl.map.getMap())
+        }
+    }
+
+    /**
+     * This method takes a task parameters in geojson format.
+     */
+    function set(json) {
+        taskSetting = json;
+    }
+
+    self.set = set;
+    self.initialLocation = initialLocation;
+    self.render = render;
+    return self;
 }
 
 var svl = svl || {};
