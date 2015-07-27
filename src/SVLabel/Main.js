@@ -30,6 +30,7 @@ function Main ($, params) {
         svl.ui = new UI($);
         svl.tracker = new Tracker();
         svl.keyboard = new Keyboard($);
+        svl.labelContainer = new LabelContainer();
         svl.canvas = new Canvas($);
         svl.form = new Form($, params.form);
         svl.examples = undefined;
@@ -46,6 +47,7 @@ function Main ($, params) {
         svl.onboarding = undefined;
         svl.progressPov = new ProgressPov($);
         svl.pointCloud = new PointCloud($, {panoIds: [panoId]});
+        svl.storage = new Storage(JSON);
 
 
         svl.form.disableSubmit();

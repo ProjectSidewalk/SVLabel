@@ -198,6 +198,8 @@ function Canvas ($, param) {
 
         status.currentLabel = new Label(path, param)
         labels.push(status.currentLabel);
+        svl.labelContainer.push(status.currentLabel);
+
         svl.actionStack.push('addLabel', status.currentLabel);
         //var label = Label(path, param);
         //if (label) {
@@ -608,10 +610,8 @@ function Canvas ($, param) {
 
         if (target === 'system') {
             return self.getSystemLabels(false);
-            // return $.extend(true, [], systemLabels);
         } else {
             return self.getUserLabels(false);
-            // $.extend(true, [], labels);
         }
     }
 
@@ -628,6 +628,7 @@ function Canvas ($, param) {
      * @method
      */
     function getNumLabels () {
+        var labels = svl.labelContainer.getCanvasLabels();
         var len = labels.length;
         var i;
         var total = 0;
@@ -700,9 +701,10 @@ function Canvas ($, param) {
         }
 
         if (reference) {
-            return labels;
+            return svl.labelContainer.getCanvasLabels();
+//            return labels;
         } else {
-            return $.extend(true, [], labels);
+            return $.extend(true, [], svl.labelContainer.getCanvasLabels());
         }
     }
 
@@ -813,7 +815,8 @@ function Canvas ($, param) {
         if (target === 'system') {
             systemLabels.push(newLabel);
         } else {
-            labels.push(newLabel);
+            svl.labelContainer.push(newLabel)
+//            labels.push(newLabel);
         }
     }
 
@@ -836,6 +839,7 @@ function Canvas ($, param) {
         // Then returns an object right below the cursor.
         // If a cursor is not on anything, return false.
         var i, lenLabels, ret;
+        var labels = svl.labelContainer.getCanvasLabels();
         lenLabels = labels.length;
 
         ret = false;
@@ -897,7 +901,8 @@ function Canvas ($, param) {
      */
     function pushLabel (label) {
         status.currentLabel = label;
-        labels.push(label);
+//        labels.push(label);
+        svl.labelContainer.push(label);
         if (svl.actionStack) {
             svl.actionStack.push('addLabel', label);
         }
@@ -909,20 +914,15 @@ function Canvas ($, param) {
      * @method
      */
     function removeAllLabels () {
-        // This method removes all the labels.
-        // This method is mainly for testing.
-        labels = [];
+        svl.labelContainer.removeAll();
         return this;
     }
 
     /**
-     *
+     * This function removes a passed label and its child path and points
      * @method
      */
     function removeLabel (label) {
-        // This function removes a passed label and its child path and points
-        // var labelIndex = labels.indexOf(label);
-
         if (!label) {
             return false;
         }
@@ -930,12 +930,7 @@ function Canvas ($, param) {
 
         label.setStatus('deleted', true);
         label.setStatus('visibility', 'hidden');
-        // I do not want to actually remove this label, but set the flag as
-        // deleted
-        // label.removePath();
-        // labels.remove(labelIndex);
 
-        //
         // Review label correctness if this is a ground truth insertion task.
         if (("goldenInsertion" in svl) &&
             svl.goldenInsertion &&
@@ -945,17 +940,6 @@ function Canvas ($, param) {
 
         self.clear();
         self.render2();
-        return this;
-    }
-
-    /**
-     * @method
-     */
-    function render () {
-        // KH. Deprecated.
-        // Renders labels and pathes (as well as points in each path.)
-        var pov = svl.getPOV();
-        // renderLabels(pov, ctx);
         return this;
     }
 
@@ -970,7 +954,8 @@ function Canvas ($, param) {
         console.warn('The ctx is not set.')
         return this;
       }
-        var i;
+        var i,
+            labels = svl.labelContainer.getCanvasLabels();
         var label;
         var lenLabels;
         var labelCount = {
@@ -1188,10 +1173,10 @@ function Canvas ($, param) {
         // This function sets the passed label's tagVisiblity to 'visible' and all the others to
         // 'hidden'.
         if (!lock.showLabelTag) {
-            var i;
-            var labelLen;
+            var i,
+                labels = svl.labelContainer.getCanvasLabels(),
+                labelLen = labels.length;
             var isAnyVisible = false;
-            labelLen = labels.length;
             if (label) {
                 for (i = 0; i < labelLen; i += 1) {
                     //if (labels[i] === label) {
@@ -1231,10 +1216,10 @@ function Canvas ($, param) {
      * @method
      */
     function setVisibility (visibility) {
-        var i = 0;
-        var labelLen = 0;
+        var i = 0,
+            labels = svl.labelContainer.getCanvasLabels(),
+            labelLen = labels.length;
 
-        labelLen = labels.length;
         for (i = 0; i < labelLen; i += 1) {
             labels[i].unlockVisibility().setVisibility('visible');
         }
@@ -1245,10 +1230,10 @@ function Canvas ($, param) {
      * @method
      */
     function setVisibilityBasedOnLocation (visibility) {
-        var i = 0;
-        var labelLen = 0;
+        var i = 0,
+            labels = svl.labelContainer.getCanvasLabels(),
+            labelLen = labels.length;
 
-        labelLen = labels.length;
         for (i = 0; i < labelLen; i += 1) {
             labels[i].setVisibilityBasedOnLocation(visibility, getPanoId());
         }
@@ -1261,10 +1246,10 @@ function Canvas ($, param) {
     function setVisibilityBasedOnLabelerId (visibility, LabelerIds, included) {
         // This function should not be used in labeling interfaces, but only in evaluation interfaces.
         // Set labels that are not in LabelerIds hidden
-        var i = 0;
-        var labelLen = 0;
+        var i = 0,
+            labels = svl.labelContainer.getCanvasLabels(),
+            labelLen = labels.length;
 
-        labelLen = labels.length;
         for (i = 0; i < labelLen; i += 1) {
             labels[i].setVisibilityBasedOnLabelerId(visibility, LabelerIds, included);
         }
@@ -1275,10 +1260,9 @@ function Canvas ($, param) {
      * @method
      */
     function setVisibilityBasedOnLabelerIdAndLabelTypes (visibility, table, included) {
-        var i = 0;
-        var labelLen = 0;
-
-        labelLen = labels.length;
+        var i = 0,
+            labels = svl.labelContainer.getCanvasLabels(),
+            labelLen = labels.length;
         for (i = 0; i < labelLen; i += 1) {
             labels[i].setVisibilityBasedOnLabelerIdAndLabelTypes(visibility, table, included);
         }

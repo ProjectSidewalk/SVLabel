@@ -296,6 +296,7 @@ function Map ($, params) {
         svl.panorama.set('navigationControl', false);
         svl.panorama.set('panControl', false);
         svl.panorama.set('zoomControl', false);
+        svl.panorama.set('keyboardShortcuts', true);
 
         properties.initialPanoId = params.taskPanoId;
         $canvas = svl.ui.map.canvas;
@@ -656,6 +657,11 @@ function Map ($, params) {
                     myTables.updateCanvas();
                 }
                 svl.canvas.render2();
+            }
+
+            if ('storage' in svl) {
+                svl.storage.set('currentPanorama', svl.panorama.getPano());
+                svl.storage.set('currentPov', svl.panorama.getPov());
             }
 
             if (fogSet) {
