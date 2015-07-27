@@ -12758,7 +12758,7 @@ function getLabelIconImagePath(labelType) {
         },
         NoCurbRamp: {
             id: 'NoCurbRamp',
-            iconImagePath : svl.rootDirectory + '/img/icons/Sidewalk/Icon_NoCurbRamp-14.svg'
+            iconImagePath : svl.rootDirectory + '/img/icons/Sidewalk/Icon_NoCurbRamp.svg'
         },
         Obstacle: {
           id: 'Obstacle',
