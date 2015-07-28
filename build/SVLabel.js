@@ -2749,8 +2749,11 @@ function Form ($, params) {
 
     }
 
+    /**
+     * This method gathers all the data needed for submission.
+     * @returns {{}}
+     */
     function compileSubmissionData() {
-        // This method gathers all the data needed for submission.
         var data = {};
         var hitId;
         var assignmentId;
@@ -2758,100 +2761,104 @@ function Form ($, params) {
         var taskGSVPanoId = svl.map.getInitialPanoId();
 
 
-        hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
-        assignmentId = properties.assignmentId? properties.assignmentId : getURLParameter("assignmentId");
-        turkerId = properties.turkerId ? properties.turkerId : getURLParameter("workerId");
+//        hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
+//        assignmentId = properties.assignmentId? properties.assignmentId : getURLParameter("assignmentId");
+//        turkerId = properties.turkerId ? properties.turkerId : getURLParameter("workerId");
 
-        if (!turkerId) {
-            turkerId = 'Test_Kotaro';
-        }
-        if (!hitId) {
-            hitId = 'Test_Hit';
-        }
-        if (!assignmentId) {
-            assignmentId = 'Test_Assignment';
-        }
+//        if (!turkerId) {
+//            turkerId = 'Test_Kotaro';
+//        }
+//        if (!hitId) {
+//            hitId = 'Test_Hit';
+//        }
+//        if (!assignmentId) {
+//            assignmentId = 'Test_Assignment';
+//        }
 
-        data.assignment = {
-            amazon_turker_id : turkerId,
-            amazon_hit_id : hitId,
-            amazon_assignment_id : assignmentId,
-            interface_type : 'StreetViewLabeler',
-            interface_version : '3',
-            completed : 0,
-            need_qualification : 0,
-            task_description : properties.taskDescription
+//        data.assignment = {
+//            amazon_turker_id : turkerId,
+//            amazon_hit_id : hitId,
+//            amazon_assignment_id : assignmentId,
+//            interface_type : 'StreetViewLabeler',
+//            interface_version : '3',
+//            completed : 0,
+//            need_qualification : 0,
+//            task_description : properties.taskDescription
+//        };
+
+
+
+//        data.labelingTask = {
+//            task_panorama_id: properties.taskPanoramaId,
+//            task_gsv_panorama_id : taskGSVPanoId,
+//            no_label : 0,
+//            description: "",
+//            previous_labeling_task_id: properties.previousLabelingTaskId
+//        };
+
+
+        data.audit_task = {
+            street_edge_id: svl.task.getStreetEdgeId(),
+            task_start: svl.task.getTaskStart()
         };
 
-        data.labelingTask = {
-            task_panorama_id: properties.taskPanoramaId,
-            task_gsv_panorama_id : taskGSVPanoId,
-            no_label : 0,
-            description: "",
-            previous_labeling_task_id: properties.previousLabelingTaskId
-        };
-
-        data.labelingTaskEnvironment = {
-            browser: getBrowser(),
-            browser_version: getBrowserVersion(),
+        data.environment = {
+            browser: svl.util.getBrowser(),
+            browser_version: svl.util.getBrowserVersion(),
             browser_width: $(window).width(),
             browser_height: $(window).height(),
             screen_width: screen.width,
             screen_height: screen.height,
             avail_width: screen.availWidth,		// total width - interface (taskbar)
             avail_height: screen.availHeight,		// total height - interface };
-            operating_system: getOperatingSystem()
+            operating_system: svl.util.getOperatingSystem()
         };
 
-        data.userInteraction = svl.tracker.getActions();
+        data.interactions = svl.tracker.getActions();
 
         data.labels = [];
-        var labels = svl.canvas.getLabels();
+        var labels = svl.labelContainer.getCanvasLabels();
         for(var i = 0; i < labels.length; i += 1) {
-            var label = labels[i];
-            var prop = label.getProperties();
+            var label = labels[i],
+                prop = label.getProperties();
             var points = label.getPath().getPoints();
             var pathLen = points.length;
 
             var temp = {
-                deleted : label.isDeleted() ? 1 : 0,
+                deleted : label.isDeleted(),
                 label_id : label.getLabelId(),
                 label_type : label.getLabelType(),
-                label_gsv_panorama_id : prop.panoId,
-                label_points : [],
-                label_additional_information : undefined
+                photographer_heading : prop.photographerHeading,
+                photographer_pitch : prop.photographerPitch,
+                gsv_panorama_id : prop.panoId,
+                label_points : []
             };
 
-            if (("photographerHeading" in prop) && ("photographerPitch" in prop)) {
-                temp.photographer_heading = prop.photographerHeading,
-                temp.photographer_pitch = prop.photographerPitch
-            }
-
             for (var j = 0; j < pathLen; j += 1) {
-                var point = points[j];
-                var gsvImageCoordinate = point.getGSVImageCoordinate();
-                var pointParam = {
-                    svImageX : gsvImageCoordinate.x,
-                    svImageY : gsvImageCoordinate.y,
-                    originalCanvasX: point.originalCanvasCoordinate.x,
-                    originalCanvasY: point.originalCanvasCoordinate.y,
-                    originalHeading: point.originalPov.heading,
-                    originalPitch: point.originalPov.pitch,
-                    originalZoom : point.originalPov.zoom,
-                    canvasX : point.canvasCoordinate.x,
-                    canvasY : point.canvasCoordinate.y,
-                    heading : point.pov.heading,
-                    pitch : point.pov.pitch,
-                    zoom : point.pov.zoom,
-                    lat : prop.panoramaLat,
-                    lng : prop.panoramaLng,
-                    svImageHeight : prop.svImageHeight,
-                    svImageWidth : prop.svImageWidth,
-                    canvasHeight : prop.canvasHeight,
-                    canvasWidth : prop.canvasWidth,
-                    alphaX : prop.canvasDistortionAlphaX,
-                    alphaY : prop.canvasDistortionAlphaY
-                };
+                var point = points[j],
+                    gsvImageCoordinate = point.getGSVImageCoordinate(),
+                    pointParam = {
+                        sv_image_x : gsvImageCoordinate.x,
+                        sv_image_y : gsvImageCoordinate.y,
+                        canvas_x: point.originalCanvasCoordinate.x,
+                        canvas_y: point.originalCanvasCoordinate.y,
+                        heading: point.originalPov.heading,
+                        pitch: point.originalPov.pitch,
+                        zoom : point.originalPov.zoom,
+                        canvas_height : prop.canvasHeight,
+                        canvas_width : prop.canvasWidth,
+                        alpha_x : prop.canvasDistortionAlphaX,
+                        alpha_y : prop.canvasDistortionAlphaY,
+                        lat : prop.panoramaLat,
+                        lng : prop.panoramaLng
+    //                    canvasX : point.canvasCoordinate.x,
+    //                    canvasY : point.canvasCoordinate.y,
+    //                    heading : point.pov.heading,
+    //                    pitch : point.pov.pitch,
+    //                    zoom : point.pov.zoom,
+    //                    svImageHeight : prop.svImageHeight,
+    //                    svImageWidth : prop.svImageWidth,
+                    };
                 temp.label_points.push(pointParam);
             }
 
@@ -2887,8 +2894,12 @@ function Form ($, params) {
         $btnConfirmSkip.css('color', 'rgba(96,96,96,1)');
     }
 
+    /**
+     * Callback function that is invoked when a user hits a submit button
+     * @param e
+     * @returns {boolean}
+     */
     function formSubmit (e) {
-        // This is a callback function that will be invoked when a user hit a submit button.
         if (!properties.isAMTTask || properties.taskRemaining > 1) {
             e.preventDefault();
         }
@@ -2902,16 +2913,16 @@ function Form ($, params) {
         }
 
         // temp
-        window.location.reload();
+        // window.location.reload();
 
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svl && svl.goldenInsertion) {
-            var numMistakes = svl.goldenInsertion.reviewLabels();
-            self.disableSubmit().lockDisableSubmit();
-            self.disableSkip().lockDisableSkip();
-            return false;
-        }
+//        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+//            var numMistakes = svl.goldenInsertion.reviewLabels();
+//            self.disableSubmit().lockDisableSubmit();
+//            self.disableSkip().lockDisableSkip();
+//            return false;
+//        }
 
         //
         // Disable a submit button and other buttons so turkers cannot submit labels more than once.
@@ -2949,9 +2960,10 @@ function Form ($, params) {
             try {
                 $.ajax({
                     async: false,
+                    contentType: 'application/json; charset=utf-8',
                     url: url,
                     type: 'post',
-                    data: data,
+                    data: JSON.stringify(data),
                     dataType: 'json',
                     success: function (result) {
                         if (result.error) {
@@ -5101,20 +5113,31 @@ function Label (pathIn, params) {
 
 var svl = svl || {};
 
-// Todo. Decouple data container and rendering stuff in Canvas.js.
-
+/**
+ * LabelContainer class constructor
+ */
 function LabelContainer() {
     var self = {className: 'LabelContainer'};
     var canvasLabels = [];
 
+    /**
+     * Returns canvas labels
+     */
     function getCanvasLabels () {
         return canvasLabels;
     }
 
+    /**
+     * Push a label into canvasLabels
+     * @param label
+     */
     function push(label) {
         canvasLabels.push(label);
     }
 
+    /**
+     * Flush the canvasLabels
+     */
     function removeAll() {
         canvasLabels = [];
     }
@@ -5199,29 +5222,6 @@ function LabeledLandmarkFeedback ($, params) {
     return self;
 }
 
-var svl = svl || {};
-
-function Storage(JSON, params) {
-    var self = {'className': 'Storage'};
-
-    if (params && 'storage' in params && params.storage == 'session') {
-        self.storage = window.sessionStorage;
-    } else {
-        self.storage = window.localStorage;
-    }
-
-    function get(key) {
-        return JSON.parse(self.storage.getItem(key));
-    }
-
-    function set(key, value) {
-        self.storage.setItem(key, JSON.stringify(value));
-    }
-
-    self.get = get;
-    self.set = set;
-    return self;
-}
 /** @namespace */
 var svl = svl || {};
 
@@ -9643,6 +9643,43 @@ function RightClickMenu (params) {
 var svl = svl || {};
 
 /**
+ * LocalStorage class constructor
+ * @param JSON
+ * @param params
+ */
+function Storage(JSON, params) {
+    var self = {'className': 'Storage'};
+
+    if (params && 'storage' in params && params.storage == 'session') {
+        self.storage = window.sessionStorage;
+    } else {
+        self.storage = window.localStorage;
+    }
+
+    /**
+     * Returns the item specified by the key
+     * @param key
+     */
+    function get(key) {
+        return JSON.parse(self.storage.getItem(key));
+    }
+
+    /**
+     * Stores a key value pair
+     * @param key
+     * @param value
+     */
+    function set(key, value) {
+        self.storage.setItem(key, JSON.stringify(value));
+    }
+
+    self.get = get;
+    self.set = set;
+    return self;
+}
+var svl = svl || {};
+
+/**
  * Task constructor
  * @param $
  * @param param
@@ -9656,6 +9693,19 @@ function Task ($) {
         status = {},
         taskSetting;
 
+    /**
+     * Returns the street edge id of the current task.
+     */
+    function getStreetEdgeId () {
+        return taskSetting.features[0].properties.street_edge_id
+    }
+
+    /**
+     * Returns the task start time
+     */
+    function getTaskStart () {
+        return taskSetting.features[0].properties.task_start;
+    }
 
     /**
      * Returns the starting location
@@ -9696,6 +9746,8 @@ function Task ($) {
         taskSetting = json;
     }
 
+    self.getStreetEdgeId = getStreetEdgeId;
+    self.getTaskStart = getTaskStart;
     self.set = set;
     self.initialLocation = initialLocation;
     self.render = render;
@@ -9863,8 +9915,6 @@ function Tracker () {
         'OnboardingQuickCheck_submit'
     ];
 
-    var undefinedMsg = 'undefined';
-
     ////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////
@@ -9872,98 +9922,86 @@ function Tracker () {
         return actions;
     };
 
-    self.getAvailableActionTypes = function () {
-      var tempArray = availableActionTypes.slice(0);
-      return tempArray;
-    };
+//    self.getAvailableActionTypes = function () {
+//      var tempArray = availableActionTypes.slice(0);
+//      return tempArray;
+//    };
 
     self.push = function (action, param) {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
-        if (availableActionTypes.indexOf(action) === -1) {
-            console.warn('Unknown action: ' + action);
-            return false;
-        } else {
-            var pov;
-            var latlng;
-            var panoId;
-            var dump;
-            var x;
-            var y;
-            var note;
+        var pov, latlng, panoId, note;
 
-            if (param) {
-                if (('x' in param) && ('y' in param)) {
-                    note = 'x:' + param.x + ',y:' + param.y;
-                } else if ('TargetPanoId' in param) {
-                    note = param.TargetPanoId;
-                } else if ('RadioValue' in param) {
-                    note = param.RadioValue;
-                } else if ('keyCode' in param) {
-                    note = 'keyCode:' + param.keyCode;
-                } else if ('errorType' in param) {
-                    note = 'errorType:' + param.errorType;
-                } else if ('quickCheckImageId' in param) {
-                    note = param.quickCheckImageId;
-                } else if ('quickCheckCorrectness' in param) {
-                    note = param.quickCheckCorrectness;
-                } else if ('labelId' in param) {
-                    note = 'labelId:' + param.labelId;
-                } else {
-                    note = undefinedMsg;
-                }
+        if (param) {
+            if (('x' in param) && ('y' in param)) {
+                note = 'x:' + param.x + ',y:' + param.y;
+            } else if ('TargetPanoId' in param) {
+                note = param.TargetPanoId;
+            } else if ('RadioValue' in param) {
+                note = param.RadioValue;
+            } else if ('keyCode' in param) {
+                note = 'keyCode:' + param.keyCode;
+            } else if ('errorType' in param) {
+                note = 'errorType:' + param.errorType;
+            } else if ('quickCheckImageId' in param) {
+                note = param.quickCheckImageId;
+            } else if ('quickCheckCorrectness' in param) {
+                note = param.quickCheckCorrectness;
+            } else if ('labelId' in param) {
+                note = 'labelId:' + param.labelId;
             } else {
-                note = undefinedMsg;
+                note = "";
             }
-
-            //
-            // Initialize variables. Note you cannot get pov, panoid, or position
-            // before the map and SV load.
-            try {
-                pov = svl.getPOV();
-            } catch (err) {
-                pov = {
-                    heading: undefinedMsg,
-                    pitch: undefinedMsg,
-                    zoom: undefinedMsg
-                }
-            }
-
-            try {
-                latlng = getPosition();
-            } catch (err) {
-                latlng = {
-                    lat: undefinedMsg,
-                    lng: undefinedMsg
-                };
-            }
-            if (!latlng) {
-                latlng = {
-                    lat: undefinedMsg,
-                    lng: undefinedMsg
-                };
-            }
-
-            try {
-                panoId = getPanoId();
-            } catch (err) {
-                panoId = undefinedMsg;
-            }
-
-            dump = {
-                actionType : action,
-                heading: pov.heading,
-                lat: latlng.lat,
-                lng: latlng.lng,
-                panoId: panoId,
-                pitch: pov.pitch,
-                timestamp: new Date().getTime(),
-                zoom: pov.zoom,
-                note: note
-            };
-            actions.push(dump);
-            return this;
+        } else {
+            note = "";
         }
+
+        //
+        // Initialize variables. Note you cannot get pov, panoid, or position
+        // before the map and SV load.
+        try {
+            pov = svl.getPOV();
+        } catch (err) {
+            pov = {
+                heading: null,
+                pitch: null,
+                zoom: null
+            }
+        }
+
+        try {
+            latlng = getPosition();
+        } catch (err) {
+            latlng = {
+                lat: null,
+                lng: null
+            };
+        }
+        if (!latlng) {
+            latlng = {
+                lat: null,
+                lng: null
+            };
+        }
+
+        try {
+            panoId = getPanoId();
+        } catch (err) {
+            panoId = null;
+        }
+
+        actions.push({
+            action : action,
+            gsv_panorama_id: panoId,
+            lat: latlng.lat,
+            lng: latlng.lng,
+            heading: pov.heading,
+            pitch: pov.pitch,
+            zoom: pov.zoom,
+            note: note,
+            timestamp: new Date().toUTCString()
+        });
+        return this;
     };
 
     return self;
@@ -11558,6 +11596,7 @@ function getBrowserVersion () {
     // Return a browser version
     return $.browser.version;
 }
+svl.util.getBrowserVersion = getBrowserVersion;
 
 function getOperatingSystem () {
     var OSName="Unknown OS";
@@ -11567,6 +11606,7 @@ function getOperatingSystem () {
     if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
     return OSName;
 }
+svl.util.getOperatingSystem = getOperatingSystem;
 
 /**
  * Given an image coordinate (x, y), return a scaled coordinate. For example, to

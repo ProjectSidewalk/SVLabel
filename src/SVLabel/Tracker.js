@@ -119,8 +119,6 @@ function Tracker () {
         'OnboardingQuickCheck_submit'
     ];
 
-    var undefinedMsg = 'undefined';
-
     ////////////////////////////////////////////////////////////
     // Public functions
     ////////////////////////////////////////////////////////////
@@ -128,98 +126,86 @@ function Tracker () {
         return actions;
     };
 
-    self.getAvailableActionTypes = function () {
-      var tempArray = availableActionTypes.slice(0);
-      return tempArray;
-    };
+//    self.getAvailableActionTypes = function () {
+//      var tempArray = availableActionTypes.slice(0);
+//      return tempArray;
+//    };
 
     self.push = function (action, param) {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
-        if (availableActionTypes.indexOf(action) === -1) {
-            console.warn('Unknown action: ' + action);
-            return false;
-        } else {
-            var pov;
-            var latlng;
-            var panoId;
-            var dump;
-            var x;
-            var y;
-            var note;
+        var pov, latlng, panoId, note;
 
-            if (param) {
-                if (('x' in param) && ('y' in param)) {
-                    note = 'x:' + param.x + ',y:' + param.y;
-                } else if ('TargetPanoId' in param) {
-                    note = param.TargetPanoId;
-                } else if ('RadioValue' in param) {
-                    note = param.RadioValue;
-                } else if ('keyCode' in param) {
-                    note = 'keyCode:' + param.keyCode;
-                } else if ('errorType' in param) {
-                    note = 'errorType:' + param.errorType;
-                } else if ('quickCheckImageId' in param) {
-                    note = param.quickCheckImageId;
-                } else if ('quickCheckCorrectness' in param) {
-                    note = param.quickCheckCorrectness;
-                } else if ('labelId' in param) {
-                    note = 'labelId:' + param.labelId;
-                } else {
-                    note = undefinedMsg;
-                }
+        if (param) {
+            if (('x' in param) && ('y' in param)) {
+                note = 'x:' + param.x + ',y:' + param.y;
+            } else if ('TargetPanoId' in param) {
+                note = param.TargetPanoId;
+            } else if ('RadioValue' in param) {
+                note = param.RadioValue;
+            } else if ('keyCode' in param) {
+                note = 'keyCode:' + param.keyCode;
+            } else if ('errorType' in param) {
+                note = 'errorType:' + param.errorType;
+            } else if ('quickCheckImageId' in param) {
+                note = param.quickCheckImageId;
+            } else if ('quickCheckCorrectness' in param) {
+                note = param.quickCheckCorrectness;
+            } else if ('labelId' in param) {
+                note = 'labelId:' + param.labelId;
             } else {
-                note = undefinedMsg;
+                note = "";
             }
-
-            //
-            // Initialize variables. Note you cannot get pov, panoid, or position
-            // before the map and SV load.
-            try {
-                pov = svl.getPOV();
-            } catch (err) {
-                pov = {
-                    heading: undefinedMsg,
-                    pitch: undefinedMsg,
-                    zoom: undefinedMsg
-                }
-            }
-
-            try {
-                latlng = getPosition();
-            } catch (err) {
-                latlng = {
-                    lat: undefinedMsg,
-                    lng: undefinedMsg
-                };
-            }
-            if (!latlng) {
-                latlng = {
-                    lat: undefinedMsg,
-                    lng: undefinedMsg
-                };
-            }
-
-            try {
-                panoId = getPanoId();
-            } catch (err) {
-                panoId = undefinedMsg;
-            }
-
-            dump = {
-                actionType : action,
-                heading: pov.heading,
-                lat: latlng.lat,
-                lng: latlng.lng,
-                panoId: panoId,
-                pitch: pov.pitch,
-                timestamp: new Date().getTime(),
-                zoom: pov.zoom,
-                note: note
-            };
-            actions.push(dump);
-            return this;
+        } else {
+            note = "";
         }
+
+        //
+        // Initialize variables. Note you cannot get pov, panoid, or position
+        // before the map and SV load.
+        try {
+            pov = svl.getPOV();
+        } catch (err) {
+            pov = {
+                heading: null,
+                pitch: null,
+                zoom: null
+            }
+        }
+
+        try {
+            latlng = getPosition();
+        } catch (err) {
+            latlng = {
+                lat: null,
+                lng: null
+            };
+        }
+        if (!latlng) {
+            latlng = {
+                lat: null,
+                lng: null
+            };
+        }
+
+        try {
+            panoId = getPanoId();
+        } catch (err) {
+            panoId = null;
+        }
+
+        actions.push({
+            action : action,
+            gsv_panorama_id: panoId,
+            lat: latlng.lat,
+            lng: latlng.lng,
+            heading: pov.heading,
+            pitch: pov.pitch,
+            zoom: pov.zoom,
+            note: note,
+            timestamp: new Date().toUTCString()
+        });
+        return this;
     };
 
     return self;

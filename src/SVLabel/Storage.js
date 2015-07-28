@@ -1,5 +1,10 @@
 var svl = svl || {};
 
+/**
+ * LocalStorage class constructor
+ * @param JSON
+ * @param params
+ */
 function Storage(JSON, params) {
     var self = {'className': 'Storage'};
 
@@ -9,10 +14,19 @@ function Storage(JSON, params) {
         self.storage = window.localStorage;
     }
 
+    /**
+     * Returns the item specified by the key
+     * @param key
+     */
     function get(key) {
         return JSON.parse(self.storage.getItem(key));
     }
 
+    /**
+     * Stores a key value pair
+     * @param key
+     * @param value
+     */
     function set(key, value) {
         self.storage.setItem(key, JSON.stringify(value));
     }

@@ -165,6 +165,7 @@ function getBrowserVersion () {
     // Return a browser version
     return $.browser.version;
 }
+svl.util.getBrowserVersion = getBrowserVersion;
 
 function getOperatingSystem () {
     var OSName="Unknown OS";
@@ -174,6 +175,7 @@ function getOperatingSystem () {
     if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
     return OSName;
 }
+svl.util.getOperatingSystem = getOperatingSystem;
 
 /**
  * Given an image coordinate (x, y), return a scaled coordinate. For example, to

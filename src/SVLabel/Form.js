@@ -184,8 +184,11 @@ function Form ($, params) {
 
     }
 
+    /**
+     * This method gathers all the data needed for submission.
+     * @returns {{}}
+     */
     function compileSubmissionData() {
-        // This method gathers all the data needed for submission.
         var data = {};
         var hitId;
         var assignmentId;
@@ -193,100 +196,104 @@ function Form ($, params) {
         var taskGSVPanoId = svl.map.getInitialPanoId();
 
 
-        hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
-        assignmentId = properties.assignmentId? properties.assignmentId : getURLParameter("assignmentId");
-        turkerId = properties.turkerId ? properties.turkerId : getURLParameter("workerId");
+//        hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
+//        assignmentId = properties.assignmentId? properties.assignmentId : getURLParameter("assignmentId");
+//        turkerId = properties.turkerId ? properties.turkerId : getURLParameter("workerId");
 
-        if (!turkerId) {
-            turkerId = 'Test_Kotaro';
-        }
-        if (!hitId) {
-            hitId = 'Test_Hit';
-        }
-        if (!assignmentId) {
-            assignmentId = 'Test_Assignment';
-        }
+//        if (!turkerId) {
+//            turkerId = 'Test_Kotaro';
+//        }
+//        if (!hitId) {
+//            hitId = 'Test_Hit';
+//        }
+//        if (!assignmentId) {
+//            assignmentId = 'Test_Assignment';
+//        }
 
-        data.assignment = {
-            amazon_turker_id : turkerId,
-            amazon_hit_id : hitId,
-            amazon_assignment_id : assignmentId,
-            interface_type : 'StreetViewLabeler',
-            interface_version : '3',
-            completed : 0,
-            need_qualification : 0,
-            task_description : properties.taskDescription
+//        data.assignment = {
+//            amazon_turker_id : turkerId,
+//            amazon_hit_id : hitId,
+//            amazon_assignment_id : assignmentId,
+//            interface_type : 'StreetViewLabeler',
+//            interface_version : '3',
+//            completed : 0,
+//            need_qualification : 0,
+//            task_description : properties.taskDescription
+//        };
+
+
+
+//        data.labelingTask = {
+//            task_panorama_id: properties.taskPanoramaId,
+//            task_gsv_panorama_id : taskGSVPanoId,
+//            no_label : 0,
+//            description: "",
+//            previous_labeling_task_id: properties.previousLabelingTaskId
+//        };
+
+
+        data.audit_task = {
+            street_edge_id: svl.task.getStreetEdgeId(),
+            task_start: svl.task.getTaskStart()
         };
 
-        data.labelingTask = {
-            task_panorama_id: properties.taskPanoramaId,
-            task_gsv_panorama_id : taskGSVPanoId,
-            no_label : 0,
-            description: "",
-            previous_labeling_task_id: properties.previousLabelingTaskId
-        };
-
-        data.labelingTaskEnvironment = {
-            browser: getBrowser(),
-            browser_version: getBrowserVersion(),
+        data.environment = {
+            browser: svl.util.getBrowser(),
+            browser_version: svl.util.getBrowserVersion(),
             browser_width: $(window).width(),
             browser_height: $(window).height(),
             screen_width: screen.width,
             screen_height: screen.height,
             avail_width: screen.availWidth,		// total width - interface (taskbar)
             avail_height: screen.availHeight,		// total height - interface };
-            operating_system: getOperatingSystem()
+            operating_system: svl.util.getOperatingSystem()
         };
 
-        data.userInteraction = svl.tracker.getActions();
+        data.interactions = svl.tracker.getActions();
 
         data.labels = [];
-        var labels = svl.canvas.getLabels();
+        var labels = svl.labelContainer.getCanvasLabels();
         for(var i = 0; i < labels.length; i += 1) {
-            var label = labels[i];
-            var prop = label.getProperties();
+            var label = labels[i],
+                prop = label.getProperties();
             var points = label.getPath().getPoints();
             var pathLen = points.length;
 
             var temp = {
-                deleted : label.isDeleted() ? 1 : 0,
+                deleted : label.isDeleted(),
                 label_id : label.getLabelId(),
                 label_type : label.getLabelType(),
-                label_gsv_panorama_id : prop.panoId,
-                label_points : [],
-                label_additional_information : undefined
+                photographer_heading : prop.photographerHeading,
+                photographer_pitch : prop.photographerPitch,
+                gsv_panorama_id : prop.panoId,
+                label_points : []
             };
 
-            if (("photographerHeading" in prop) && ("photographerPitch" in prop)) {
-                temp.photographer_heading = prop.photographerHeading,
-                temp.photographer_pitch = prop.photographerPitch
-            }
-
             for (var j = 0; j < pathLen; j += 1) {
-                var point = points[j];
-                var gsvImageCoordinate = point.getGSVImageCoordinate();
-                var pointParam = {
-                    svImageX : gsvImageCoordinate.x,
-                    svImageY : gsvImageCoordinate.y,
-                    originalCanvasX: point.originalCanvasCoordinate.x,
-                    originalCanvasY: point.originalCanvasCoordinate.y,
-                    originalHeading: point.originalPov.heading,
-                    originalPitch: point.originalPov.pitch,
-                    originalZoom : point.originalPov.zoom,
-                    canvasX : point.canvasCoordinate.x,
-                    canvasY : point.canvasCoordinate.y,
-                    heading : point.pov.heading,
-                    pitch : point.pov.pitch,
-                    zoom : point.pov.zoom,
-                    lat : prop.panoramaLat,
-                    lng : prop.panoramaLng,
-                    svImageHeight : prop.svImageHeight,
-                    svImageWidth : prop.svImageWidth,
-                    canvasHeight : prop.canvasHeight,
-                    canvasWidth : prop.canvasWidth,
-                    alphaX : prop.canvasDistortionAlphaX,
-                    alphaY : prop.canvasDistortionAlphaY
-                };
+                var point = points[j],
+                    gsvImageCoordinate = point.getGSVImageCoordinate(),
+                    pointParam = {
+                        sv_image_x : gsvImageCoordinate.x,
+                        sv_image_y : gsvImageCoordinate.y,
+                        canvas_x: point.originalCanvasCoordinate.x,
+                        canvas_y: point.originalCanvasCoordinate.y,
+                        heading: point.originalPov.heading,
+                        pitch: point.originalPov.pitch,
+                        zoom : point.originalPov.zoom,
+                        canvas_height : prop.canvasHeight,
+                        canvas_width : prop.canvasWidth,
+                        alpha_x : prop.canvasDistortionAlphaX,
+                        alpha_y : prop.canvasDistortionAlphaY,
+                        lat : prop.panoramaLat,
+                        lng : prop.panoramaLng
+    //                    canvasX : point.canvasCoordinate.x,
+    //                    canvasY : point.canvasCoordinate.y,
+    //                    heading : point.pov.heading,
+    //                    pitch : point.pov.pitch,
+    //                    zoom : point.pov.zoom,
+    //                    svImageHeight : prop.svImageHeight,
+    //                    svImageWidth : prop.svImageWidth,
+                    };
                 temp.label_points.push(pointParam);
             }
 
@@ -322,8 +329,12 @@ function Form ($, params) {
         $btnConfirmSkip.css('color', 'rgba(96,96,96,1)');
     }
 
+    /**
+     * Callback function that is invoked when a user hits a submit button
+     * @param e
+     * @returns {boolean}
+     */
     function formSubmit (e) {
-        // This is a callback function that will be invoked when a user hit a submit button.
         if (!properties.isAMTTask || properties.taskRemaining > 1) {
             e.preventDefault();
         }
@@ -337,16 +348,16 @@ function Form ($, params) {
         }
 
         // temp
-        window.location.reload();
+        // window.location.reload();
 
         //
         // If this is a task with ground truth labels, check if users made any mistake.
-        if ('goldenInsertion' in svl && svl.goldenInsertion) {
-            var numMistakes = svl.goldenInsertion.reviewLabels();
-            self.disableSubmit().lockDisableSubmit();
-            self.disableSkip().lockDisableSkip();
-            return false;
-        }
+//        if ('goldenInsertion' in svl && svl.goldenInsertion) {
+//            var numMistakes = svl.goldenInsertion.reviewLabels();
+//            self.disableSubmit().lockDisableSubmit();
+//            self.disableSkip().lockDisableSkip();
+//            return false;
+//        }
 
         //
         // Disable a submit button and other buttons so turkers cannot submit labels more than once.
@@ -384,9 +395,10 @@ function Form ($, params) {
             try {
                 $.ajax({
                     async: false,
+                    contentType: 'application/json; charset=utf-8',
                     url: url,
                     type: 'post',
-                    data: data,
+                    data: JSON.stringify(data),
                     dataType: 'json',
                     success: function (result) {
                         if (result.error) {

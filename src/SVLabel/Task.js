@@ -14,6 +14,19 @@ function Task ($) {
         status = {},
         taskSetting;
 
+    /**
+     * Returns the street edge id of the current task.
+     */
+    function getStreetEdgeId () {
+        return taskSetting.features[0].properties.street_edge_id
+    }
+
+    /**
+     * Returns the task start time
+     */
+    function getTaskStart () {
+        return taskSetting.features[0].properties.task_start;
+    }
 
     /**
      * Returns the starting location
@@ -54,6 +67,8 @@ function Task ($) {
         taskSetting = json;
     }
 
+    self.getStreetEdgeId = getStreetEdgeId;
+    self.getTaskStart = getTaskStart;
     self.set = set;
     self.initialLocation = initialLocation;
     self.render = render;
