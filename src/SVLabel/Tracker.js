@@ -194,6 +194,10 @@ function Tracker () {
             panoId = null;
         }
 
+
+        var now = new Date(),
+            timestamp = now.getUTCFullYear() + "-" + now.getUTCMonth() + "-" + now.getUTCDate() + " " + now.getUTCHours() + ":" + now.getUTCMinutes() + ":" + now.getUTCSeconds() + "." + now.getUTCMilliseconds();
+
         actions.push({
             action : action,
             gsv_panorama_id: panoId,
@@ -203,7 +207,7 @@ function Tracker () {
             pitch: pov.pitch,
             zoom: pov.zoom,
             note: note,
-            timestamp: new Date().toUTCString()
+            timestamp: timestamp
         });
         return this;
     };

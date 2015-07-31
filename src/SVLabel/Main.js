@@ -36,7 +36,8 @@ function Main ($, params) {
         svl.examples = undefined;
         svl.overlayMessageBox = new OverlayMessageBox($);
         svl.missionDescription = new MissionDescription($, params.missionDescription);
-        svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
+//        svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
+        svl.labelCounter = new LabelCounter($, d3);
         svl.qualificationBadges = undefined;
         svl.progressFeedback = new ProgressFeedback($);
         svl.actionStack = new ActionStack($);

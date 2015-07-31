@@ -412,7 +412,7 @@ function Canvas ($, param) {
             }
 
             if (currLabel) {
-                self.removeLabel(currLabel);
+                svl.labelContainer.removeLabel(currLabel);
                 svl.actionStack.push('deleteLabel', self.getCurrentLabel());
                 $divHolderLabelDeleteIcon.css('visibility', 'hidden');
                 // $divHolderLabelEditIcon.css('visibility', 'hidden');
@@ -922,26 +922,27 @@ function Canvas ($, param) {
      * This function removes a passed label and its child path and points
      * @method
      */
-    function removeLabel (label) {
-        if (!label) {
-            return false;
-        }
-        svl.tracker.push('RemoveLabel', {labelId: label.getProperty('labelId')});
-
-        label.setStatus('deleted', true);
-        label.setStatus('visibility', 'hidden');
-
-        // Review label correctness if this is a ground truth insertion task.
-        if (("goldenInsertion" in svl) &&
-            svl.goldenInsertion &&
-            svl.goldenInsertion.isRevisingLabels()) {
-            svl.goldenInsertion.reviewLabels();
-        }
-
-        self.clear();
-        self.render2();
-        return this;
-    }
+//    function removeLabel (label) {
+//        if (!label) {
+//            return false;
+//        }
+//        svl.tracker.push('RemoveLabel', {labelId: label.getProperty('labelId')});
+//
+//        label.setStatus('deleted', true);
+//        label.setStatus('visibility', 'hidden');
+//
+//
+//        // Review label correctness if this is a ground truth insertion task.
+//        if (("goldenInsertion" in svl) &&
+//            svl.goldenInsertion &&
+//            svl.goldenInsertion.isRevisingLabels()) {
+//            svl.goldenInsertion.reviewLabels();
+//        }
+//
+//        self.clear();
+//        self.render2();
+//        return this;
+//    }
 
     /**
      * Renders labels
@@ -1350,7 +1351,8 @@ function Canvas ($, param) {
     self.lockShowLabelTag = lockShowLabelTag;
     self.pushLabel = pushLabel;
     self.removeAllLabels = removeAllLabels;
-    self.removeLabel = removeLabel;
+    self.removeLabel = svl.labelContainer.removeLabel;
+    self.render = render2;
     self.render2 = render2;
     self.renderBoundingBox = renderBoundingBox;
     self.setCurrentLabel = setCurrentLabel;

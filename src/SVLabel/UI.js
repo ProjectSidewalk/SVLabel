@@ -27,14 +27,16 @@ function UI ($, params) {
       self.actionStack.undo = $("#undo-button");
 
       // LabeledLandmarkFeedback DOMs
-      $labelCountCurbRamp = $("#LabeledLandmarkCount_CurbRamp");
-      $labelCountNoCurbRamp = $("#LabeledLandmarkCount_NoCurbRamp");
-      $submittedLabelMessage = $("#LabeledLandmarks_SubmittedLabelCount");
+//      $labelCountCurbRamp = $("#LabeledLandmarkCount_CurbRamp");
+//      $labelCountNoCurbRamp = $("#LabeledLandmarkCount_NoCurbRamp");
+//      $submittedLabelMessage = $("#LabeledLandmarks_SubmittedLabelCount");
 
-      self.labeledLandmark = {};
-      self.labeledLandmark.curbRamp = $labelCountCurbRamp;
-      self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
-      self.labeledLandmark.submitted = $submittedLabelMessage;
+//      self.labeledLandmark = {};
+//      self.labeledLandmark.curbRamp = $labelCountCurbRamp;
+//      self.labeledLandmark.noCurbRamp = $labelCountNoCurbRamp;
+//      self.labeledLandmark.submitted = $submittedLabelMessage;
+      self.counterHolder = $("#counter-holder");
+      self.labelCounter = $("#label-counter");
 
       // Map DOMs
       self.map = {};

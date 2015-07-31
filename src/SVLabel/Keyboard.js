@@ -98,6 +98,13 @@ function Keyboard ($) {
                     // "m" for MissingCurbRamp. Switch the mode to the MissingCurbRamp labeling mode.
                     svl.ribbon.modeSwitchClick("NoCurbRamp");
                     break;
+                case 79:
+                    // "o" for Obstacle
+                    svl.ribbon.modeSwitchClick("Obstacle");
+                    break;
+                case 83:
+                    svl.ribbon.modeSwitchClick("SurfaceProblem");
+                    break;
                 case 90:
                     // "z" for zoom. By default, it will zoom in. If "shift" is down, it will zoom out.
                     if (status.shiftDown) {

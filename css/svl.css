@@ -9,7 +9,9 @@ text {
     visibility: hidden;
 }
 
-
+.visible {
+    visibility: visible;
+}
 /*
 #Footer {
     position: absolute;
