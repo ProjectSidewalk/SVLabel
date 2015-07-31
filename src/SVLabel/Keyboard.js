@@ -86,6 +86,22 @@ function Keyboard ($) {
                         svl.ribbon.backToWalk();
                     }
                     break;
+                case 49:
+                    // "1"
+                    svl.ribbon.modeSwitchClick("CurbRamp");
+                    break;
+                case 50:
+                    // "2"
+                    svl.ribbon.modeSwitchClick("NoCurbRamp");
+                    break;
+                case 51:
+                    // "3"
+                    svl.ribbon.modeSwitchClick("Obstacle");
+                    break;
+                case 52:
+                    // "4"
+                    svl.ribbon.modeSwitchClick("SurfaceProblem");
+                    break;
                 case 67:
                     // "c" for CurbRamp. Switch the mode to the CurbRamp labeling mode.
                     svl.ribbon.modeSwitchClick("CurbRamp");

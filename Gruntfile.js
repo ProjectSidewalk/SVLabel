@@ -35,6 +35,15 @@ module.exports = function(grunt) {
             dist : {
                 src: 'src/SVLabel/*.js'
             }
+        },
+        watch : {
+            scripts: {
+                files: ['**/*.js'],
+                tasks: ['concat'],
+                options: {
+                    interrupt: true
+                }
+            }
         }
     });
 
@@ -43,6 +52,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concat-css');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
 
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.

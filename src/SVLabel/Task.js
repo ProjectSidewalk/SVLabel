@@ -15,6 +15,16 @@ function Task ($) {
         taskSetting;
 
     /**
+     * End the current task
+     */
+    function endTask () {
+        // Show the end of the task message.
+        // Prompt a user who's not logged in to login.
+        // Submit the data.
+
+    }
+
+    /**
      * Returns the street edge id of the current task.
      */
     function getStreetEdgeId () {
@@ -36,6 +46,31 @@ function Task ($) {
             return {
                 lat: taskSetting.features[0].properties.y1,
                 lng: taskSetting.features[0].properties.x1
+            }
+        }
+    }
+
+    /**
+     * This method checks if the task is done or not by assessing the
+     * current distance and the ending distance.
+     */
+    function isAtEnd (lat, lng, threshold) {
+        if (taskSetting) {
+            var featuresLength = taskSetting.features.length,
+                latEnd = taskSetting.features[0].properties.y2,
+                lngEnd = taskSetting.features[0].properties.x2,
+                d;
+
+            if (!threshold) {
+                threshold = 15; // 15 meters
+            }
+
+            d = svl.util.math.haversine(lat, lng, latEnd, lngEnd);
+
+            if (d < threshold) {
+                return true;
+            } else {
+                return false;
             }
         }
     }
@@ -67,10 +102,12 @@ function Task ($) {
         taskSetting = json;
     }
 
+    self.endTask = endTask;
     self.getStreetEdgeId = getStreetEdgeId;
     self.getTaskStart = getTaskStart;
     self.set = set;
     self.initialLocation = initialLocation;
+    self.isAtEnd = isAtEnd;
     self.render = render;
     return self;
 }

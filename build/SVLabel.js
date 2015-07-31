@@ -4128,6 +4128,22 @@ function Keyboard ($) {
                         svl.ribbon.backToWalk();
                     }
                     break;
+                case 49:
+                    // "1"
+                    svl.ribbon.modeSwitchClick("CurbRamp");
+                    break;
+                case 50:
+                    // "2"
+                    svl.ribbon.modeSwitchClick("NoCurbRamp");
+                    break;
+                case 51:
+                    // "3"
+                    svl.ribbon.modeSwitchClick("Obstacle");
+                    break;
+                case 52:
+                    // "4"
+                    svl.ribbon.modeSwitchClick("SurfaceProblem");
+                    break;
                 case 67:
                     // "c" for CurbRamp. Switch the mode to the CurbRamp labeling mode.
                     svl.ribbon.modeSwitchClick("CurbRamp");
@@ -5714,16 +5730,14 @@ var polys = [];
  * @memberof svl
  */
 function Map ($, params) {
-    var self = {className: 'Map'};
-    var canvas;
-    var overlayMessageBox;
-    var className = 'Map';
-
-    var mapIconInterval = undefined;
-    var lock = {
-        renderLabels : false
-    };
-    var markers = [];
+    var self = {className: 'Map'},
+        canvas,
+        overlayMessageBox,
+        mapIconInterval,
+        lock = {
+            renderLabels : false
+        },
+        markers = [];
     // properties
     var properties = {
         browser : 'unknown',
@@ -5936,9 +5950,10 @@ function Map ($, params) {
 
         // Add listeners to the SV panorama
         // https://developers.google.com/maps/documentation/javascript/streetview#StreetViewEvents
-        google.maps.event.addListener(svl.panorama, "pov_changed", povUpdated);
-        google.maps.event.addListener(svl.panorama, "position_changed", povUpdated);
-        google.maps.event.addListener(svl.panorama, "pano_changed", updateMap);
+        google.maps.event.addListener(svl.panorama, "pov_changed", handlerPovChange);
+//        google.maps.event.addListener(svl.panorama, "position_changed", handlerPovChange);
+        google.maps.event.addListener(svl.panorama, "position_changed", handlerPositionUpdate);
+        google.maps.event.addListener(svl.panorama, "pano_changed", handlerPanoramaChange);
 
         // Connect the map view and panorama view
         map.setStreetView(svl.panorama);
@@ -6044,7 +6059,7 @@ function Map ($, params) {
     }
 
     /**
-     * Get a map
+     * Get the map
      */
     function getMap() {
         return properties.map;
@@ -6135,9 +6150,69 @@ function Map ($, params) {
     }
 
     /**
+     * Callback for pano_changed event (https://developers.google.com/maps/documentation/javascript/streetview).
+     * Update the map pane, and also query data for the new panorama.
+     */
+    function handlerPanoramaChange () {
+        if (svl.panorama) {
+            var panoramaPosition = svl.panorama.getPosition();
+            map.setCenter(panoramaPosition);
+
+            if (svl.canvas) {
+                svl.canvas.clear();
+                svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
+                if (properties.mode === 'Evaluation') {
+                    myTables.updateCanvas();
+                }
+                svl.canvas.render2();
+            }
+
+            if ('storage' in svl) {
+                svl.storage.set('currentPanorama', svl.panorama.getPano());
+                svl.storage.set('currentPov', svl.panorama.getPov());
+            }
+
+            if (fogSet) {
+                fogUpdate();
+            }
+
+            // Attach listeners to svl.pointCloud
+            if ('pointCloud' in svl && svl.pointCloud) {
+                var panoId = svl.getPanoId();
+                var pointCloud = svl.pointCloud.getPointCloud(panoId);
+                if (!pointCloud) {
+                    svl.pointCloud.createPointCloud(svl.getPanoId());
+                    // svl.pointCloud.ready(panoId, function () {
+                        // console.log(svl.pointCloud.getPointCloud(panoId));
+                    //});
+                }
+            }
+        } else {
+            throw self.className + ' handlerPanoramaChange(): panorama not defined.';
+        }
+
+
+    }
+
+    /**
+     * A callback for position_change.
+     */
+    function handlerPositionUpdate () {
+        var position = svl.panorama.getPosition();
+        handlerPovChange(); // handle pov change
+
+        // End of the task if the user is close enough to the end point
+        if ('task' in svl) {
+            if (svl.task.isAtEnd(position.lat(), position.lng(), 15)) {
+                svl.task.endTask();
+            }
+        }
+    }
+
+    /**
      * Callback for pov update
      */
-    function povUpdated () {
+    function handlerPovChange () {
         // This is a callback function that is fired when pov is changed
         if (svl.canvas) {
             var latlng = getPosition();
@@ -6257,51 +6332,7 @@ function Map ($, params) {
         }
     }
 
-    /**
-     * This is fired as a callback for pano_changed event (https://developers.google.com/maps/documentation/javascript/streetview).
-     * Update the map pane, and also query data for the new panorama.
-     */
-    function updateMap () {
-        // This function updates the map pane.
-        if (svl.panorama) {
-            var panoramaPosition = svl.panorama.getPosition();
-            map.setCenter(panoramaPosition);
 
-            if (svl.canvas) {
-                svl.canvas.clear();
-                svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
-                if (properties.mode === 'Evaluation') {
-                    myTables.updateCanvas();
-                }
-                svl.canvas.render2();
-            }
-
-            if ('storage' in svl) {
-                svl.storage.set('currentPanorama', svl.panorama.getPano());
-                svl.storage.set('currentPov', svl.panorama.getPov());
-            }
-
-            if (fogSet) {
-                fogUpdate();
-            }
-
-            // Attach listeners to svl.pointCloud
-            if ('pointCloud' in svl && svl.pointCloud) {
-                var panoId = svl.getPanoId();
-                var pointCloud = svl.pointCloud.getPointCloud(panoId);
-                if (pointCloud) {
-                    // console.log("It is ready.", pointCloud);
-                } else {
-                    svl.pointCloud.createPointCloud(svl.getPanoId());
-                    svl.pointCloud.ready(panoId, function () {
-                        // console.log(svl.pointCloud.getPointCloud(panoId));
-                    });
-                }
-            }
-        } else {
-            throw self.className + ' updateMap(): panorama not defined.';
-        }
-    }
 
     /**
      * Update POV of Street View as a user drag a mouse cursor.
@@ -6350,7 +6381,7 @@ function Map ($, params) {
             properties.panoramaPov = pov;
             svl.panorama.setPov(pov);
         } else {
-            throw className + ' updatePov(): panorama not defined!';
+            throw self.className + ' updatePov(): panorama not defined!';
         }
     }
 
@@ -9967,6 +9998,16 @@ function Task ($) {
         taskSetting;
 
     /**
+     * End the current task
+     */
+    function endTask () {
+        // Show the end of the task message.
+        // Prompt a user who's not logged in to login.
+        // Submit the data.
+
+    }
+
+    /**
      * Returns the street edge id of the current task.
      */
     function getStreetEdgeId () {
@@ -9988,6 +10029,31 @@ function Task ($) {
             return {
                 lat: taskSetting.features[0].properties.y1,
                 lng: taskSetting.features[0].properties.x1
+            }
+        }
+    }
+
+    /**
+     * This method checks if the task is done or not by assessing the
+     * current distance and the ending distance.
+     */
+    function isAtEnd (lat, lng, threshold) {
+        if (taskSetting) {
+            var featuresLength = taskSetting.features.length,
+                latEnd = taskSetting.features[0].properties.y2,
+                lngEnd = taskSetting.features[0].properties.x2,
+                d;
+
+            if (!threshold) {
+                threshold = 15; // 15 meters
+            }
+
+            d = svl.util.math.haversine(lat, lng, latEnd, lngEnd);
+
+            if (d < threshold) {
+                return true;
+            } else {
+                return false;
             }
         }
     }
@@ -10019,10 +10085,12 @@ function Task ($) {
         taskSetting = json;
     }
 
+    self.endTask = endTask;
     self.getStreetEdgeId = getStreetEdgeId;
     self.getTaskStart = getTaskStart;
     self.set = set;
     self.initialLocation = initialLocation;
+    self.isAtEnd = isAtEnd;
     self.render = render;
     return self;
 }
