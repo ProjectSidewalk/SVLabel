@@ -559,11 +559,11 @@ input#Text_BusStopAbsenceOtherReason {
 }
 
 
-#Holder_Feedback {
+#status-holder {
     border: 3px dotted none;
     margin: 0;
     padding: 0;
-    /* Position */
+    
     position: absolute;
     left: 735px;
     top:-100px;
@@ -680,63 +680,6 @@ footer {
     text-align: center;
     width: 100%;
 }
-/*
- * Labeled landmark counter
- */
-#Holder_LabeledLandmarks {
-    position: relative;
-    height: 100px;
-}
-
-.LabeledLandmarkHolder {
-    background: transparent;
-    border-bottom: solid 1px #ccc;
-    text-align: left;
-    height: 45px;
-    width: 80px;
-}
-
-#LabeledLandmarkHolder_CurbRamp {
-    position: absolute;
-    left: 10px;
-    top: 20px;
-}
-
-#LabeledLandmarkHolder_NoCurbRamp {
-    position: absolute;
-    left: 120px;
-    top: 20px;
-}
-
-.LabeledLandmark_Icon {
-    height: 45px;
-    width: 45px;
-}
-
-.LabeledLandmark_Description {
-    font-size: 0.8em;
-    text-align: center;
-    visibility: hidden;
-}
-
-.LabeledLandmark_Count {
-    color: #484848;
-    font-size: 1.4em;
-    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
-    visibility: visible;
-    /* position */
-    position: absolute;
-    top: 22px;
-    left: 55px;
-    height: 20px;
-    width: 20px;
-}
-
-#LabeledLandmarks_SubmittedLabelCount {
-    font-size: 8pt;
-    position: absolute;
-    top: 67px;
-}
 /*******************************************
 * This class is applied to DIVs and CANVASes
 * which overlap with a Google Map.
@@ -754,36 +697,6 @@ footer {
     top:0px;
     width: 200px;
     height: 200px;
-}
-/********************************************************************************
- * Message holder
- */
-#Holder_Message {
-    background: rgba(255,255,255,0.5);
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    visibility: hidden;
-    width: 100%;
-}
-
-#MessageBox {
-    background: rgba(69,183,214,1);
-    border: 3px solid rgba(255,255,255,1);
-    color: white;
-    font-size: 14pt;
-    padding: 10px;
-    position: absolute;
-    visibility: hidden;
-    width: 720px;
-}
-
-.MessageBoxIcons {
-    height: 12px;
-    position: relative;
-    top: 0px;
-    width: 12px;
 }
 /*******************************************
  These styles apply to onboarding attirbutes
@@ -926,124 +839,37 @@ footer {
     top: 2px;
     left: 3px;
 }
-#progress-pov-holder {
-    height: 25px;
+#pop-up-message-holder {
     position: absolute;
-    top: 367px;
-    width: 202px;
+    left: 0;
+    top: 0;
+    /* height: 100%;
+    width: 100%; */
 }
 
-#progress-pov-label {
-    text-align: justify;
-    font-size: 8pt;
-}
-
-#progress-pov-current-completion-bar {
-    background: #ffffff;
-    border: solid 1px #000;
-    bottom: 3px;
-    height: 5px;
-    left: 0px;
+#pop-up-message-background {
     position: absolute;
-    width: 200px;
+    left: 0;
+    top: 0;
+    background: rgba(255, 255, 255, 0.5);
+    height: 100%;
+    width: 100%;
 }
 
-#progress-pov-current-completion-bar-filler {
-    border-width: 0px;
-    bottom: 4px;
-    height: 3px;
-    left: 1px;
+#pop-up-message-box {
+    background: rgba(69,183,214,1);
+    border: 3px solid rgba(255,255,255,1);
+    color: white;
+    /* background: rgba(255, 255, 255, 1); */
+    /* border: 3px solid rgba(200, 200, 200, 1); */
+    /* color: black; */
+    font-size: 14pt;
+    padding: 10px;
     position: absolute;
-    width: 198px;
-}
-
-#progress-pov-current-completion-rate {
-    color: #888;
-    font-size: 8pt;
-    width: 40px;
-}
-#status-pane-title {
-    border-bottom: 1px solid #ccc;
-    font-size: 1em;
-    margin-bottom: 3px;
-    text-align: center;
-}
-
-.FeedbackBox {
-    border-bottom: 1px dotted #ccc;
-    font-size: 0.8em;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    text-align: left;
-}
-
-/*
- * Progress bar holder
- */
-#Holder_Progress {
-    position: relative;
-    height: 65px;
-}
-
-#ProgressBarContainer {
-    border: 1px solid rgba(60,60,60,1);
-    /* Position */
-    position: absolute;
-    top: 52px;
-    left: 0px;
-    height: 4px;
-    width: 200px;
-}
-
-#ProgressBarFilled {
-    background: yellow;
-    border: 0px;
-    /* Position */
-    position: absolute;
-    height: 4px;
-    width: 100px;
-}
-/*
- * Qualification
- */
-#Holder_QualificationBadges {
-    position: relative;
-    height: 75px;
-}
-
-.BadgeHolder {
-    display: inline-block;
-    text-align: center;
-}
-
-.Badge {
-    position: relative;
-    height: 30px;
-    width: 30px;
-}
-
-.BadgeDescription {
-    font-size: 0.9em;
-    padding-top: 0.1em;
-    text-align: center;
-}
-
-#BadgeHolder_BusStopAuditor {
-    /* position */
-    position: absolute;
-    left: 0px;
-    top: 2em;
-    height: 80px;
-    width: 100px;
-}
-
-#BadgeHolder_BusStopExplorer {
-    /* position */
-    position: absolute;
-    left: 100px;
-    top: 2em;
-    height: 80px;
-    width: 100px;
+    top: 0;
+    left: 0;
+    visibility: visible;
+    width: 730px;
 }
 /*************************************************************
 * These styles are for the Ribbon Menu area.
@@ -1221,6 +1047,180 @@ footer {
     top: -24px;
     height: 20px;
     width: 0px;
+}
+/*
+ * Labeled landmark counter
+ */
+#Holder_LabeledLandmarks {
+    position: relative;
+    height: 100px;
+}
+
+.LabeledLandmarkHolder {
+    background: transparent;
+    border-bottom: solid 1px #ccc;
+    text-align: left;
+    height: 45px;
+    width: 80px;
+}
+
+#LabeledLandmarkHolder_CurbRamp {
+    position: absolute;
+    left: 10px;
+    top: 20px;
+}
+
+#LabeledLandmarkHolder_NoCurbRamp {
+    position: absolute;
+    left: 120px;
+    top: 20px;
+}
+
+.LabeledLandmark_Icon {
+    height: 45px;
+    width: 45px;
+}
+
+.LabeledLandmark_Description {
+    font-size: 0.8em;
+    text-align: center;
+    visibility: hidden;
+}
+
+.LabeledLandmark_Count {
+    color: #484848;
+    font-size: 1.4em;
+    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
+    visibility: visible;
+    /* position */
+    position: absolute;
+    top: 22px;
+    left: 55px;
+    height: 20px;
+    width: 20px;
+}
+
+#LabeledLandmarks_SubmittedLabelCount {
+    font-size: 8pt;
+    position: absolute;
+    top: 67px;
+}
+#progress-pov-holder {
+    height: 25px;
+    position: absolute;
+    top: 367px;
+    width: 202px;
+}
+
+#progress-pov-label {
+    text-align: justify;
+    font-size: 8pt;
+}
+
+#progress-pov-current-completion-bar {
+    background: #ffffff;
+    border: solid 1px #000;
+    bottom: 3px;
+    height: 5px;
+    left: 0px;
+    position: absolute;
+    width: 200px;
+}
+
+#progress-pov-current-completion-bar-filler {
+    border-width: 0px;
+    bottom: 4px;
+    height: 3px;
+    left: 1px;
+    position: absolute;
+    width: 198px;
+}
+
+#progress-pov-current-completion-rate {
+    color: #888;
+    font-size: 8pt;
+    width: 40px;
+}
+#progress-holder {
+    position: relative;
+    height: 65px;
+}
+
+#ProgressBarContainer {
+    border: 1px solid rgba(60,60,60,1);
+    position: absolute;
+    top: 52px;
+    left: 0px;
+    height: 4px;
+    width: 200px;
+}
+
+#ProgressBarFilled {
+    background: yellow;
+    border: 0px;
+    position: absolute;
+    height: 4px;
+    width: 100px;
+}
+/*
+ * Qualification
+ */
+#Holder_QualificationBadges {
+    position: relative;
+    height: 75px;
+}
+
+.BadgeHolder {
+    display: inline-block;
+    text-align: center;
+}
+
+.Badge {
+    position: relative;
+    height: 30px;
+    width: 30px;
+}
+
+.BadgeDescription {
+    font-size: 0.9em;
+    padding-top: 0.1em;
+    text-align: center;
+}
+
+#BadgeHolder_BusStopAuditor {
+    /* position */
+    position: absolute;
+    left: 0px;
+    top: 2em;
+    height: 80px;
+    width: 100px;
+}
+
+#BadgeHolder_BusStopExplorer {
+    /* position */
+    position: absolute;
+    left: 100px;
+    top: 2em;
+    height: 80px;
+    width: 100px;
+}
+#status-pane-title {
+    border-bottom: 1px solid #ccc;
+    font-size: 1em;
+    margin-bottom: 3px;
+    text-align: center;
+}
+
+.status-box {
+    border-bottom: 1px dotted #ccc;
+    font-size: 0.8em;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-align: left;
+}
+
+#current-status-complete {
+    background-color: rgb(254, 255, 223);
 }
 #zoom-control-holder {
     background: transparent;

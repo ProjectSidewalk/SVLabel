@@ -50,11 +50,11 @@
 }
 
 
-#Holder_Feedback {
+#status-holder {
     border: 3px dotted none;
     margin: 0;
     padding: 0;
-    /* Position */
+    
     position: absolute;
     left: 735px;
     top:-100px;

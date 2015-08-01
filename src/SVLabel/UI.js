@@ -53,7 +53,7 @@ function UI ($, params) {
 
       // MissionDescription DOMs
       self.missinDescription = {};
-      self.missinDescription.description = $("#CurrentStatus_Description");
+      self.missinDescription.description = $("#current-status-mission-description");
 
       // OverlayMessage
       self.overlayMessage = {};
@@ -61,6 +61,14 @@ function UI ($, params) {
       self.overlayMessage.holder.append("<span id='overlay-message-box'><span id='overlay-message'>Walk</span></span>");
       self.overlayMessage.box = $("#overlay-message-box");
       self.overlayMessage.message = $("#overlay-message");
+
+      // Pop up message
+      self.popUpMessage = {};
+      self.popUpMessage.holder = $("#pop-up-message-holder");
+      self.popUpMessage.box = $("#pop-up-message-box");
+      self.popUpMessage.background = $("#pop-up-message-background");
+      self.popUpMessage.title = $("#pop-up-message-title");
+      self.popUpMessage.content = $("#pop-up-message-content");
 
       // ProgressPov
       self.progressPov = {};

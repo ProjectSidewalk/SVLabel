@@ -570,7 +570,7 @@ function Map ($, params) {
 
         // End of the task if the user is close enough to the end point
         if ('task' in svl) {
-            if (svl.task.isAtEnd(position.lat(), position.lng(), 15)) {
+            if (svl.task.isAtEnd(position.lat(), position.lng(), 10)) {
                 svl.task.endTask();
             }
         }

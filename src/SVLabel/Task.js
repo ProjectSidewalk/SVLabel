@@ -12,14 +12,35 @@ function Task ($) {
     var self = {className: 'Task'},
         properties = {},
         status = {},
-        taskSetting;
+        taskSetting,
+        previousTasks = [];
 
     /**
      * End the current task
      */
     function endTask () {
         // Show the end of the task message.
+
+
         // Prompt a user who's not logged in to login.
+        if (!('user' in svl)) {
+            svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
+            svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
+            svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
+                $("#sign-in-modal").addClass("hidden");
+                $("#sign-up-modal").removeClass("hidden");
+                $('#sign-in-modal-container').modal('show')
+            });
+            svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
+                svl.user = new User({username: 'Anon accessibility auditor'});
+            });
+            svl.popUpMessage.setPosition(0, 260, '100%');
+            svl.popUpMessage.show(true);
+        }
+
+        // Push the data into
+        previousTasks.push(taskSetting);
+
         // Submit the data.
 
     }
@@ -44,8 +65,8 @@ function Task ($) {
     function initialLocation() {
         if (taskSetting) {
             return {
-                lat: taskSetting.features[0].properties.y1,
-                lng: taskSetting.features[0].properties.x1
+                lat: taskSetting.features[0].geometry.coordinates[0][1],
+                lng: taskSetting.features[0].geometry.coordinates[0][0]
             }
         }
     }
@@ -56,16 +77,18 @@ function Task ($) {
      */
     function isAtEnd (lat, lng, threshold) {
         if (taskSetting) {
-            var featuresLength = taskSetting.features.length,
-                latEnd = taskSetting.features[0].properties.y2,
-                lngEnd = taskSetting.features[0].properties.x2,
+            var len = taskSetting.features[0].geometry.coordinates.length - 1,
+                latEnd = taskSetting.features[0].geometry.coordinates[len][1],
+                lngEnd = taskSetting.features[0].geometry.coordinates[len][0],
                 d;
 
             if (!threshold) {
-                threshold = 15; // 15 meters
+                threshold = 10; // 10 meters
             }
 
             d = svl.util.math.haversine(lat, lng, latEnd, lngEnd);
+
+            console.log('Distance to the end:' , d);
 
             if (d < threshold) {
                 return true;

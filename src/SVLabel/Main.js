@@ -42,7 +42,7 @@ function Main ($, params) {
         svl.progressFeedback = new ProgressFeedback($);
         svl.actionStack = new ActionStack($);
         svl.ribbon = new RibbonMenu($);
-        svl.messageBox = new MessageBox($);
+        svl.popUpMessage = new PopUpMessage($);
         svl.zoomControl = new ZoomControl($);
         svl.tooltip = undefined;
         svl.onboarding = undefined;
@@ -96,13 +96,13 @@ function Main ($, params) {
           " out of " + totalTaskCount + ".");
 
       if (isFirstTask) {
-          svl.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
-          svl.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
+          svl.popUpMessage.setPosition(10, 120, width=400, height=undefined, background=true);
+          svl.popUpMessage.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
               "Now the actual task begins. Click OK to start the task.");
-          svl.messageBox.appendOKButton();
-          svl.messageBox.show();
+          svl.popUpMessage.appendOKButton();
+          svl.popUpMessage.show();
       } else {
-          svl.messageBox.hide();
+          svl.popUpMessage.hide();
       }
 
       // Instantiation

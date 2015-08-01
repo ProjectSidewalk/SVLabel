@@ -15,16 +15,10 @@ function Tooltip ($, param) {
 
     var $divToolTip;
 
-    ////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////
     function _init(param) {
         $divToolTip = $(param.domIds.tooltipHolder);
     }
 
-    ////////////////////////////////////////
-    // Public functions
-    ////////////////////////////////////////
     self.show = function (message) {
         $divToolTip.html(message);
         $divToolTip.css('visibility', 'visible');

@@ -5554,7 +5554,7 @@ function Main ($, params) {
         svl.progressFeedback = new ProgressFeedback($);
         svl.actionStack = new ActionStack($);
         svl.ribbon = new RibbonMenu($);
-        svl.messageBox = new MessageBox($);
+        svl.popUpMessage = new PopUpMessage($);
         svl.zoomControl = new ZoomControl($);
         svl.tooltip = undefined;
         svl.onboarding = undefined;
@@ -5608,13 +5608,13 @@ function Main ($, params) {
           " out of " + totalTaskCount + ".");
 
       if (isFirstTask) {
-          svl.messageBox.setPosition(10, 120, width=400, height=undefined, background=true);
-          svl.messageBox.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
+          svl.popUpMessage.setPosition(10, 120, width=400, height=undefined, background=true);
+          svl.popUpMessage.setMessage("<span class='bold'>Remember, label all the landmarks close to the bus stop.</span> " +
               "Now the actual task begins. Click OK to start the task.");
-          svl.messageBox.appendOKButton();
-          svl.messageBox.show();
+          svl.popUpMessage.appendOKButton();
+          svl.popUpMessage.show();
       } else {
-          svl.messageBox.hide();
+          svl.popUpMessage.hide();
       }
 
       // Instantiation
@@ -6203,7 +6203,7 @@ function Map ($, params) {
 
         // End of the task if the user is close enough to the end point
         if ('task' in svl) {
-            if (svl.task.isAtEnd(position.lat(), position.lng(), 15)) {
+            if (svl.task.isAtEnd(position.lat(), position.lng(), 10)) {
                 svl.task.endTask();
             }
         }
@@ -6889,142 +6889,6 @@ function Map ($, params) {
 var svl = svl || {};
 
 /**
- * A MessageBox module
- * @param $
- * @param param
- * @returns {{className: string}}
- * @constructor
- * @memberof svl
- */
-function MessageBox ($, param) {
-    var self = {className: 'MessageBox'};
-    var OKButton = '<button id="MessageBoxOkButton" class="button" style="position: absolute; bottom: 10px; left: 10px;">OK</button>';
-
-    // jQuery elements
-    var $divMessageBoxHolder;
-    var $divMessageBox;
-
-
-    function init () {
-        $divMessageBoxHolder = $("#message-box-holder");
-        $divMessageBox = $("#message-box");
-    }
-
-    self.setMessage = function (message) {
-        $divMessageBox.html(message);
-        return this;
-    };
-
-    self.setPosition = function (x, y, width, height, background) {
-        if (x && typeof x == 'number') {
-            x = x + 'px';
-        }
-        if (y && typeof y === 'number') {
-            y = y + 'px';
-        }
-
-        if (!width) {
-            width = '240px';
-        } else if (typeof width === 'number') {
-            width = width + 'px';
-        }
-
-        if (height && typeof height === 'number') {
-            height = height + 'px';
-        }
-
-        if (!background) {
-            background = false;
-        }
-
-        if (background) {
-            $divMessageBoxHolder.css({
-                height: '100%',
-                left: '0px',
-                top: '0px',
-                visibility: 'visible',
-                width: '100%',
-                zIndex: 1000
-            });
-            $divMessageBox.css({
-                left: x,
-                top: y,
-                width: width,
-                zIndex: 1000
-            });
-            if (height) {
-                $divMessageBox.css('height', height);
-            }
-        } else {
-            $divMessageBoxHolder.css({
-                height: '1px',
-                left: x,
-                top: y,
-                width: '1px',
-                zIndex: 1000
-            });
-            $divMessageBox.css({
-                left: '0px',
-                top: '0px',
-                width: width
-            });
-            if (height) {
-                $divMessageBox.css('height', height);
-            }
-        }
-        return this;
-    };
-
-    self.appendOKButton = function (message) {
-        $divMessageBox.css('padding-bottom', '50px');
-        $divMessageBox.append(OKButton);
-
-        $("#MessageBoxOkButton").on('click', function () {
-            if ('tracker' in svl && svl.tracker) {
-                if (message) {
-                    svl.tracker.push('MessageBox_ClickOk', {message: message});
-                } else {
-                    svl.tracker.push('MessageBox_ClickOk');
-                }
-            }
-            $divMessageBoxHolder.css({
-                visibility: 'hidden'
-            });
-            $divMessageBox.css({
-                'padding-bottom': '',
-                'visibility' : 'hidden'
-            });
-            $("#MessageBoxOkButton").remove();
-        });
-    };
-
-    self.hide = function () {
-        // This method hides the message box.
-        $divMessageBox.css('visibility', 'hidden');
-        $divMessageBoxHolder.css('visibility', 'hidden');
-        return this;
-    };
-
-    self.show = function (disableOtherInteraction) {
-        // This method shows a messaage box on the page.
-        if (!disableOtherInteraction) {
-            disableOtherInteraction = false;
-        }
-
-        $divMessageBox.css('visibility', 'visible');
-        if (disableOtherInteraction) {
-            $divMessageBoxHolder.css('visibility', 'visible');
-        }
-        return this;
-    };
-
-    init();
-    return self;
-}
-
-var svl = svl || {};
-
-/**
  * A MissionDescription module
  * @param $
  * @param params
@@ -7052,6 +6916,17 @@ function MissionDescription ($, params) {
           $currentStatusDescription = svl.ui.missinDescription.description;
           $currentStatusDescription.html(params.description);
         }
+
+        $("#current-status-complete-sign-up").on('click', function () {
+            $("#sign-in-modal").addClass("hidden");
+            $("#sign-up-modal").removeClass("hidden");
+            $("#sign-in-modal-container").modal('show');
+        });
+        $("#current-status-complete-sign-in").on('click', function () {
+            $("#sign-up-modal").addClass("hidden");
+            $("#sign-in-modal").removeClass("hidden");
+            $("#sign-in-modal-container").modal('show');
+        });
     }
 
 
@@ -8359,6 +8234,164 @@ function PointCloud ($, params) {
     _init(params);
     return self;
 }
+var svl = svl || {};
+
+/**
+ * A MessageBox module
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
+function PopUpMessage ($, param) {
+    var self = {className: 'PopUpMessage'},
+        buttons = [],
+        OKButton = '<button id="pop-up-message-ok-button">OK</button>';
+
+    function appendButton (buttonDom, callback) {
+        var $button = $(buttonDom);
+
+        $button.css({
+            margin: '10 10 10 0'
+        });
+        $button.addClass('button');
+
+//        svl.ui.popUpMessage.box.css('padding-bottom', '50px');
+        svl.ui.popUpMessage.box.append($button);
+
+        if (callback) {
+            $button.on('click', callback);
+        }
+        $button.on('click', hide);
+        buttons.push($button);
+    }
+
+    function appendOKButton(callback) {
+        appendButton(OKButton, callback);
+    }
+
+    function handleClickOK () {
+        $("#pop-up-message-ok-button").on('click', function () {
+            if ('tracker' in svl && svl.tracker) {
+                if (message) {
+                    svl.tracker.push('MessageBox_ClickOk', {message: message});
+                } else {
+                    svl.tracker.push('MessageBox_ClickOk');
+                }
+            }
+            $("#pop-up-message-ok-button").remove();
+        });
+    }
+
+    /**
+     * Hides the message box.
+     */
+    function hide () {
+        // This method hides the message box.
+        svl.ui.popUpMessage.holder.removeClass('visible');
+        svl.ui.popUpMessage.holder.addClass('hidden');
+        hideBackground();  // hide background
+        reset();  // reset all the parameters
+        return this;
+    }
+
+    /**
+     * Hides the background
+     */
+    function hideBackground () {
+        svl.ui.popUpMessage.holder.css({ width: '', height: '' });
+    }
+
+    /**
+     * Reset all the parameters.
+     */
+    function reset () {
+        svl.ui.popUpMessage.holder.css({ width: '', height: '' });
+        svl.ui.popUpMessage.box.css({
+                    left: '',
+                    top: '',
+                    width: '',
+                    height: '',
+                    zIndex: ''
+                });
+
+        svl.ui.popUpMessage.box.css('padding-bottom', '')
+
+        for (var i = 0; i < buttons.length; i++ ){
+            try {
+                buttons[i].remove();
+            } catch (e) {
+                console.warning("Button does not exist.", e);
+            }
+        }
+        buttons = [];
+    }
+
+    /**
+     * This method shows a messaage box on the page.
+     */
+    function show (disableOtherInteraction) {
+        if (disableOtherInteraction) {
+            showBackground();
+        }
+
+        svl.ui.popUpMessage.holder.removeClass('hidden');
+        svl.ui.popUpMessage.holder.addClass('visible');
+        return this;
+    }
+
+    /**
+     * Show a semi-transparent background to block people to interact with
+     * other parts of the interface.
+     */
+    function showBackground () {
+        svl.ui.popUpMessage.holder.css({ width: '100%', height: '100%'});
+    }
+
+    /**
+     * Sets the title
+     */
+    function setTitle (title) {
+         svl.ui.popUpMessage.title.html(title);
+         return this;
+    }
+
+    /**
+     * Sets the message.
+     */
+    function setMessage (message) {
+        svl.ui.popUpMessage.content.html(message);
+        return this;
+    }
+
+    /*
+     * Sets the position of the message.
+     */
+    function setPosition (x, y, width, height) {
+        svl.ui.popUpMessage.box.css({
+            left: x,
+            top: y,
+            width: width,
+            height: height,
+            zIndex: 1000
+        });
+        return this;
+    }
+
+    self.appendButton = appendButton;
+    self.appendOKButton = appendOKButton;
+    self.hide = hide;
+    self.hideBackground = hideBackground;
+    self.reset = reset;
+    self.show = show;
+    self.showBackground = showBackground;
+    self.setPosition = setPosition;
+    self.setTitle = setTitle;
+    self.setMessage = setMessage;
+    return self;
+}
+
 var svl = svl || {};
 
 /**
@@ -9995,14 +10028,35 @@ function Task ($) {
     var self = {className: 'Task'},
         properties = {},
         status = {},
-        taskSetting;
+        taskSetting,
+        previousTasks = [];
 
     /**
      * End the current task
      */
     function endTask () {
         // Show the end of the task message.
+
+
         // Prompt a user who's not logged in to login.
+        if (!('user' in svl)) {
+            svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
+            svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
+            svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
+                $("#sign-in-modal").addClass("hidden");
+                $("#sign-up-modal").removeClass("hidden");
+                $('#sign-in-modal-container').modal('show')
+            });
+            svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
+                svl.user = new User({username: 'Anon accessibility auditor'});
+            });
+            svl.popUpMessage.setPosition(0, 260, '100%');
+            svl.popUpMessage.show(true);
+        }
+
+        // Push the data into
+        previousTasks.push(taskSetting);
+
         // Submit the data.
 
     }
@@ -10027,8 +10081,8 @@ function Task ($) {
     function initialLocation() {
         if (taskSetting) {
             return {
-                lat: taskSetting.features[0].properties.y1,
-                lng: taskSetting.features[0].properties.x1
+                lat: taskSetting.features[0].geometry.coordinates[0][1],
+                lng: taskSetting.features[0].geometry.coordinates[0][0]
             }
         }
     }
@@ -10039,16 +10093,18 @@ function Task ($) {
      */
     function isAtEnd (lat, lng, threshold) {
         if (taskSetting) {
-            var featuresLength = taskSetting.features.length,
-                latEnd = taskSetting.features[0].properties.y2,
-                lngEnd = taskSetting.features[0].properties.x2,
+            var len = taskSetting.features[0].geometry.coordinates.length - 1,
+                latEnd = taskSetting.features[0].geometry.coordinates[len][1],
+                lngEnd = taskSetting.features[0].geometry.coordinates[len][0],
                 d;
 
             if (!threshold) {
-                threshold = 15; // 15 meters
+                threshold = 10; // 10 meters
             }
 
             d = svl.util.math.haversine(lat, lng, latEnd, lngEnd);
+
+            console.log('Distance to the end:' , d);
 
             if (d < threshold) {
                 return true;
@@ -10112,16 +10168,10 @@ function Tooltip ($, param) {
 
     var $divToolTip;
 
-    ////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////
     function _init(param) {
         $divToolTip = $(param.domIds.tooltipHolder);
     }
 
-    ////////////////////////////////////////
-    // Public functions
-    ////////////////////////////////////////
     self.show = function (message) {
         $divToolTip.html(message);
         $divToolTip.css('visibility', 'visible');
@@ -10407,7 +10457,7 @@ function UI ($, params) {
 
       // MissionDescription DOMs
       self.missinDescription = {};
-      self.missinDescription.description = $("#CurrentStatus_Description");
+      self.missinDescription.description = $("#current-status-mission-description");
 
       // OverlayMessage
       self.overlayMessage = {};
@@ -10415,6 +10465,14 @@ function UI ($, params) {
       self.overlayMessage.holder.append("<span id='overlay-message-box'><span id='overlay-message'>Walk</span></span>");
       self.overlayMessage.box = $("#overlay-message-box");
       self.overlayMessage.message = $("#overlay-message");
+
+      // Pop up message
+      self.popUpMessage = {};
+      self.popUpMessage.holder = $("#pop-up-message-holder");
+      self.popUpMessage.box = $("#pop-up-message-box");
+      self.popUpMessage.background = $("#pop-up-message-background");
+      self.popUpMessage.title = $("#pop-up-message-title");
+      self.popUpMessage.content = $("#pop-up-message-content");
 
       // ProgressPov
       self.progressPov = {};
@@ -10463,6 +10521,29 @@ function UI ($, params) {
     }
 
     _init(params);
+    return self;
+}
+
+var svl = svl || {};
+
+/**
+ * User class constructor
+ * @param $
+ * @param param
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
+function User (param) {
+    var self = {className: 'User'},
+        properties = {};
+
+    properties.username = param.username;
+
+    self.getProperty = function (key) {
+        return properties[key];
+    };
+
     return self;
 }
 
