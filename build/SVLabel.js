@@ -2762,43 +2762,6 @@ function Form ($, params) {
         var turkerId;
         var taskGSVPanoId = svl.map.getInitialPanoId();
 
-
-//        hitId = properties.hitId ? properties.hitId : getURLParameter("hitId");
-//        assignmentId = properties.assignmentId? properties.assignmentId : getURLParameter("assignmentId");
-//        turkerId = properties.turkerId ? properties.turkerId : getURLParameter("workerId");
-
-//        if (!turkerId) {
-//            turkerId = 'Test_Kotaro';
-//        }
-//        if (!hitId) {
-//            hitId = 'Test_Hit';
-//        }
-//        if (!assignmentId) {
-//            assignmentId = 'Test_Assignment';
-//        }
-
-//        data.assignment = {
-//            amazon_turker_id : turkerId,
-//            amazon_hit_id : hitId,
-//            amazon_assignment_id : assignmentId,
-//            interface_type : 'StreetViewLabeler',
-//            interface_version : '3',
-//            completed : 0,
-//            need_qualification : 0,
-//            task_description : properties.taskDescription
-//        };
-
-
-
-//        data.labelingTask = {
-//            task_panorama_id: properties.taskPanoramaId,
-//            task_gsv_panorama_id : taskGSVPanoId,
-//            no_label : 0,
-//            description: "",
-//            previous_labeling_task_id: properties.previousLabelingTaskId
-//        };
-
-
         data.audit_task = {
             street_edge_id: svl.task.getStreetEdgeId(),
             task_start: svl.task.getTaskStart()
@@ -2897,6 +2860,55 @@ function Form ($, params) {
     }
 
     /**
+      * Submit the data.
+      * @param data This can be an object of a compiled data for auditing, or an array of
+      * the auditing data.
+      */
+    function submit(data) {
+        svl.tracker.push('TaskSubmit');
+
+        if (data.constructor !== Array) {
+            data = [data];
+        }
+
+        try {
+            $.ajax({
+                // async: false,
+                contentType: 'application/json; charset=utf-8',
+                url: properties.dataStoreUrl,
+                type: 'post',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function (result) {
+                    if (result.error) {
+                        console.log(result.error);
+                    }
+                },
+                error: function (result) {
+                    throw result;
+                    // console.error(result);
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+//
+//        if (properties.taskRemaining > 1) {
+//            window.location.reload();
+//            return false;
+//        } else {
+//            if (properties.isAMTTask) {
+//                return true;
+//            } else {
+//                window.location.reload();
+//                //window.location = '/';
+//                return false;
+//            }
+//        }
+    }
+
+    /**
      * Callback function that is invoked when a user hits a submit button
      * @param e
      * @returns {boolean}
@@ -2947,53 +2959,55 @@ function Form ($, params) {
         //
         // Submit collected data if a user is not in onboarding mode.
         if (!properties.onboarding) {
-            svl.tracker.push('TaskSubmit');
-
             data = compileSubmissionData();
-
-            if (status.taskDifficulty != undefined) {
-                data.taskDifficulty = status.taskDifficulty;
-                data.labelingTask.description = "TaskDifficulty:" + status.taskDifficulty;
-                if (status.taskDifficultyComment) {
-                    data.comment = "TaskDifficultyCommentField:" + status.taskDifficultyComment + ";InterfaceCommentField:" + data.comment
-                }
-            }
-
-            try {
-                $.ajax({
-                    async: false,
-                    contentType: 'application/json; charset=utf-8',
-                    url: url,
-                    type: 'post',
-                    data: JSON.stringify(data),
-                    dataType: 'json',
-                    success: function (result) {
-                        if (result.error) {
-                            console.log(result.error);
-                        }
-                    },
-                    error: function (result) {
-                        throw result;
-                        // console.error(result);
-                    }
-                });
-            } catch (e) {
-                console.error(e);
-                return false;
-            }
-
-            if (properties.taskRemaining > 1) {
-                window.location.reload();
-                return false;
-            } else {
-                if (properties.isAMTTask) {
-                    return true;
-                } else {
-                    window.location.reload();
-                    //window.location = '/';
-                    return false;
-                }
-            }
+            submit(data);
+//            svl.tracker.push('TaskSubmit');
+//
+//            data = compileSubmissionData();
+//
+//            if (status.taskDifficulty != undefined) {
+//                data.taskDifficulty = status.taskDifficulty;
+//                data.labelingTask.description = "TaskDifficulty:" + status.taskDifficulty;
+//                if (status.taskDifficultyComment) {
+//                    data.comment = "TaskDifficultyCommentField:" + status.taskDifficultyComment + ";InterfaceCommentField:" + data.comment
+//                }
+//            }
+//
+//            try {
+//                $.ajax({
+//                    async: false,
+//                    contentType: 'application/json; charset=utf-8',
+//                    url: url,
+//                    type: 'post',
+//                    data: JSON.stringify(data),
+//                    dataType: 'json',
+//                    success: function (result) {
+//                        if (result.error) {
+//                            console.log(result.error);
+//                        }
+//                    },
+//                    error: function (result) {
+//                        throw result;
+//                        // console.error(result);
+//                    }
+//                });
+//            } catch (e) {
+//                console.error(e);
+//                return false;
+//            }
+//
+//            if (properties.taskRemaining > 1) {
+//                window.location.reload();
+//                return false;
+//            } else {
+//                if (properties.isAMTTask) {
+//                    return true;
+//                } else {
+//                    window.location.reload();
+//                    //window.location = '/';
+//                    return false;
+//                }
+//            }
         }
         return false;
     }
@@ -3394,6 +3408,8 @@ function Form ($, params) {
         return this;
     };
 
+    self.submit = submit;
+    self.compileSubmissionData = compileSubmissionData;
     _init(params);
     return self;
 }
@@ -10010,6 +10026,11 @@ function Storage(JSON, params) {
         self.storage.setItem(key, JSON.stringify(value));
     }
 
+    // Create an array to store staged submission data (if there hasn't been one)
+    if (!get("staged")) {
+        set("staged", []);
+    }
+
     self.get = get;
     self.set = set;
     return self;
@@ -10037,28 +10058,46 @@ function Task ($) {
     function endTask () {
         // Show the end of the task message.
 
+        // Push the data into the list
+        previousTasks.push(taskSetting);
 
-        // Prompt a user who's not logged in to login.
         if (!('user' in svl)) {
+            // Prompt a user who's not logged in to sign up/sign in.
             svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
             svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
             svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
+                // Store the data in LocalStorage.
+                var data = svl.form.compileSubmissionData(),
+                    staged = svl.storage.get("staged");
+                staged.push(data);
+                svl.storage.set("staged", staged);
+
                 $("#sign-in-modal").addClass("hidden");
                 $("#sign-up-modal").removeClass("hidden");
                 $('#sign-in-modal-container').modal('show')
             });
             svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
                 svl.user = new User({username: 'Anon accessibility auditor'});
+
+                // Submit the data as an anonymous user.
+                var data = svl.form.compileSubmissionData();
+                svl.form.submit(data);
             });
             svl.popUpMessage.setPosition(0, 260, '100%');
             svl.popUpMessage.show(true);
+        } else {
+            // Submit the data.
+            var data = svl.form.compileSubmissionData(),
+                staged = svl.storage.get("staged");
+
+            if (staged.length > 0) {
+                staged.push(data);
+                svl.form.submit(staged)
+                svl.storage.set("staged", []);  // Empty the staged data.
+            } else {
+                svl.form.submit(data);
+            }
         }
-
-        // Push the data into
-        previousTasks.push(taskSetting);
-
-        // Submit the data.
-
     }
 
     /**

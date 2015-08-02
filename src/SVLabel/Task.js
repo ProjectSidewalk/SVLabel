@@ -21,28 +21,46 @@ function Task ($) {
     function endTask () {
         // Show the end of the task message.
 
+        // Push the data into the list
+        previousTasks.push(taskSetting);
 
-        // Prompt a user who's not logged in to login.
         if (!('user' in svl)) {
+            // Prompt a user who's not logged in to sign up/sign in.
             svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
             svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
             svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
+                // Store the data in LocalStorage.
+                var data = svl.form.compileSubmissionData(),
+                    staged = svl.storage.get("staged");
+                staged.push(data);
+                svl.storage.set("staged", staged);
+
                 $("#sign-in-modal").addClass("hidden");
                 $("#sign-up-modal").removeClass("hidden");
                 $('#sign-in-modal-container').modal('show')
             });
             svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
                 svl.user = new User({username: 'Anon accessibility auditor'});
+
+                // Submit the data as an anonymous user.
+                var data = svl.form.compileSubmissionData();
+                svl.form.submit(data);
             });
             svl.popUpMessage.setPosition(0, 260, '100%');
             svl.popUpMessage.show(true);
+        } else {
+            // Submit the data.
+            var data = svl.form.compileSubmissionData(),
+                staged = svl.storage.get("staged");
+
+            if (staged.length > 0) {
+                staged.push(data);
+                svl.form.submit(staged)
+                svl.storage.set("staged", []);  // Empty the staged data.
+            } else {
+                svl.form.submit(data);
+            }
         }
-
-        // Push the data into
-        previousTasks.push(taskSetting);
-
-        // Submit the data.
-
     }
 
     /**

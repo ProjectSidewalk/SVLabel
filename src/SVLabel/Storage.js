@@ -31,6 +31,11 @@ function Storage(JSON, params) {
         self.storage.setItem(key, JSON.stringify(value));
     }
 
+    // Create an array to store staged submission data (if there hasn't been one)
+    if (!get("staged")) {
+        set("staged", []);
+    }
+
     self.get = get;
     self.set = set;
     return self;
