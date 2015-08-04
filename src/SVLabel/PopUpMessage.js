@@ -13,6 +13,17 @@ function PopUpMessage ($, param) {
         buttons = [],
         OKButton = '<button id="pop-up-message-ok-button">OK</button>';
 
+    function appendHTML (htmlDom, callback) {
+        var $html = $(htmlDom);
+        svl.ui.popUpMessage.box.append($html);
+
+        if (callback) {
+            $html.on("click", callback);
+        }
+        $html.on('click', hide);
+        buttons.push($html);
+    }
+
     function appendButton (buttonDom, callback) {
         var $button = $(buttonDom);
 
@@ -144,6 +155,7 @@ function PopUpMessage ($, param) {
     }
 
     self.appendButton = appendButton;
+    self.appendHTML = appendHTML;
     self.appendOKButton = appendOKButton;
     self.hide = hide;
     self.hideBackground = hideBackground;

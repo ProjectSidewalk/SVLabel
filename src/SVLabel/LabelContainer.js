@@ -5,13 +5,28 @@ var svl = svl || {};
  */
 function LabelContainer() {
     var self = {className: 'LabelContainer'};
-    var canvasLabels = [];
+    var currentCanvasLabels = [],
+        prevCanvasLabels = [];
 
     /**
      * Returns canvas labels
      */
     function getCanvasLabels () {
-        return canvasLabels;
+        return prevCanvasLabels.concat(currentCanvasLabels);
+    }
+
+    /**
+     *
+     */
+    function getCurrentLabels () {
+        return currentCanvasLabels;
+    }
+
+    /**
+     * Load labels
+     */
+    function load () {
+        currentCanvasLabels = svl.storage.get("labels");
     }
 
     /**
@@ -19,15 +34,23 @@ function LabelContainer() {
      * @param label
      */
     function push(label) {
-        canvasLabels.push(label);
+        currentCanvasLabels.push(label);
         svl.labelCounter.increment(label.getProperty("labelType"));
+    }
+
+    /**
+     *
+     */
+    function refresh () {
+        prevCanvasLabels = prevCanvasLabels.concat(currentCanvasLabels);
+        currentCanvasLabels = [];
     }
 
     /**
      * Flush the canvasLabels
      */
     function removeAll() {
-        canvasLabels = [];
+        currentCanvasLabels = [];
     }
 
     /**
@@ -56,10 +79,18 @@ function LabelContainer() {
         return this;
     }
 
+    function save () {
+        svl.storage.set("labels", currentCanvasLabels);
+    }
+
 
     self.getCanvasLabels = getCanvasLabels;
+    self.getCurrentLabels = getCurrentLabels;
+//    self.load = load;
     self.push = push;
+    self.refresh = refresh;
     self.removeAll = removeAll;
     self.removeLabel = removeLabel;
+//    self.save = save;
     return self;
 }

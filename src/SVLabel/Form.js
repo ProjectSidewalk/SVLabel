@@ -188,12 +188,8 @@ function Form ($, params) {
      * This method gathers all the data needed for submission.
      * @returns {{}}
      */
-    function compileSubmissionData() {
+    function compileSubmissionData () {
         var data = {};
-        var hitId;
-        var assignmentId;
-        var turkerId;
-        var taskGSVPanoId = svl.map.getInitialPanoId();
 
         data.audit_task = {
             street_edge_id: svl.task.getStreetEdgeId(),
@@ -213,14 +209,16 @@ function Form ($, params) {
         };
 
         data.interactions = svl.tracker.getActions();
+        svl.tracker.refresh();
 
         data.labels = [];
-        var labels = svl.labelContainer.getCanvasLabels();
+        var labels = svl.labelContainer.getCurrentLabels();
+
         for(var i = 0; i < labels.length; i += 1) {
             var label = labels[i],
-                prop = label.getProperties();
-            var points = label.getPath().getPoints();
-            var pathLen = points.length;
+                prop = label.getProperties(),
+                points = label.getPath().getPoints(),
+                pathLen = points.length;
 
             var temp = {
                 deleted : label.isDeleted(),
@@ -249,13 +247,6 @@ function Form ($, params) {
                         alpha_y : prop.canvasDistortionAlphaY,
                         lat : prop.panoramaLat,
                         lng : prop.panoramaLng
-    //                    canvasX : point.canvasCoordinate.x,
-    //                    canvasY : point.canvasCoordinate.y,
-    //                    heading : point.pov.heading,
-    //                    pitch : point.pov.pitch,
-    //                    zoom : point.pov.zoom,
-    //                    svImageHeight : prop.svImageHeight,
-    //                    svImageWidth : prop.svImageWidth,
                     };
                 temp.label_points.push(pointParam);
             }
@@ -263,11 +254,10 @@ function Form ($, params) {
             data.labels.push(temp)
         }
 
-        if (data.labels.length === 0) {
-            data.labelingTask.no_label = 0;
-        }
+//        if (data.labels.length === 0) {
+//            data.labelingTask.no_label = 0;
+//        }
 
-        //
         // Add the value in the comment field if there are any.
         var comment = $textieldComment.val();
         data.comment = undefined;
@@ -299,6 +289,7 @@ function Form ($, params) {
       */
     function submit(data) {
         svl.tracker.push('TaskSubmit');
+        svl.labelContainer.refresh();
 
         if (data.constructor !== Array) {
             data = [data];

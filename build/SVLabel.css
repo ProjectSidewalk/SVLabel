@@ -56,12 +56,12 @@ text {
 }
 
 .bold {
-    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
+    font-family: SegoeUISemiBold, 'Open Sans', 'Mono Sans', Helvetica, Arial;
     font-weight: bold;
 }
 
 b {
-    font-family: SegoeUISemiBold, 'Mono Sans', Helvetica, Arial;
+    font-family: SegoeUISemiBold, 'Open Sans','Mono Sans', Helvetica, Arial;
     font-weight: bold;
 }
 
@@ -1221,6 +1221,10 @@ footer {
 
 #current-status-complete {
     background-color: rgb(254, 255, 223);
+}
+
+#current-status-title {
+    font-weight: bold;
 }
 #zoom-control-holder {
     background: transparent;

@@ -7,131 +7,28 @@ var svl = svl || {};
  * @memberof svl
  */
 function Tracker () {
-    var self = {className: 'Tracker'};
-    var actions = [];
-    var availableActionTypes = [
-        'TaskStart',
-        'TaskSubmit',
-        'TaskSubmitSkip',
-        'Click_ModeSwitch_Walk',
-        'Click_ModeSwitch_CurbRamp',
-        'Click_ModeSwitch_NoCurbRamp',
-        'Click_Undo',
-        'Click_Redo',
-        'Click_ZoomIn',
-        'Click_ZoomOut',
-        'Click_LabelDelete',
-        'Click_LabelEdit',
-        'Click_Path',
-        'Click_OpenSkipWindow',
-        'Click_CloseSkipWindow',
-        'Click_SkipRadio',
-        'LabelingCanvas_MouseUp',
-        'LabelingCanvas_MouseDown',
-        'LabelingCanvas_CancelLabeling',
-        'LabelingCanvas_StartLabeling',
-        'LabelingCanvas_FinishLabeling',
-        'ViewControl_MouseDown',
-        'ViewControl_MouseUp',
-        'ViewControl_DoubleClick',
-        'ViewControl_ZoomIn',
-        'ViewControl_ZoomOut',
-        'WalkTowards',
-        'KeyDown',
-        'KeyUp',
-        'RemoveLabel',
-        'Redo_AddLabel',
-        'Redo_RemoveLabel',
-        'Undo_AddLabel',
-        'Undo_RemoveLabel',
-        'MessageBox_ClickOk',
-        'GoldenInsertion_Submit',
-        'GoldenInsertion_ReviewLabels',
-        'GoldenInsertion_ReviseFalseNegative',
-        'GoldenInsertion_ReviseFalsePositive',
-        'Onboarding1_Start',
-        'Onboarding1_FirstCorner_IntroduceCurbRamps',
-        'Onboarding1_FirstCorner_LabelTheFirstCurbRamps',
-        'Onboarding1_FirstCorner_RedoLabelingTheFirstCurbRamps',
-        'Onboarding1_FirstCorner_SwitchTheModeToCurbRampForLabelTheSecondCurbRamps',
-        'Onboarding1_FirstCorner_LabelTheSecondCurbRamps',
-        'Onboarding1_FirstCorner_RedoLabelingTheSecondCurbRamps',
-        'Onboarding1_GrabAndDragToMoveToTheNextCorner',
-        'Onboarding1_KeepDragging',
-        'Onboarding1_SecondCorner_ModeSwitchToCurbRamps',
-        'Onboarding1_SecondCorner_LabelTheCurbRamps',
-        'Onboarding1_SecondCorner_RedoLabelingTheThirdCurbRamps',
-        'Onboarding1_SecondCorner_IntroductionToAMissingCurbRamp',
-        'Onboarding1_SecondCorner_LabelTheMissingCurbRamp',
-        'Onboarding1_SecondCorner_RedoLabelingTheMissingCurbRamps',
-        'Onboarding1_DoneLabelingAllTheCorners_EndLabeling',
-        'Onboarding1_Submit',
-        'Onboarding2_Start',
-        'Onboarding2_FirstCorner_IntroduceMissingCurbRamps',
-        'Onboarding2_FirstCorner_LabelTheMissingCurbRamps',
-        'Onboarding2_FirstCorner_RedoLabelingTheMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_LabelTheFirstMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_RedoLabelingTheFirstMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_ModeSwitchToMissingCurbRamp',
-        'Onboarding2_FirstCorner_V2_LabelTheSecondMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_RedoLabelingTheSecondMissingCurbRamps',
-        'Onboarding2_FirstCorner_MissingCurbRampExampleLabels',
-        'Onboarding2_GrabAndDragToTheSecondCorner',
-        'Onboarding2_KeepDraggingToTheSecondCorner',
-        'Onboarding2_SecondCorner_ModeSwitchToCurbRamp',
-        'Onboarding2_SecondCorner_LabelTheCurbRamp',
-        'Onboarding2_SecondCorner_RedoLabelingTheCurbRamps',
-        'Onboarding2_SecondCorner_ExamplesOfDiagonalCurbRamps',
-        'Onboarding2_RemindAboutTheCompletionRateMeter',
-        'Onboarding2_GrabAndDragToTheThirdCorner',
-        'Onboarding2_KeepDraggingToTheThirdCorner',
-        'Onboarding2_ThirdCorner_FirstZoomIn',
-        'Onboarding2_ThirdCorner_FirstModeSwitchToCurbRamp',
-        'Onboarding2_ThirdCorner_LabelTheFirstCurbRamp',
-        'Onboarding2_ThirdCorner_RedoLabelingTheFirstCurbRamps',
-        'Onboarding2_ThirdCorner_AdjustTheCameraAngle',
-        'Onboarding2_ThirdCorner_KeepAdjustingTheCameraAngle',
-        'Onboarding2_ThirdCorner_SecondZoomIn',
-        'Onboarding2_ThirdCorner_SecondModeSwitchToCurbRamp',
-        'Onboarding2_ThirdCorner_LabelTheSecondCurbRamps',
-        'Onboarding2_ThirdCorner_RedoLabelingTheSecondCurbRamps',
-        'Onboarding2_ThirdCorner_FirstZoomOut',
-        'Onboarding2_ThirdCorner_SecondZoomOut',
-        'Onboarding2_GrabAndDragToTheFourthCorner',
-        'Onboarding2_KeepDraggingToTheFourthCorner',
-        'Onboarding2_FourthCorner_IntroduceOcclusion',
-        'Onboarding2_DoneLabelingAllTheCorners_EndLabeling',
-        'Onboarding2_Submit',
-        'Onboarding3_Start',
-        'Onboarding3_ShowNorthSideOfTheIntersection',
-        'Onboarding3_GrabAndDrag',
-        'Onboarding3_KeepDragging',
-        'Onboarding3_SouthSideOfTheIntersection',
-        'Onboarding3_GrabAndDragToNorth',
-        'Onboarding3_ClickSkip',
-        'Onboarding3_SelectSkipOption',
-        'Onboarding3_ClickSkipOk',
-        'Onboarding3_finalMessage',
-        'Onboarding3_Submit',
-        'OnboardingQuickCheck_nextClick',
-        'OnboardingQuickCheck_clickQuickCheckImages',
-        'OnboardingQuickCheck_submitClick',
-        'OnboardingQuickCheck_submit'
-    ];
+    var self = {className: 'Tracker'},
+        actions = [],
+        prevActions = [];
 
-    ////////////////////////////////////////////////////////////
-    // Public functions
-    ////////////////////////////////////////////////////////////
-    self.getActions = function () {
+    /**
+     * Returns actions
+     */
+    function getActions () {
         return actions;
-    };
+    }
 
-//    self.getAvailableActionTypes = function () {
-//      var tempArray = availableActionTypes.slice(0);
-//      return tempArray;
-//    };
+    /**
+     * Load the actions in storage
+     */
+    function load () {
+        actions = svl.storage.get("tracker");
+    }
 
-    self.push = function (action, param) {
+    /**
+     * Push an action into the array.
+     */
+    function push (action, param) {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
         var pov, latlng, panoId, note;
@@ -160,7 +57,6 @@ function Tracker () {
             note = "";
         }
 
-        //
         // Initialize variables. Note you cannot get pov, panoid, or position
         // before the map and SV load.
         try {
@@ -194,7 +90,6 @@ function Tracker () {
             panoId = null;
         }
 
-
         var now = new Date(),
             timestamp = now.getUTCFullYear() + "-" + now.getUTCMonth() + "-" + now.getUTCDate() + " " + now.getUTCHours() + ":" + now.getUTCMinutes() + ":" + now.getUTCSeconds() + "." + now.getUTCMilliseconds();
 
@@ -210,7 +105,28 @@ function Tracker () {
             timestamp: timestamp
         });
         return this;
-    };
+    }
 
+    /**
+     * Put the previous labeling actions into prevActions. Then refresh the current actions.
+     */
+    function refresh () {
+        prevActions = prevActions.concat(actions);
+        actions = [];
+        push("RefreshTracker");
+    }
+
+    /**
+     * Save the actions in the storage
+     */
+    function save () {
+        svl.storage.set("tracker", actions);
+    }
+
+    self.getActions = getActions;
+//    self.load = load;
+    self.push = push;
+    self.refresh = refresh;
+//    self.save = save;
     return self;
 }

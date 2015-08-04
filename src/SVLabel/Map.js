@@ -40,6 +40,13 @@ function getPosition() {
 }
 svl.getPosition = getPosition;
 
+function setPosition(lat, lng) {
+    if (svl.panorama) {
+        var pos = new google.maps.LatLng(lat, lng);
+        svl.panorama.setPosition(pos);
+    }
+}
+svl.setPosition = setPosition;
 
 function getPOV() {
     if (svl.panorama) {
@@ -356,6 +363,9 @@ function Map ($, params) {
         }
     }
 
+    /**
+     *
+     */
     function removeIcon() {
         var doms = $('.gmnoprint');
         if (doms.length > 0) {
@@ -369,9 +379,6 @@ function Map ($, params) {
         }
     }
 
-    ////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////
     /**
      * This method disables zooming by double click.
      */
@@ -468,6 +475,20 @@ function Map ($, params) {
     }
 
     /**
+     * Save
+     */
+    function save () {
+        svl.storage.set("map", {"pov": svl.getPOV(), "latlng": svl.getPosition(), "panoId": svl.getPanoId() });
+    }
+
+    /**
+     * Load
+     */
+    function load () {
+        return svl.storage.get("map");
+    }
+
+    /**
      * This method brings the links (<, >) to the view control layer so that a user can click them to walk around
      */
     function makeLinksClickable () {
@@ -534,10 +555,10 @@ function Map ($, params) {
                 svl.canvas.render2();
             }
 
-            if ('storage' in svl) {
-                svl.storage.set('currentPanorama', svl.panorama.getPano());
-                svl.storage.set('currentPov', svl.panorama.getPov());
-            }
+//            if ('storage' in svl) {
+//                svl.storage.set('currentPanorama', svl.panorama.getPano());
+//                svl.storage.set('currentPov', svl.panorama.getPov());
+//            }
 
             if (fogSet) {
                 fogUpdate();
@@ -568,6 +589,14 @@ function Map ($, params) {
         var position = svl.panorama.getPosition();
         handlerPovChange(); // handle pov change
 
+        // Store the current status
+//        if ('storage' in svl) {
+//            svl.tracker.save();
+//            svl.labelContainer.save();
+//            svl.map.save();
+//            svl.task.save();
+//        }
+
         // End of the task if the user is close enough to the end point
         if ('task' in svl) {
             if (svl.task.isAtEnd(position.lat(), position.lng(), 10)) {
@@ -587,8 +616,7 @@ function Map ($, params) {
 
             svl.canvas.clear();
 
-            if (status.currentPanoId !== svl
-              .getPanoId()) {
+            if (status.currentPanoId !== svl.getPanoId()) {
             	svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
             }
             status.currentPanoId = svl.getPanoId();
@@ -1248,6 +1276,8 @@ function Map ($, params) {
     self.enableClickZoom = enableClickZoom;
     self.hideLinks = hideLinks;
     self.modeSwitchLabelClick = modeSwitchLabelClick;
+    self.save = save;
+    self.load = load;
 
     _init(params);
     return self;

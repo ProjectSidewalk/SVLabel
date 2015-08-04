@@ -16,3 +16,7 @@
 #current-status-complete {
     background-color: rgb(254, 255, 223);
 }
+
+#current-status-title {
+    font-weight: bold;
+}

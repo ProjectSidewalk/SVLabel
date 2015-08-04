@@ -52,8 +52,10 @@ function UI ($, params) {
       self.googleMaps.holder.append('<div id="google-maps" class="google-maps-pane" style=""></div><div id="google-maps-overlay" class="google-maps-pane" style="z-index: 1"></div>')
 
       // MissionDescription DOMs
-      self.missinDescription = {};
-      self.missinDescription.description = $("#current-status-mission-description");
+      self.statusMessage = {};
+      self.statusMessage.holder = $("#current-status-holder");
+      self.statusMessage.title = $("#current-status-title");
+      self.statusMessage.description = $("#current-status-description");
 
       // OverlayMessage
       self.overlayMessage = {};

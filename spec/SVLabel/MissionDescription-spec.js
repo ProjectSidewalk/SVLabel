@@ -1,6 +1,6 @@
-describe("Tests for the MissionDescription module.", function () {
+describe("Tests for the StatusMessage module.", function () {
 
-  describe("The MissionDescription constructor", function(){
+  describe("The StatusMessage constructor", function(){
     it("should XXX", function() {
       // Todo
     });

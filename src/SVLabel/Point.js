@@ -44,6 +44,14 @@ function Point (x, y, pov, params) {
             'visibilityIcon' : 'visible'
     };
 
+//    function assemble () {
+//        return {
+//            properties: properties,
+//            status
+//        };
+//    }
+//    self.assemble = assemble;
+
     function _init (x, y, pov, params) {
         // Convert a canvas coordinate (x, y) into a sv image coordinate
         // Note, svImageCoordinate.x varies from 0 to svImageWidth and

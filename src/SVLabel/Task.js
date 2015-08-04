@@ -13,13 +13,76 @@ function Task ($) {
         properties = {},
         status = {},
         taskSetting,
-        previousTasks = [];
+        previousTasks = [],
+        lat, lng;
+
+    function save () {
+        svl.storage.set("task", taskSetting);
+    }
+
+    function load () {
+        var map = svl.storage.get("map");
+        taskSetting = svl.storage.get("task");
+
+        if (map) {
+            lat = map.latlng.lat;
+            lng = map.latlng.lng;
+        }
+        return taskSetting ? true : false;
+    }
+
+    /**
+     * Get a next task
+     */
+    function nextTask (streetEdgeId) {
+        var data = {street_edge_id: streetEdgeId},
+            len = taskSetting.features[0].geometry.coordinates.length - 1,
+            latEnd = taskSetting.features[0].geometry.coordinates[len][1],
+            lngEnd = taskSetting.features[0].geometry.coordinates[len][0];
+        $.ajax({
+            // async: false,
+            // contentType: 'application/json; charset=utf-8',
+            url: "/task/next?streetEdgeId=" + streetEdgeId + "&lat=" + latEnd + "&lng=" + lngEnd,
+            type: 'get',
+            success: function (task) {
+                var len = task.features[0].geometry.coordinates.length - 1,
+                    lat1 = task.features[0].geometry.coordinates[0][1],
+                    lng1 = task.features[0].geometry.coordinates[0][0],
+                    lat2 = task.features[0].geometry.coordinates[len][1],
+                    lng2 = task.features[0].geometry.coordinates[len][0],
+                    d1 = svl.util.math.haversine(lat1, lng1, latEnd, lngEnd),
+                    d2 = svl.util.math.haversine(lat2, lng2, latEnd, lngEnd);
+
+                if (d1 > 10 && d2 > 10) {
+                    // If the starting point of the task is far away, jump there.
+                    svl.setPosition(lat1, lng1);
+                } else if (d2 < d1) {
+                    // Flip the coordinates of the line string if the last point is closer to the end point of the current street segment.
+                    task.features[0].geometry.coordinates.reverse();
+                }
+
+                set(task);
+                render();
+
+
+            },
+            error: function (result) {
+                throw result;
+            }
+        });
+    }
+
 
     /**
      * End the current task
      */
     function endTask () {
         // Show the end of the task message.
+        console.log("End of task");
+        svl.statusMessage.animate();
+        svl.statusMessage.setCurrentStatusTitle("Great!");
+        svl.statusMessage.setCurrentStatusDescription("You have finished auditing accessibility of this street and sidewalks. Keep it up!");
+        svl.statusMessage.setBackgroundColor("rgb(254, 255, 223)");
 
         // Push the data into the list
         previousTasks.push(taskSetting);
@@ -37,7 +100,7 @@ function Task ($) {
 
                 $("#sign-in-modal").addClass("hidden");
                 $("#sign-up-modal").removeClass("hidden");
-                $('#sign-in-modal-container').modal('show')
+                $('#sign-in-modal-container').modal('show');
             });
             svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
                 svl.user = new User({username: 'Anon accessibility auditor'});
@@ -45,6 +108,16 @@ function Task ($) {
                 // Submit the data as an anonymous user.
                 var data = svl.form.compileSubmissionData();
                 svl.form.submit(data);
+            });
+            svl.popUpMessage.appendHTML('<br /><a id="pop-up-message-sign-in"><small><span style="color: white; text-decoration: underline;">I do have an account! Let me sign in.</span></small></a>', function () {
+                var data = svl.form.compileSubmissionData(),
+                    staged = svl.storage.get("staged");
+                staged.push(data);
+                svl.storage.set("staged", staged);
+
+                $("#sign-in-modal").removeClass("hidden");
+                $("#sign-up-modal").addClass("hidden");
+                $('#sign-in-modal-container').modal('show');
             });
             svl.popUpMessage.setPosition(0, 260, '100%');
             svl.popUpMessage.show(true);
@@ -61,6 +134,7 @@ function Task ($) {
                 svl.form.submit(data);
             }
         }
+        nextTask(getStreetEdgeId());
     }
 
     /**
@@ -83,8 +157,8 @@ function Task ($) {
     function initialLocation() {
         if (taskSetting) {
             return {
-                lat: taskSetting.features[0].geometry.coordinates[0][1],
-                lng: taskSetting.features[0].geometry.coordinates[0][0]
+                lat: lat,
+                lng: lng
             }
         }
     }
@@ -141,14 +215,19 @@ function Task ($) {
      */
     function set(json) {
         taskSetting = json;
+        lat = taskSetting.features[0].geometry.coordinates[0][1];
+        lng = taskSetting.features[0].geometry.coordinates[0][0];
     }
 
     self.endTask = endTask;
     self.getStreetEdgeId = getStreetEdgeId;
     self.getTaskStart = getTaskStart;
+    self.load = load;
     self.set = set;
     self.initialLocation = initialLocation;
     self.isAtEnd = isAtEnd;
     self.render = render;
+    self.save = save;
+    self.nextTask = nextTask;
     return self;
 }

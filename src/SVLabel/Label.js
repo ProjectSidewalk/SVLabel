@@ -55,6 +55,15 @@ function Label (pathIn, params) {
         visibility : false
     };
 
+//    function assemble () {
+//        return {
+//            properties: properties,
+//            status: status,
+//            path: path.assemble(),
+//        }
+//    }
+//
+//    self.assemble = assemble;
 
     //
     // Private functions

@@ -28,14 +28,13 @@ function Main ($, params) {
 
         // Instantiate objects
         svl.ui = new UI($);
-        svl.tracker = new Tracker();
-        svl.keyboard = new Keyboard($);
         svl.labelContainer = new LabelContainer();
+        svl.keyboard = new Keyboard($);
         svl.canvas = new Canvas($);
         svl.form = new Form($, params.form);
         svl.examples = undefined;
         svl.overlayMessageBox = new OverlayMessageBox($);
-        svl.missionDescription = new MissionDescription($, params.missionDescription);
+        svl.statusMessage = new StatusMessage($, params.missionDescription);
 //        svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
         svl.labelCounter = new LabelCounter($, d3);
         svl.qualificationBadges = undefined;
@@ -48,7 +47,8 @@ function Main ($, params) {
         svl.onboarding = undefined;
         svl.progressPov = new ProgressPov($);
         svl.pointCloud = new PointCloud($, {panoIds: [panoId]});
-        svl.storage = new Storage(JSON);
+        svl.tracker = new Tracker();
+
 
 
         svl.form.disableSubmit();
@@ -89,8 +89,10 @@ function Main ($, params) {
       nearbyPanoIds = [mapParam.taskPanoId];
       mapParam.availablePanoIds = nearbyPanoIds;
 
-      svl.missionDescription.setCurrentStatusDescription('Your mission is to ' +
-          '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
+//      svl.statusMessage.setCurrentStatusDescription('Your mission is to ' +
+//          '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
+      svl.statusMessage.restoreDefault();
+      // svl.statusMessage.setCurrentStatusDescription("Your mission is to find and label all the accessibility attributes in the sidewalks and streets.");
       svl.progressFeedback.setProgress(currentProgress);
       svl.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
           " out of " + totalTaskCount + ".");

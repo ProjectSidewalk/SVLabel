@@ -14,12 +14,35 @@ function Storage(JSON, params) {
         self.storage = window.localStorage;
     }
 
+    function _init () {
+        // Create an array to store staged submission data (if there hasn't been one)
+        if (!get("staged")) {
+            set("staged", []);
+        }
+
+        // Create an object to store current status.
+        if (!get("tracker")) {
+            set("tracker", []);
+        }
+
+        if (!get("labels")) {
+            set("labels", []);
+        }
+    }
+
     /**
      * Returns the item specified by the key
      * @param key
      */
     function get(key) {
         return JSON.parse(self.storage.getItem(key));
+    }
+
+    /**
+     * Refresh
+     */
+    function refresh () {
+        _init();
     }
 
     /**
@@ -31,12 +54,9 @@ function Storage(JSON, params) {
         self.storage.setItem(key, JSON.stringify(value));
     }
 
-    // Create an array to store staged submission data (if there hasn't been one)
-    if (!get("staged")) {
-        set("staged", []);
-    }
-
     self.get = get;
+    self.refresh = refresh;
     self.set = set;
+    _init();
     return self;
 }

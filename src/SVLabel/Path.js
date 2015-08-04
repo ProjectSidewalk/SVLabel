@@ -32,6 +32,19 @@ function Path (points, params) {
         visibility: 'visible'
     };
 
+//    function assemble () {
+//        var p = [];
+//        for (var i = 0; i < self.points.length; i++) {
+//            p.push(self.points[i].assemble());
+//        }
+//        return {
+//            properties: properties,
+//            status: status,
+//            points: p
+//        }
+//    }
+//    self.assemble = assemble;
+
     function _init(points, params) {
         var lenPoints;
         var i;

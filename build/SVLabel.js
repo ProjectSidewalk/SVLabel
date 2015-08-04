@@ -2755,12 +2755,8 @@ function Form ($, params) {
      * This method gathers all the data needed for submission.
      * @returns {{}}
      */
-    function compileSubmissionData() {
+    function compileSubmissionData () {
         var data = {};
-        var hitId;
-        var assignmentId;
-        var turkerId;
-        var taskGSVPanoId = svl.map.getInitialPanoId();
 
         data.audit_task = {
             street_edge_id: svl.task.getStreetEdgeId(),
@@ -2780,14 +2776,16 @@ function Form ($, params) {
         };
 
         data.interactions = svl.tracker.getActions();
+        svl.tracker.refresh();
 
         data.labels = [];
-        var labels = svl.labelContainer.getCanvasLabels();
+        var labels = svl.labelContainer.getCurrentLabels();
+
         for(var i = 0; i < labels.length; i += 1) {
             var label = labels[i],
-                prop = label.getProperties();
-            var points = label.getPath().getPoints();
-            var pathLen = points.length;
+                prop = label.getProperties(),
+                points = label.getPath().getPoints(),
+                pathLen = points.length;
 
             var temp = {
                 deleted : label.isDeleted(),
@@ -2816,13 +2814,6 @@ function Form ($, params) {
                         alpha_y : prop.canvasDistortionAlphaY,
                         lat : prop.panoramaLat,
                         lng : prop.panoramaLng
-    //                    canvasX : point.canvasCoordinate.x,
-    //                    canvasY : point.canvasCoordinate.y,
-    //                    heading : point.pov.heading,
-    //                    pitch : point.pov.pitch,
-    //                    zoom : point.pov.zoom,
-    //                    svImageHeight : prop.svImageHeight,
-    //                    svImageWidth : prop.svImageWidth,
                     };
                 temp.label_points.push(pointParam);
             }
@@ -2830,11 +2821,10 @@ function Form ($, params) {
             data.labels.push(temp)
         }
 
-        if (data.labels.length === 0) {
-            data.labelingTask.no_label = 0;
-        }
+//        if (data.labels.length === 0) {
+//            data.labelingTask.no_label = 0;
+//        }
 
-        //
         // Add the value in the comment field if there are any.
         var comment = $textieldComment.val();
         data.comment = undefined;
@@ -2866,6 +2856,7 @@ function Form ($, params) {
       */
     function submit(data) {
         svl.tracker.push('TaskSubmit');
+        svl.labelContainer.refresh();
 
         if (data.constructor !== Array) {
             data = [data];
@@ -4286,6 +4277,15 @@ function Label (pathIn, params) {
         visibility : false
     };
 
+//    function assemble () {
+//        return {
+//            properties: properties,
+//            status: status,
+//            path: path.assemble(),
+//        }
+//    }
+//
+//    self.assemble = assemble;
 
     //
     // Private functions
@@ -5159,13 +5159,28 @@ var svl = svl || {};
  */
 function LabelContainer() {
     var self = {className: 'LabelContainer'};
-    var canvasLabels = [];
+    var currentCanvasLabels = [],
+        prevCanvasLabels = [];
 
     /**
      * Returns canvas labels
      */
     function getCanvasLabels () {
-        return canvasLabels;
+        return prevCanvasLabels.concat(currentCanvasLabels);
+    }
+
+    /**
+     *
+     */
+    function getCurrentLabels () {
+        return currentCanvasLabels;
+    }
+
+    /**
+     * Load labels
+     */
+    function load () {
+        currentCanvasLabels = svl.storage.get("labels");
     }
 
     /**
@@ -5173,15 +5188,23 @@ function LabelContainer() {
      * @param label
      */
     function push(label) {
-        canvasLabels.push(label);
+        currentCanvasLabels.push(label);
         svl.labelCounter.increment(label.getProperty("labelType"));
+    }
+
+    /**
+     *
+     */
+    function refresh () {
+        prevCanvasLabels = prevCanvasLabels.concat(currentCanvasLabels);
+        currentCanvasLabels = [];
     }
 
     /**
      * Flush the canvasLabels
      */
     function removeAll() {
-        canvasLabels = [];
+        currentCanvasLabels = [];
     }
 
     /**
@@ -5210,11 +5233,19 @@ function LabelContainer() {
         return this;
     }
 
+    function save () {
+        svl.storage.set("labels", currentCanvasLabels);
+    }
+
 
     self.getCanvasLabels = getCanvasLabels;
+    self.getCurrentLabels = getCurrentLabels;
+//    self.load = load;
     self.push = push;
+    self.refresh = refresh;
     self.removeAll = removeAll;
     self.removeLabel = removeLabel;
+//    self.save = save;
     return self;
 }
 var svl = svl || {};
@@ -5556,14 +5587,13 @@ function Main ($, params) {
 
         // Instantiate objects
         svl.ui = new UI($);
-        svl.tracker = new Tracker();
-        svl.keyboard = new Keyboard($);
         svl.labelContainer = new LabelContainer();
+        svl.keyboard = new Keyboard($);
         svl.canvas = new Canvas($);
         svl.form = new Form($, params.form);
         svl.examples = undefined;
         svl.overlayMessageBox = new OverlayMessageBox($);
-        svl.missionDescription = new MissionDescription($, params.missionDescription);
+        svl.statusMessage = new StatusMessage($, params.missionDescription);
 //        svl.labeledLandmarkFeedback = new LabeledLandmarkFeedback($);
         svl.labelCounter = new LabelCounter($, d3);
         svl.qualificationBadges = undefined;
@@ -5576,7 +5606,8 @@ function Main ($, params) {
         svl.onboarding = undefined;
         svl.progressPov = new ProgressPov($);
         svl.pointCloud = new PointCloud($, {panoIds: [panoId]});
-        svl.storage = new Storage(JSON);
+        svl.tracker = new Tracker();
+
 
 
         svl.form.disableSubmit();
@@ -5617,8 +5648,10 @@ function Main ($, params) {
       nearbyPanoIds = [mapParam.taskPanoId];
       mapParam.availablePanoIds = nearbyPanoIds;
 
-      svl.missionDescription.setCurrentStatusDescription('Your mission is to ' +
-          '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
+//      svl.statusMessage.setCurrentStatusDescription('Your mission is to ' +
+//          '<span class="bold">find and label</span> presence and absence of curb ramps at intersections.');
+      svl.statusMessage.restoreDefault();
+      // svl.statusMessage.setCurrentStatusDescription("Your mission is to find and label all the accessibility attributes in the sidewalks and streets.");
       svl.progressFeedback.setProgress(currentProgress);
       svl.progressFeedback.setMessage("You have finished " + (totalTaskCount - taskRemaining) +
           " out of " + totalTaskCount + ".");
@@ -5689,6 +5722,13 @@ function getPosition() {
 }
 svl.getPosition = getPosition;
 
+function setPosition(lat, lng) {
+    if (svl.panorama) {
+        var pos = new google.maps.LatLng(lat, lng);
+        svl.panorama.setPosition(pos);
+    }
+}
+svl.setPosition = setPosition;
 
 function getPOV() {
     if (svl.panorama) {
@@ -6005,6 +6045,9 @@ function Map ($, params) {
         }
     }
 
+    /**
+     *
+     */
     function removeIcon() {
         var doms = $('.gmnoprint');
         if (doms.length > 0) {
@@ -6018,9 +6061,6 @@ function Map ($, params) {
         }
     }
 
-    ////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////
     /**
      * This method disables zooming by double click.
      */
@@ -6117,6 +6157,20 @@ function Map ($, params) {
     }
 
     /**
+     * Save
+     */
+    function save () {
+        svl.storage.set("map", {"pov": svl.getPOV(), "latlng": svl.getPosition(), "panoId": svl.getPanoId() });
+    }
+
+    /**
+     * Load
+     */
+    function load () {
+        return svl.storage.get("map");
+    }
+
+    /**
      * This method brings the links (<, >) to the view control layer so that a user can click them to walk around
      */
     function makeLinksClickable () {
@@ -6183,10 +6237,10 @@ function Map ($, params) {
                 svl.canvas.render2();
             }
 
-            if ('storage' in svl) {
-                svl.storage.set('currentPanorama', svl.panorama.getPano());
-                svl.storage.set('currentPov', svl.panorama.getPov());
-            }
+//            if ('storage' in svl) {
+//                svl.storage.set('currentPanorama', svl.panorama.getPano());
+//                svl.storage.set('currentPov', svl.panorama.getPov());
+//            }
 
             if (fogSet) {
                 fogUpdate();
@@ -6217,6 +6271,14 @@ function Map ($, params) {
         var position = svl.panorama.getPosition();
         handlerPovChange(); // handle pov change
 
+        // Store the current status
+//        if ('storage' in svl) {
+//            svl.tracker.save();
+//            svl.labelContainer.save();
+//            svl.map.save();
+//            svl.task.save();
+//        }
+
         // End of the task if the user is close enough to the end point
         if ('task' in svl) {
             if (svl.task.isAtEnd(position.lat(), position.lng(), 10)) {
@@ -6236,8 +6298,7 @@ function Map ($, params) {
 
             svl.canvas.clear();
 
-            if (status.currentPanoId !== svl
-              .getPanoId()) {
+            if (status.currentPanoId !== svl.getPanoId()) {
             	svl.canvas.setVisibilityBasedOnLocation('visible', svl.getPanoId());
             }
             status.currentPanoId = svl.getPanoId();
@@ -6897,72 +6958,10 @@ function Map ($, params) {
     self.enableClickZoom = enableClickZoom;
     self.hideLinks = hideLinks;
     self.modeSwitchLabelClick = modeSwitchLabelClick;
+    self.save = save;
+    self.load = load;
 
     _init(params);
-    return self;
-}
-
-var svl = svl || {};
-
-/**
- * A MissionDescription module
- * @param $
- * @param params
- * @returns {{className: string}}
- * @constructor
- * @memberof svl
- */
-function MissionDescription ($, params) {
-    var self = {
-        className : 'MissionDescription'
-    };
-    var properties = {};
-    var status = {};
-
-    // jQuery elements
-    var $currentStatusDescription;
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // Private functions
-    ////////////////////////////////////////////////////////////////////////////////
-    function init (params) {
-        // Initialize DOM elements
-        if (svl.ui && svl.ui.missinDescription) {
-          // $currentStatusDescription = $(params.domIds.descriptionMessage);
-          $currentStatusDescription = svl.ui.missinDescription.description;
-          $currentStatusDescription.html(params.description);
-        }
-
-        $("#current-status-complete-sign-up").on('click', function () {
-            $("#sign-in-modal").addClass("hidden");
-            $("#sign-up-modal").removeClass("hidden");
-            $("#sign-in-modal-container").modal('show');
-        });
-        $("#current-status-complete-sign-in").on('click', function () {
-            $("#sign-up-modal").addClass("hidden");
-            $("#sign-in-modal").removeClass("hidden");
-            $("#sign-in-modal-container").modal('show');
-        });
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // Public functions
-    ////////////////////////////////////////////////////////////////////////////////
-    /**
-     * The method sets what's shown in the current status pane in the interface
-     * @param description {string} A string (or html) to put.
-     * @returns {self}
-     */
-    function setCurrentStatusDescription (description) {
-      if (svl.ui && svl.ui.missinDescription) {
-        $currentStatusDescription.html(description);
-      }
-      return this;
-    }
-
-    self.setCurrentStatusDescription = setCurrentStatusDescription;
-    init(params);
     return self;
 }
 
@@ -7123,6 +7122,19 @@ function Path (points, params) {
     var status = {
         visibility: 'visible'
     };
+
+//    function assemble () {
+//        var p = [];
+//        for (var i = 0; i < self.points.length; i++) {
+//            p.push(self.points[i].assemble());
+//        }
+//        return {
+//            properties: properties,
+//            status: status,
+//            points: p
+//        }
+//    }
+//    self.assemble = assemble;
 
     function _init(points, params) {
         var lenPoints;
@@ -7760,6 +7772,14 @@ function Point (x, y, pov, params) {
             'visibilityIcon' : 'visible'
     };
 
+//    function assemble () {
+//        return {
+//            properties: properties,
+//            status
+//        };
+//    }
+//    self.assemble = assemble;
+
     function _init (x, y, pov, params) {
         // Convert a canvas coordinate (x, y) into a sv image coordinate
         // Note, svImageCoordinate.x varies from 0 to svImageWidth and
@@ -8265,6 +8285,17 @@ function PopUpMessage ($, param) {
         buttons = [],
         OKButton = '<button id="pop-up-message-ok-button">OK</button>';
 
+    function appendHTML (htmlDom, callback) {
+        var $html = $(htmlDom);
+        svl.ui.popUpMessage.box.append($html);
+
+        if (callback) {
+            $html.on("click", callback);
+        }
+        $html.on('click', hide);
+        buttons.push($html);
+    }
+
     function appendButton (buttonDom, callback) {
         var $button = $(buttonDom);
 
@@ -8396,6 +8427,7 @@ function PopUpMessage ($, param) {
     }
 
     self.appendButton = appendButton;
+    self.appendHTML = appendHTML;
     self.appendOKButton = appendOKButton;
     self.hide = hide;
     self.hideBackground = hideBackground;
@@ -9996,6 +10028,68 @@ function RightClickMenu (params) {
 var svl = svl || {};
 
 /**
+ * A MissionDescription module
+ * @param $
+ * @param params
+ * @returns {{className: string}}
+ * @constructor
+ * @memberof svl
+ */
+function StatusMessage ($, params) {
+    var self = { className : 'StatusMessage' },
+        properties = {},
+        status = {};
+
+    function _init (params) {    }
+
+    function animate() {
+        svl.ui.statusMessage.holder.removeClass('bounce animated').addClass('bounce animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+            $(this).removeClass('bounce animated');
+        });
+//        $('#animationSandbox').removeClass().addClass('bounce animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+//              $(this).removeClass();
+//            });
+    }
+
+    function restoreDefault () {
+        setBackgroundColor('rgb(255, 255, 255)');
+        setCurrentStatusDescription('Your mission is to find and label all the accessibility attributes in the sidewalks and streets.');
+        setCurrentStatusTitle('Mission:');
+    }
+    /**
+     *
+     */
+    function setBackgroundColor (rgb) {
+        svl.ui.statusMessage.holder.css('background', rgb);
+    }
+
+    /**
+     * The method sets what's shown in the current status pane in the interface
+     * @param description {string} A string (or html) to put.
+     * @returns {self}
+     */
+    function setCurrentStatusDescription (description) {
+      svl.ui.statusMessage.description.html(description);
+      return this;
+    }
+
+    function setCurrentStatusTitle (title) {
+        svl.ui.statusMessage.title.html(title);
+        return this;
+    }
+
+    self.animate = animate;
+    self.restoreDefault = restoreDefault;
+    self.setBackgroundColor = setBackgroundColor;
+    self.setCurrentStatusDescription = setCurrentStatusDescription;
+    self.setCurrentStatusTitle = setCurrentStatusTitle;
+    _init(params);
+    return self;
+}
+
+var svl = svl || {};
+
+/**
  * LocalStorage class constructor
  * @param JSON
  * @param params
@@ -10009,12 +10103,35 @@ function Storage(JSON, params) {
         self.storage = window.localStorage;
     }
 
+    function _init () {
+        // Create an array to store staged submission data (if there hasn't been one)
+        if (!get("staged")) {
+            set("staged", []);
+        }
+
+        // Create an object to store current status.
+        if (!get("tracker")) {
+            set("tracker", []);
+        }
+
+        if (!get("labels")) {
+            set("labels", []);
+        }
+    }
+
     /**
      * Returns the item specified by the key
      * @param key
      */
     function get(key) {
         return JSON.parse(self.storage.getItem(key));
+    }
+
+    /**
+     * Refresh
+     */
+    function refresh () {
+        _init();
     }
 
     /**
@@ -10026,13 +10143,10 @@ function Storage(JSON, params) {
         self.storage.setItem(key, JSON.stringify(value));
     }
 
-    // Create an array to store staged submission data (if there hasn't been one)
-    if (!get("staged")) {
-        set("staged", []);
-    }
-
     self.get = get;
+    self.refresh = refresh;
     self.set = set;
+    _init();
     return self;
 }
 var svl = svl || {};
@@ -10050,13 +10164,76 @@ function Task ($) {
         properties = {},
         status = {},
         taskSetting,
-        previousTasks = [];
+        previousTasks = [],
+        lat, lng;
+
+    function save () {
+        svl.storage.set("task", taskSetting);
+    }
+
+    function load () {
+        var map = svl.storage.get("map");
+        taskSetting = svl.storage.get("task");
+
+        if (map) {
+            lat = map.latlng.lat;
+            lng = map.latlng.lng;
+        }
+        return taskSetting ? true : false;
+    }
+
+    /**
+     * Get a next task
+     */
+    function nextTask (streetEdgeId) {
+        var data = {street_edge_id: streetEdgeId},
+            len = taskSetting.features[0].geometry.coordinates.length - 1,
+            latEnd = taskSetting.features[0].geometry.coordinates[len][1],
+            lngEnd = taskSetting.features[0].geometry.coordinates[len][0];
+        $.ajax({
+            // async: false,
+            // contentType: 'application/json; charset=utf-8',
+            url: "/task/next?streetEdgeId=" + streetEdgeId + "&lat=" + latEnd + "&lng=" + lngEnd,
+            type: 'get',
+            success: function (task) {
+                var len = task.features[0].geometry.coordinates.length - 1,
+                    lat1 = task.features[0].geometry.coordinates[0][1],
+                    lng1 = task.features[0].geometry.coordinates[0][0],
+                    lat2 = task.features[0].geometry.coordinates[len][1],
+                    lng2 = task.features[0].geometry.coordinates[len][0],
+                    d1 = svl.util.math.haversine(lat1, lng1, latEnd, lngEnd),
+                    d2 = svl.util.math.haversine(lat2, lng2, latEnd, lngEnd);
+
+                if (d1 > 10 && d2 > 10) {
+                    // If the starting point of the task is far away, jump there.
+                    svl.setPosition(lat1, lng1);
+                } else if (d2 < d1) {
+                    // Flip the coordinates of the line string if the last point is closer to the end point of the current street segment.
+                    task.features[0].geometry.coordinates.reverse();
+                }
+
+                set(task);
+                render();
+
+
+            },
+            error: function (result) {
+                throw result;
+            }
+        });
+    }
+
 
     /**
      * End the current task
      */
     function endTask () {
         // Show the end of the task message.
+        console.log("End of task");
+        svl.statusMessage.animate();
+        svl.statusMessage.setCurrentStatusTitle("Great!");
+        svl.statusMessage.setCurrentStatusDescription("You have finished auditing accessibility of this street and sidewalks. Keep it up!");
+        svl.statusMessage.setBackgroundColor("rgb(254, 255, 223)");
 
         // Push the data into the list
         previousTasks.push(taskSetting);
@@ -10074,7 +10251,7 @@ function Task ($) {
 
                 $("#sign-in-modal").addClass("hidden");
                 $("#sign-up-modal").removeClass("hidden");
-                $('#sign-in-modal-container').modal('show')
+                $('#sign-in-modal-container').modal('show');
             });
             svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
                 svl.user = new User({username: 'Anon accessibility auditor'});
@@ -10082,6 +10259,16 @@ function Task ($) {
                 // Submit the data as an anonymous user.
                 var data = svl.form.compileSubmissionData();
                 svl.form.submit(data);
+            });
+            svl.popUpMessage.appendHTML('<br /><a id="pop-up-message-sign-in"><small><span style="color: white; text-decoration: underline;">I do have an account! Let me sign in.</span></small></a>', function () {
+                var data = svl.form.compileSubmissionData(),
+                    staged = svl.storage.get("staged");
+                staged.push(data);
+                svl.storage.set("staged", staged);
+
+                $("#sign-in-modal").removeClass("hidden");
+                $("#sign-up-modal").addClass("hidden");
+                $('#sign-in-modal-container').modal('show');
             });
             svl.popUpMessage.setPosition(0, 260, '100%');
             svl.popUpMessage.show(true);
@@ -10098,6 +10285,7 @@ function Task ($) {
                 svl.form.submit(data);
             }
         }
+        nextTask(getStreetEdgeId());
     }
 
     /**
@@ -10120,8 +10308,8 @@ function Task ($) {
     function initialLocation() {
         if (taskSetting) {
             return {
-                lat: taskSetting.features[0].geometry.coordinates[0][1],
-                lng: taskSetting.features[0].geometry.coordinates[0][0]
+                lat: lat,
+                lng: lng
             }
         }
     }
@@ -10178,15 +10366,20 @@ function Task ($) {
      */
     function set(json) {
         taskSetting = json;
+        lat = taskSetting.features[0].geometry.coordinates[0][1];
+        lng = taskSetting.features[0].geometry.coordinates[0][0];
     }
 
     self.endTask = endTask;
     self.getStreetEdgeId = getStreetEdgeId;
     self.getTaskStart = getTaskStart;
+    self.load = load;
     self.set = set;
     self.initialLocation = initialLocation;
     self.isAtEnd = isAtEnd;
     self.render = render;
+    self.save = save;
+    self.nextTask = nextTask;
     return self;
 }
 
@@ -10233,131 +10426,28 @@ var svl = svl || {};
  * @memberof svl
  */
 function Tracker () {
-    var self = {className: 'Tracker'};
-    var actions = [];
-    var availableActionTypes = [
-        'TaskStart',
-        'TaskSubmit',
-        'TaskSubmitSkip',
-        'Click_ModeSwitch_Walk',
-        'Click_ModeSwitch_CurbRamp',
-        'Click_ModeSwitch_NoCurbRamp',
-        'Click_Undo',
-        'Click_Redo',
-        'Click_ZoomIn',
-        'Click_ZoomOut',
-        'Click_LabelDelete',
-        'Click_LabelEdit',
-        'Click_Path',
-        'Click_OpenSkipWindow',
-        'Click_CloseSkipWindow',
-        'Click_SkipRadio',
-        'LabelingCanvas_MouseUp',
-        'LabelingCanvas_MouseDown',
-        'LabelingCanvas_CancelLabeling',
-        'LabelingCanvas_StartLabeling',
-        'LabelingCanvas_FinishLabeling',
-        'ViewControl_MouseDown',
-        'ViewControl_MouseUp',
-        'ViewControl_DoubleClick',
-        'ViewControl_ZoomIn',
-        'ViewControl_ZoomOut',
-        'WalkTowards',
-        'KeyDown',
-        'KeyUp',
-        'RemoveLabel',
-        'Redo_AddLabel',
-        'Redo_RemoveLabel',
-        'Undo_AddLabel',
-        'Undo_RemoveLabel',
-        'MessageBox_ClickOk',
-        'GoldenInsertion_Submit',
-        'GoldenInsertion_ReviewLabels',
-        'GoldenInsertion_ReviseFalseNegative',
-        'GoldenInsertion_ReviseFalsePositive',
-        'Onboarding1_Start',
-        'Onboarding1_FirstCorner_IntroduceCurbRamps',
-        'Onboarding1_FirstCorner_LabelTheFirstCurbRamps',
-        'Onboarding1_FirstCorner_RedoLabelingTheFirstCurbRamps',
-        'Onboarding1_FirstCorner_SwitchTheModeToCurbRampForLabelTheSecondCurbRamps',
-        'Onboarding1_FirstCorner_LabelTheSecondCurbRamps',
-        'Onboarding1_FirstCorner_RedoLabelingTheSecondCurbRamps',
-        'Onboarding1_GrabAndDragToMoveToTheNextCorner',
-        'Onboarding1_KeepDragging',
-        'Onboarding1_SecondCorner_ModeSwitchToCurbRamps',
-        'Onboarding1_SecondCorner_LabelTheCurbRamps',
-        'Onboarding1_SecondCorner_RedoLabelingTheThirdCurbRamps',
-        'Onboarding1_SecondCorner_IntroductionToAMissingCurbRamp',
-        'Onboarding1_SecondCorner_LabelTheMissingCurbRamp',
-        'Onboarding1_SecondCorner_RedoLabelingTheMissingCurbRamps',
-        'Onboarding1_DoneLabelingAllTheCorners_EndLabeling',
-        'Onboarding1_Submit',
-        'Onboarding2_Start',
-        'Onboarding2_FirstCorner_IntroduceMissingCurbRamps',
-        'Onboarding2_FirstCorner_LabelTheMissingCurbRamps',
-        'Onboarding2_FirstCorner_RedoLabelingTheMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_LabelTheFirstMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_RedoLabelingTheFirstMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_ModeSwitchToMissingCurbRamp',
-        'Onboarding2_FirstCorner_V2_LabelTheSecondMissingCurbRamps',
-        'Onboarding2_FirstCorner_V2_RedoLabelingTheSecondMissingCurbRamps',
-        'Onboarding2_FirstCorner_MissingCurbRampExampleLabels',
-        'Onboarding2_GrabAndDragToTheSecondCorner',
-        'Onboarding2_KeepDraggingToTheSecondCorner',
-        'Onboarding2_SecondCorner_ModeSwitchToCurbRamp',
-        'Onboarding2_SecondCorner_LabelTheCurbRamp',
-        'Onboarding2_SecondCorner_RedoLabelingTheCurbRamps',
-        'Onboarding2_SecondCorner_ExamplesOfDiagonalCurbRamps',
-        'Onboarding2_RemindAboutTheCompletionRateMeter',
-        'Onboarding2_GrabAndDragToTheThirdCorner',
-        'Onboarding2_KeepDraggingToTheThirdCorner',
-        'Onboarding2_ThirdCorner_FirstZoomIn',
-        'Onboarding2_ThirdCorner_FirstModeSwitchToCurbRamp',
-        'Onboarding2_ThirdCorner_LabelTheFirstCurbRamp',
-        'Onboarding2_ThirdCorner_RedoLabelingTheFirstCurbRamps',
-        'Onboarding2_ThirdCorner_AdjustTheCameraAngle',
-        'Onboarding2_ThirdCorner_KeepAdjustingTheCameraAngle',
-        'Onboarding2_ThirdCorner_SecondZoomIn',
-        'Onboarding2_ThirdCorner_SecondModeSwitchToCurbRamp',
-        'Onboarding2_ThirdCorner_LabelTheSecondCurbRamps',
-        'Onboarding2_ThirdCorner_RedoLabelingTheSecondCurbRamps',
-        'Onboarding2_ThirdCorner_FirstZoomOut',
-        'Onboarding2_ThirdCorner_SecondZoomOut',
-        'Onboarding2_GrabAndDragToTheFourthCorner',
-        'Onboarding2_KeepDraggingToTheFourthCorner',
-        'Onboarding2_FourthCorner_IntroduceOcclusion',
-        'Onboarding2_DoneLabelingAllTheCorners_EndLabeling',
-        'Onboarding2_Submit',
-        'Onboarding3_Start',
-        'Onboarding3_ShowNorthSideOfTheIntersection',
-        'Onboarding3_GrabAndDrag',
-        'Onboarding3_KeepDragging',
-        'Onboarding3_SouthSideOfTheIntersection',
-        'Onboarding3_GrabAndDragToNorth',
-        'Onboarding3_ClickSkip',
-        'Onboarding3_SelectSkipOption',
-        'Onboarding3_ClickSkipOk',
-        'Onboarding3_finalMessage',
-        'Onboarding3_Submit',
-        'OnboardingQuickCheck_nextClick',
-        'OnboardingQuickCheck_clickQuickCheckImages',
-        'OnboardingQuickCheck_submitClick',
-        'OnboardingQuickCheck_submit'
-    ];
+    var self = {className: 'Tracker'},
+        actions = [],
+        prevActions = [];
 
-    ////////////////////////////////////////////////////////////
-    // Public functions
-    ////////////////////////////////////////////////////////////
-    self.getActions = function () {
+    /**
+     * Returns actions
+     */
+    function getActions () {
         return actions;
-    };
+    }
 
-//    self.getAvailableActionTypes = function () {
-//      var tempArray = availableActionTypes.slice(0);
-//      return tempArray;
-//    };
+    /**
+     * Load the actions in storage
+     */
+    function load () {
+        actions = svl.storage.get("tracker");
+    }
 
-    self.push = function (action, param) {
+    /**
+     * Push an action into the array.
+     */
+    function push (action, param) {
         // This function pushes action type, time stamp, current pov, and current panoId
         // into actions list.
         var pov, latlng, panoId, note;
@@ -10386,7 +10476,6 @@ function Tracker () {
             note = "";
         }
 
-        //
         // Initialize variables. Note you cannot get pov, panoid, or position
         // before the map and SV load.
         try {
@@ -10420,7 +10509,6 @@ function Tracker () {
             panoId = null;
         }
 
-
         var now = new Date(),
             timestamp = now.getUTCFullYear() + "-" + now.getUTCMonth() + "-" + now.getUTCDate() + " " + now.getUTCHours() + ":" + now.getUTCMinutes() + ":" + now.getUTCSeconds() + "." + now.getUTCMilliseconds();
 
@@ -10436,8 +10524,29 @@ function Tracker () {
             timestamp: timestamp
         });
         return this;
-    };
+    }
 
+    /**
+     * Put the previous labeling actions into prevActions. Then refresh the current actions.
+     */
+    function refresh () {
+        prevActions = prevActions.concat(actions);
+        actions = [];
+        push("RefreshTracker");
+    }
+
+    /**
+     * Save the actions in the storage
+     */
+    function save () {
+        svl.storage.set("tracker", actions);
+    }
+
+    self.getActions = getActions;
+//    self.load = load;
+    self.push = push;
+    self.refresh = refresh;
+//    self.save = save;
     return self;
 }
 
@@ -10495,8 +10604,10 @@ function UI ($, params) {
       self.googleMaps.holder.append('<div id="google-maps" class="google-maps-pane" style=""></div><div id="google-maps-overlay" class="google-maps-pane" style="z-index: 1"></div>')
 
       // MissionDescription DOMs
-      self.missinDescription = {};
-      self.missinDescription.description = $("#current-status-mission-description");
+      self.statusMessage = {};
+      self.statusMessage.holder = $("#current-status-holder");
+      self.statusMessage.title = $("#current-status-title");
+      self.statusMessage.description = $("#current-status-description");
 
       // OverlayMessage
       self.overlayMessage = {};
