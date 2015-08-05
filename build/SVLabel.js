@@ -1264,20 +1264,16 @@ function Canvas ($, param) {
         svl.labelContainer.push(status.currentLabel);
 
         svl.actionStack.push('addLabel', status.currentLabel);
-        //var label = Label(path, param);
-        //if (label) {
-        //    status.currentLabel = new Label(path, param)
-        //    labels.push(status.currentLabel);
-        //    svl.actionStack.push('addLabel', status.currentLabel);
-        //} else {
-        //    throw "Failed to add a new label.";
-        //}
 
         // Initialize the tempPath
         tempPath = [];
         svl.ribbon.backToWalk();
 
-        //
+        if (callbacks) {
+            for (var i = 0; i < callbacks.length; i++) {
+                callbacks[i]();
+            }
+        }
         // Review label correctness if this is a ground truth insertion task.
         if (("goldenInsertion" in svl) &&
             svl.goldenInsertion &&
@@ -8309,8 +8305,10 @@ function PopUpMessage ($, param) {
 
         if (callback) {
             $button.on('click', callback);
+        } else {
+            $button.on('click', hide);
         }
-        $button.on('click', hide);
+
         buttons.push($button);
     }
 
@@ -8356,6 +8354,9 @@ function PopUpMessage ($, param) {
     function reset () {
         svl.ui.popUpMessage.holder.css({ width: '', height: '' });
         svl.ui.popUpMessage.box.css({
+                    background: 'rgba(69,183,214,1)',
+                    border: '3px solid rgba(255,255,255,1)',
+                    color: 'white',
                     left: '',
                     top: '',
                     width: '',
@@ -8364,6 +8365,8 @@ function PopUpMessage ($, param) {
                 });
 
         svl.ui.popUpMessage.box.css('padding-bottom', '')
+        setTitle('');
+        setMessage('');
 
         for (var i = 0; i < buttons.length; i++ ){
             try {
@@ -8397,6 +8400,22 @@ function PopUpMessage ($, param) {
     }
 
     /**
+     *
+     */
+    function setBackground (rgb) {
+        svl.ui.popUpMessage.box.css('background', rgb);
+
+    }
+
+    function setBorder (border) {
+        svl.ui.popUpMessage.box.css('border', border);
+    }
+
+    function setFontColor (rgb) {
+        svl.ui.popUpMessage.box.css('color', rgb);
+    }
+
+    /**
      * Sets the title
      */
     function setTitle (title) {
@@ -8416,13 +8435,32 @@ function PopUpMessage ($, param) {
      * Sets the position of the message.
      */
     function setPosition (x, y, width, height) {
-        svl.ui.popUpMessage.box.css({
-            left: x,
-            top: y,
-            width: width,
-            height: height,
-            zIndex: 1000
-        });
+        if (x == 'fullscreen') {
+            svl.ui.popUpMessage.box.css({
+                left: 0,
+                top: 0,
+                width: '960px',
+                height: '680px',
+                zIndex: 1000
+            });
+        } else if (x == 'canvas-top-left') {
+            svl.ui.popUpMessage.box.css({
+                left: 365,
+                top: 122,
+                width: '360px',
+                height: '',
+                zIndex: 1000
+            });
+        } else {
+            svl.ui.popUpMessage.box.css({
+                left: x,
+                top: y,
+                width: width,
+                height: height,
+                zIndex: 1000
+            });
+        }
+
         return this;
     }
 
@@ -8432,11 +8470,14 @@ function PopUpMessage ($, param) {
     self.hide = hide;
     self.hideBackground = hideBackground;
     self.reset = reset;
-    self.show = show;
-    self.showBackground = showBackground;
+    self.setBackground = setBackground;
+    self.setBorder = setBorder;
+    self.setFontColor = setFontColor;
     self.setPosition = setPosition;
     self.setTitle = setTitle;
     self.setMessage = setMessage;
+    self.show = show;
+    self.showBackground = showBackground;
     return self;
 }
 
@@ -10228,64 +10269,69 @@ function Task ($) {
      * End the current task
      */
     function endTask () {
-        // Show the end of the task message.
-        console.log("End of task");
-        svl.statusMessage.animate();
-        svl.statusMessage.setCurrentStatusTitle("Great!");
-        svl.statusMessage.setCurrentStatusDescription("You have finished auditing accessibility of this street and sidewalks. Keep it up!");
-        svl.statusMessage.setBackgroundColor("rgb(254, 255, 223)");
+        if (!('onboarding' in task)) {
+            // Show the end of the task message.
+            console.log("End of task");
+            svl.statusMessage.animate();
+            svl.statusMessage.setCurrentStatusTitle("Great!");
+            svl.statusMessage.setCurrentStatusDescription("You have finished auditing accessibility of this street and sidewalks. Keep it up!");
+            svl.statusMessage.setBackgroundColor("rgb(254, 255, 223)");
 
-        // Push the data into the list
-        previousTasks.push(taskSetting);
+            // Push the data into the list
+            previousTasks.push(taskSetting);
 
-        if (!('user' in svl)) {
-            // Prompt a user who's not logged in to sign up/sign in.
-            svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
-            svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
-            svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
-                // Store the data in LocalStorage.
-                var data = svl.form.compileSubmissionData(),
-                    staged = svl.storage.get("staged");
-                staged.push(data);
-                svl.storage.set("staged", staged);
+            if (!('user' in svl)) {
+                // Prompt a user who's not logged in to sign up/sign in.
+                svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
+                svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
+                svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
+                    // Store the data in LocalStorage.
+                    var data = svl.form.compileSubmissionData(),
+                        staged = svl.storage.get("staged");
+                    staged.push(data);
+                    svl.storage.set("staged", staged);
 
-                $("#sign-in-modal").addClass("hidden");
-                $("#sign-up-modal").removeClass("hidden");
-                $('#sign-in-modal-container').modal('show');
-            });
-            svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
-                svl.user = new User({username: 'Anon accessibility auditor'});
+                    $("#sign-in-modal").addClass("hidden");
+                    $("#sign-up-modal").removeClass("hidden");
+                    $('#sign-in-modal-container').modal('show');
+                    svl.popUpMessage.hide();
+                });
+                svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
+                    svl.user = new User({username: 'anonymous'});
 
-                // Submit the data as an anonymous user.
-                var data = svl.form.compileSubmissionData();
-                svl.form.submit(data);
-            });
-            svl.popUpMessage.appendHTML('<br /><a id="pop-up-message-sign-in"><small><span style="color: white; text-decoration: underline;">I do have an account! Let me sign in.</span></small></a>', function () {
-                var data = svl.form.compileSubmissionData(),
-                    staged = svl.storage.get("staged");
-                staged.push(data);
-                svl.storage.set("staged", staged);
+                    // Submit the data as an anonymous user.
+                    var data = svl.form.compileSubmissionData();
+                    svl.form.submit(data);
+                    svl.popUpMessage.hide();
+                });
+                svl.popUpMessage.appendHTML('<br /><a id="pop-up-message-sign-in"><small><span style="color: white; text-decoration: underline;">I do have an account! Let me sign in.</span></small></a>', function () {
+                    var data = svl.form.compileSubmissionData(),
+                        staged = svl.storage.get("staged");
+                    staged.push(data);
+                    svl.storage.set("staged", staged);
 
-                $("#sign-in-modal").removeClass("hidden");
-                $("#sign-up-modal").addClass("hidden");
-                $('#sign-in-modal-container').modal('show');
-            });
-            svl.popUpMessage.setPosition(0, 260, '100%');
-            svl.popUpMessage.show(true);
-        } else {
-            // Submit the data.
-            var data = svl.form.compileSubmissionData(),
-                staged = svl.storage.get("staged");
-
-            if (staged.length > 0) {
-                staged.push(data);
-                svl.form.submit(staged)
-                svl.storage.set("staged", []);  // Empty the staged data.
+                    $("#sign-in-modal").removeClass("hidden");
+                    $("#sign-up-modal").addClass("hidden");
+                    $('#sign-in-modal-container').modal('show');
+                    svl.popUpMessage.hide();
+                });
+                svl.popUpMessage.setPosition(0, 260, '100%');
+                svl.popUpMessage.show(true);
             } else {
-                svl.form.submit(data);
+                // Submit the data.
+                var data = svl.form.compileSubmissionData(),
+                    staged = svl.storage.get("staged");
+
+                if (staged.length > 0) {
+                    staged.push(data);
+                    svl.form.submit(staged)
+                    svl.storage.set("staged", []);  // Empty the staged data.
+                } else {
+                    svl.form.submit(data);
+                }
             }
+            nextTask(getStreetEdgeId());
         }
-        nextTask(getStreetEdgeId());
     }
 
     /**

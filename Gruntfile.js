@@ -14,6 +14,10 @@ module.exports = function(grunt) {
                     'src/SVLabel/Util/*.js'
                 ],
                 dest: 'build/SVLabel.js'
+            },
+            onboarding: {
+                src: ['src/SVLabel/Onboarding/Tutorial.js'],
+                dest: 'build/SVLabel.Tutorial.js'
             }
         },
         uglify: {

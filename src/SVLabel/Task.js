@@ -77,64 +77,69 @@ function Task ($) {
      * End the current task
      */
     function endTask () {
-        // Show the end of the task message.
-        console.log("End of task");
-        svl.statusMessage.animate();
-        svl.statusMessage.setCurrentStatusTitle("Great!");
-        svl.statusMessage.setCurrentStatusDescription("You have finished auditing accessibility of this street and sidewalks. Keep it up!");
-        svl.statusMessage.setBackgroundColor("rgb(254, 255, 223)");
+        if (!('onboarding' in task)) {
+            // Show the end of the task message.
+            console.log("End of task");
+            svl.statusMessage.animate();
+            svl.statusMessage.setCurrentStatusTitle("Great!");
+            svl.statusMessage.setCurrentStatusDescription("You have finished auditing accessibility of this street and sidewalks. Keep it up!");
+            svl.statusMessage.setBackgroundColor("rgb(254, 255, 223)");
 
-        // Push the data into the list
-        previousTasks.push(taskSetting);
+            // Push the data into the list
+            previousTasks.push(taskSetting);
 
-        if (!('user' in svl)) {
-            // Prompt a user who's not logged in to sign up/sign in.
-            svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
-            svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
-            svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
-                // Store the data in LocalStorage.
-                var data = svl.form.compileSubmissionData(),
-                    staged = svl.storage.get("staged");
-                staged.push(data);
-                svl.storage.set("staged", staged);
+            if (!('user' in svl)) {
+                // Prompt a user who's not logged in to sign up/sign in.
+                svl.popUpMessage.setTitle("You've completed the first accessibility audit!");
+                svl.popUpMessage.setMessage("Do you want to create an account to keep track of your progress?");
+                svl.popUpMessage.appendButton('<button id="pop-up-message-sign-up-button">Let me sign up!</button>', function () {
+                    // Store the data in LocalStorage.
+                    var data = svl.form.compileSubmissionData(),
+                        staged = svl.storage.get("staged");
+                    staged.push(data);
+                    svl.storage.set("staged", staged);
 
-                $("#sign-in-modal").addClass("hidden");
-                $("#sign-up-modal").removeClass("hidden");
-                $('#sign-in-modal-container').modal('show');
-            });
-            svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
-                svl.user = new User({username: 'Anon accessibility auditor'});
+                    $("#sign-in-modal").addClass("hidden");
+                    $("#sign-up-modal").removeClass("hidden");
+                    $('#sign-in-modal-container').modal('show');
+                    svl.popUpMessage.hide();
+                });
+                svl.popUpMessage.appendButton('<button id="pop-up-message-cancel-button">Nope</button>', function () {
+                    svl.user = new User({username: 'anonymous'});
 
-                // Submit the data as an anonymous user.
-                var data = svl.form.compileSubmissionData();
-                svl.form.submit(data);
-            });
-            svl.popUpMessage.appendHTML('<br /><a id="pop-up-message-sign-in"><small><span style="color: white; text-decoration: underline;">I do have an account! Let me sign in.</span></small></a>', function () {
-                var data = svl.form.compileSubmissionData(),
-                    staged = svl.storage.get("staged");
-                staged.push(data);
-                svl.storage.set("staged", staged);
+                    // Submit the data as an anonymous user.
+                    var data = svl.form.compileSubmissionData();
+                    svl.form.submit(data);
+                    svl.popUpMessage.hide();
+                });
+                svl.popUpMessage.appendHTML('<br /><a id="pop-up-message-sign-in"><small><span style="color: white; text-decoration: underline;">I do have an account! Let me sign in.</span></small></a>', function () {
+                    var data = svl.form.compileSubmissionData(),
+                        staged = svl.storage.get("staged");
+                    staged.push(data);
+                    svl.storage.set("staged", staged);
 
-                $("#sign-in-modal").removeClass("hidden");
-                $("#sign-up-modal").addClass("hidden");
-                $('#sign-in-modal-container').modal('show');
-            });
-            svl.popUpMessage.setPosition(0, 260, '100%');
-            svl.popUpMessage.show(true);
-        } else {
-            // Submit the data.
-            var data = svl.form.compileSubmissionData(),
-                staged = svl.storage.get("staged");
-
-            if (staged.length > 0) {
-                staged.push(data);
-                svl.form.submit(staged)
-                svl.storage.set("staged", []);  // Empty the staged data.
+                    $("#sign-in-modal").removeClass("hidden");
+                    $("#sign-up-modal").addClass("hidden");
+                    $('#sign-in-modal-container').modal('show');
+                    svl.popUpMessage.hide();
+                });
+                svl.popUpMessage.setPosition(0, 260, '100%');
+                svl.popUpMessage.show(true);
             } else {
-                svl.form.submit(data);
+                // Submit the data.
+                var data = svl.form.compileSubmissionData(),
+                    staged = svl.storage.get("staged");
+
+                if (staged.length > 0) {
+                    staged.push(data);
+                    svl.form.submit(staged)
+                    svl.storage.set("staged", []);  // Empty the staged data.
+                } else {
+                    svl.form.submit(data);
+                }
             }
+            nextTask(getStreetEdgeId());
         }
-        nextTask(getStreetEdgeId());
     }
 
     /**

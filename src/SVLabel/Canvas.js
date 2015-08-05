@@ -201,20 +201,16 @@ function Canvas ($, param) {
         svl.labelContainer.push(status.currentLabel);
 
         svl.actionStack.push('addLabel', status.currentLabel);
-        //var label = Label(path, param);
-        //if (label) {
-        //    status.currentLabel = new Label(path, param)
-        //    labels.push(status.currentLabel);
-        //    svl.actionStack.push('addLabel', status.currentLabel);
-        //} else {
-        //    throw "Failed to add a new label.";
-        //}
 
         // Initialize the tempPath
         tempPath = [];
         svl.ribbon.backToWalk();
 
-        //
+        if (callbacks) {
+            for (var i = 0; i < callbacks.length; i++) {
+                callbacks[i]();
+            }
+        }
         // Review label correctness if this is a ground truth insertion task.
         if (("goldenInsertion" in svl) &&
             svl.goldenInsertion &&

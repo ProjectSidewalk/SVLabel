@@ -37,8 +37,10 @@ function PopUpMessage ($, param) {
 
         if (callback) {
             $button.on('click', callback);
+        } else {
+            $button.on('click', hide);
         }
-        $button.on('click', hide);
+
         buttons.push($button);
     }
 
@@ -84,6 +86,9 @@ function PopUpMessage ($, param) {
     function reset () {
         svl.ui.popUpMessage.holder.css({ width: '', height: '' });
         svl.ui.popUpMessage.box.css({
+                    background: 'rgba(69,183,214,1)',
+                    border: '3px solid rgba(255,255,255,1)',
+                    color: 'white',
                     left: '',
                     top: '',
                     width: '',
@@ -92,6 +97,8 @@ function PopUpMessage ($, param) {
                 });
 
         svl.ui.popUpMessage.box.css('padding-bottom', '')
+        setTitle('');
+        setMessage('');
 
         for (var i = 0; i < buttons.length; i++ ){
             try {
@@ -125,6 +132,22 @@ function PopUpMessage ($, param) {
     }
 
     /**
+     *
+     */
+    function setBackground (rgb) {
+        svl.ui.popUpMessage.box.css('background', rgb);
+
+    }
+
+    function setBorder (border) {
+        svl.ui.popUpMessage.box.css('border', border);
+    }
+
+    function setFontColor (rgb) {
+        svl.ui.popUpMessage.box.css('color', rgb);
+    }
+
+    /**
      * Sets the title
      */
     function setTitle (title) {
@@ -144,13 +167,32 @@ function PopUpMessage ($, param) {
      * Sets the position of the message.
      */
     function setPosition (x, y, width, height) {
-        svl.ui.popUpMessage.box.css({
-            left: x,
-            top: y,
-            width: width,
-            height: height,
-            zIndex: 1000
-        });
+        if (x == 'fullscreen') {
+            svl.ui.popUpMessage.box.css({
+                left: 0,
+                top: 0,
+                width: '960px',
+                height: '680px',
+                zIndex: 1000
+            });
+        } else if (x == 'canvas-top-left') {
+            svl.ui.popUpMessage.box.css({
+                left: 365,
+                top: 122,
+                width: '360px',
+                height: '',
+                zIndex: 1000
+            });
+        } else {
+            svl.ui.popUpMessage.box.css({
+                left: x,
+                top: y,
+                width: width,
+                height: height,
+                zIndex: 1000
+            });
+        }
+
         return this;
     }
 
@@ -160,10 +202,13 @@ function PopUpMessage ($, param) {
     self.hide = hide;
     self.hideBackground = hideBackground;
     self.reset = reset;
-    self.show = show;
-    self.showBackground = showBackground;
+    self.setBackground = setBackground;
+    self.setBorder = setBorder;
+    self.setFontColor = setFontColor;
     self.setPosition = setPosition;
     self.setTitle = setTitle;
     self.setMessage = setMessage;
+    self.show = show;
+    self.showBackground = showBackground;
     return self;
 }
