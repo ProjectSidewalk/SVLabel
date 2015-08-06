@@ -43,8 +43,6 @@ function Main ($, params) {
         svl.ribbon = new RibbonMenu($);
         svl.popUpMessage = new PopUpMessage($);
         svl.zoomControl = new ZoomControl($);
-        svl.tooltip = undefined;
-        svl.onboarding = undefined;
         svl.progressPov = new ProgressPov($);
         svl.pointCloud = new PointCloud($, {panoIds: [panoId]});
         svl.tracker = new Tracker();
@@ -115,6 +113,10 @@ function Main ($, params) {
       }
 
       //svl.map.setStatus('hideNonavailablePanoLinks', true);
+
+      if ('onboarding' in svl) {
+        svl.onboarding.start();
+      }
     }
 
     _init(params);

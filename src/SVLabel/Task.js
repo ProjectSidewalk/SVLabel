@@ -77,7 +77,7 @@ function Task ($) {
      * End the current task
      */
     function endTask () {
-        if (!('onboarding' in task)) {
+        if (!('onboarding' in svl)) {
             // Show the end of the task message.
             console.log("End of task");
             svl.statusMessage.animate();

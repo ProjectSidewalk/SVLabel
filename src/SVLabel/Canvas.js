@@ -32,7 +32,8 @@ svl.getLabelCounter = function () {
  * @memberof svl
  */
 function Canvas ($, param) {
-    var self = { className : 'Canvas' };
+    var self = { className : 'Canvas' },
+        callbacks = [];
 
         // Mouse status and mouse event callback functions
     var mouseStatus = {

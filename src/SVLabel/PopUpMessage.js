@@ -22,6 +22,7 @@ function PopUpMessage ($, param) {
         }
         $html.on('click', hide);
         buttons.push($html);
+        return this;
     }
 
     function appendButton (buttonDom, callback) {
@@ -42,10 +43,12 @@ function PopUpMessage ($, param) {
         }
 
         buttons.push($button);
+        return this;
     }
 
     function appendOKButton(callback) {
         appendButton(OKButton, callback);
+        return this;
     }
 
     function handleClickOK () {
@@ -78,6 +81,7 @@ function PopUpMessage ($, param) {
      */
     function hideBackground () {
         svl.ui.popUpMessage.holder.css({ width: '', height: '' });
+        return this;
     }
 
     /**
@@ -108,6 +112,7 @@ function PopUpMessage ($, param) {
             }
         }
         buttons = [];
+        return this;
     }
 
     /**
@@ -129,6 +134,7 @@ function PopUpMessage ($, param) {
      */
     function showBackground () {
         svl.ui.popUpMessage.holder.css({ width: '100%', height: '100%'});
+        return this;
     }
 
     /**
@@ -136,15 +142,17 @@ function PopUpMessage ($, param) {
      */
     function setBackground (rgb) {
         svl.ui.popUpMessage.box.css('background', rgb);
-
+        return this;
     }
 
     function setBorder (border) {
         svl.ui.popUpMessage.box.css('border', border);
+        return this;
     }
 
     function setFontColor (rgb) {
         svl.ui.popUpMessage.box.css('color', rgb);
+        return this;
     }
 
     /**

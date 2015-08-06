@@ -19,6 +19,8 @@ function UI ($, params) {
     function _init (params) {
       // Todo. Use better templating techniques rather so it's prettier!
 
+      self.applicationHolder = $("#svl-application-holder");
+
       self.actionStack = {};
       self.actionStack.holder = $("#action-stack-control-holder");
       self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="' + svl.rootDirectory + 'img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
@@ -84,16 +86,16 @@ function UI ($, params) {
       self.progressPov.filler = $("#progress-pov-current-completion-bar-filler");
 
       // Ribbon menu DOMs
-      $divStreetViewHolder = $("#Holder_StreetView");
-      $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
-      $ribbonConnector = $("#StreetViewLabelRibbonConnection");
-      $spansModeSwitches = $('span.modeSwitch');
+      $divStreetViewHolder =
+      $ribbonButtonBottomLines =
 
       self.ribbonMenu = {};
-      self.ribbonMenu.streetViewHolder = $divStreetViewHolder;
-      self.ribbonMenu.buttons = $spansModeSwitches;
-      self.ribbonMenu.bottonBottomBorders = $ribbonButtonBottomLines;
-      self.ribbonMenu.connector = $ribbonConnector;
+      self.ribbonMenu.streetViewHolder = $("#Holder_StreetView");
+      self.ribbonMenu.buttons = $('span.modeSwitch');
+      self.ribbonMenu.curbRampButton = $("#ModeSwitchButton_CurbRamp");
+      self.ribbonMenu.missingCurbRampButton = $("#ModeSwitchButton_NoCurbRamp");
+      self.ribbonMenu.bottonBottomBorders = $(".RibbonModeSwitchHorizontalLine");
+      self.ribbonMenu.connector = $("#StreetViewLabelRibbonConnection");
 
       // Zoom control
       self.zoomControl = {};
@@ -110,12 +112,17 @@ function UI ($, params) {
       self.form.skipButton = $("#skip-button");
       self.form.submitButton = $("#submit-button");
 
-      self.onboarding = {};
-      self.onboarding.holder = $("#onboarding-holder");
-      if ("onboarding" in params && params.onboarding) {
-        self.onboarding.holder.append("<div id='Holder_OnboardingCanvas'><canvas id='onboardingCanvas' width='720px' height='480px'></canvas><div id='Holder_OnboardingMessageBox'><div id='Holder_OnboardingMessage'></div></div></div>");
-      }
+      // Annotation
+      self.annotation = {};
+      self.annotation.holder = $("#annotation-holder");
 
+      if ("onboarding" in svl) {
+        self.onboarding = {};
+        self.onboarding.holder = $("#onboarding-holder");
+        self.onboarding.holder.append("<canvas id='onboarding-canvas' width='720px' height='480px'></canvas>");
+        self.onboarding.canvas = $("#onboarding-canvas");
+        svl.onboarding.ctx = self.onboarding.canvas[0].getContext('2d');
+      }
     }
 
     _init(params);

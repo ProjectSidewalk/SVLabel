@@ -203,25 +203,31 @@ function LabelCounter ($, d3) {
      * Decrement the label count
      */
     function decrement(key) {
-        if (dotPlots[key].count > 0) {
-            dotPlots[key].count -= 1;
+        if (key in dotPlots) {
+            if (dotPlots[key].count > 0) {
+                dotPlots[key].count -= 1;
+            }
+            update(key);
         }
-        update(key);
     }
     /**
      * Increment the label count
      */
     function increment(key) {
-      dotPlots[key].count += 1;
-      update(key);
+        if (key in dotPlots) {
+            dotPlots[key].count += 1;
+            update(key);
+        }
     }
 
     /**
      * Set the number of label count
      */
     function set(key, num) {
-        dotPlots[key].count = num;
-        update(key);
+        if (key in dotPlots) {
+            dotPlots[key].count = num;
+            update(key);
+        }
     }
 
     // Initialize

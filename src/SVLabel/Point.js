@@ -384,6 +384,11 @@ function Point (x, y, pov, params) {
     return self;
 }
 
+svl.canvasCoordinate2gsvImageCoordinate = function (xIn, yIn, pov) {
+    var x = svl.svImageWidth * pov.heading / 360 + (svl.alpha_x * (xIn - (svl.canvasWidth / 2)) / svl.zoomFactor[pov.zoom]),
+        y = (svl.svImageHeight / 2) * pov.pitch / 90 + (svl.alpha_y * (yIn - (svl.canvasHeight / 2)) / svl.zoomFactor[pov.zoom]);
+    return {x: parseInt(x, 10), y: parseInt(y, 10)};
+};
 
 svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     // This function takes the current pov of the Street View as a parameter
@@ -420,7 +425,7 @@ svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     y = yIn - (svImageHeight / 2) * (pov.pitch / 90);
     y = y / svl.alpha_y + svl.canvasHeight / 2;
 
-    return {x : x, y : y};
+    return {x : parseInt(x, 10), y : parseInt(y, 10)};
 };
 
 svl.zoomFactor = {

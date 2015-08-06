@@ -1095,7 +1095,8 @@ svl.getLabelCounter = function () {
  * @memberof svl
  */
 function Canvas ($, param) {
-    var self = { className : 'Canvas' };
+    var self = { className : 'Canvas' },
+        callbacks = [];
 
         // Mouse status and mouse event callback functions
     var mouseStatus = {
@@ -5449,25 +5450,31 @@ function LabelCounter ($, d3) {
      * Decrement the label count
      */
     function decrement(key) {
-        if (dotPlots[key].count > 0) {
-            dotPlots[key].count -= 1;
+        if (key in dotPlots) {
+            if (dotPlots[key].count > 0) {
+                dotPlots[key].count -= 1;
+            }
+            update(key);
         }
-        update(key);
     }
     /**
      * Increment the label count
      */
     function increment(key) {
-      dotPlots[key].count += 1;
-      update(key);
+        if (key in dotPlots) {
+            dotPlots[key].count += 1;
+            update(key);
+        }
     }
 
     /**
      * Set the number of label count
      */
     function set(key, num) {
-        dotPlots[key].count = num;
-        update(key);
+        if (key in dotPlots) {
+            dotPlots[key].count = num;
+            update(key);
+        }
     }
 
     // Initialize
@@ -5598,8 +5605,6 @@ function Main ($, params) {
         svl.ribbon = new RibbonMenu($);
         svl.popUpMessage = new PopUpMessage($);
         svl.zoomControl = new ZoomControl($);
-        svl.tooltip = undefined;
-        svl.onboarding = undefined;
         svl.progressPov = new ProgressPov($);
         svl.pointCloud = new PointCloud($, {panoIds: [panoId]});
         svl.tracker = new Tracker();
@@ -5670,6 +5675,10 @@ function Main ($, params) {
       }
 
       //svl.map.setStatus('hideNonavailablePanoLinks', true);
+
+      if ('onboarding' in svl) {
+        svl.onboarding.start();
+      }
     }
 
     _init(params);
@@ -8108,6 +8117,11 @@ function Point (x, y, pov, params) {
     return self;
 }
 
+svl.canvasCoordinate2gsvImageCoordinate = function (xIn, yIn, pov) {
+    var x = svl.svImageWidth * pov.heading / 360 + (svl.alpha_x * (xIn - (svl.canvasWidth / 2)) / svl.zoomFactor[pov.zoom]),
+        y = (svl.svImageHeight / 2) * pov.pitch / 90 + (svl.alpha_y * (yIn - (svl.canvasHeight / 2)) / svl.zoomFactor[pov.zoom]);
+    return {x: parseInt(x, 10), y: parseInt(y, 10)};
+};
 
 svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     // This function takes the current pov of the Street View as a parameter
@@ -8144,7 +8158,7 @@ svl.gsvImageCoordinate2CanvasCoordinate = function (xIn, yIn, pov) {
     y = yIn - (svImageHeight / 2) * (pov.pitch / 90);
     y = y / svl.alpha_y + svl.canvasHeight / 2;
 
-    return {x : x, y : y};
+    return {x : parseInt(x, 10), y : parseInt(y, 10)};
 };
 
 svl.zoomFactor = {
@@ -8290,6 +8304,7 @@ function PopUpMessage ($, param) {
         }
         $html.on('click', hide);
         buttons.push($html);
+        return this;
     }
 
     function appendButton (buttonDom, callback) {
@@ -8310,10 +8325,12 @@ function PopUpMessage ($, param) {
         }
 
         buttons.push($button);
+        return this;
     }
 
     function appendOKButton(callback) {
         appendButton(OKButton, callback);
+        return this;
     }
 
     function handleClickOK () {
@@ -8346,6 +8363,7 @@ function PopUpMessage ($, param) {
      */
     function hideBackground () {
         svl.ui.popUpMessage.holder.css({ width: '', height: '' });
+        return this;
     }
 
     /**
@@ -8376,6 +8394,7 @@ function PopUpMessage ($, param) {
             }
         }
         buttons = [];
+        return this;
     }
 
     /**
@@ -8397,6 +8416,7 @@ function PopUpMessage ($, param) {
      */
     function showBackground () {
         svl.ui.popUpMessage.holder.css({ width: '100%', height: '100%'});
+        return this;
     }
 
     /**
@@ -8404,15 +8424,17 @@ function PopUpMessage ($, param) {
      */
     function setBackground (rgb) {
         svl.ui.popUpMessage.box.css('background', rgb);
-
+        return this;
     }
 
     function setBorder (border) {
         svl.ui.popUpMessage.box.css('border', border);
+        return this;
     }
 
     function setFontColor (rgb) {
         svl.ui.popUpMessage.box.css('color', rgb);
+        return this;
     }
 
     /**
@@ -10269,7 +10291,7 @@ function Task ($) {
      * End the current task
      */
     function endTask () {
-        if (!('onboarding' in task)) {
+        if (!('onboarding' in svl)) {
             // Show the end of the task message.
             console.log("End of task");
             svl.statusMessage.animate();
@@ -10617,6 +10639,8 @@ function UI ($, params) {
     function _init (params) {
       // Todo. Use better templating techniques rather so it's prettier!
 
+      self.applicationHolder = $("#svl-application-holder");
+
       self.actionStack = {};
       self.actionStack.holder = $("#action-stack-control-holder");
       self.actionStack.holder.append('<button id="undo-button" class="button action-stack-button" value="Undo"><img src="' + svl.rootDirectory + 'img/icons/Icon_Undo.png" class="action-stack-icons" alt="Undo" /><br /><small>Undo</small></button>');
@@ -10682,16 +10706,16 @@ function UI ($, params) {
       self.progressPov.filler = $("#progress-pov-current-completion-bar-filler");
 
       // Ribbon menu DOMs
-      $divStreetViewHolder = $("#Holder_StreetView");
-      $ribbonButtonBottomLines = $(".RibbonModeSwitchHorizontalLine");
-      $ribbonConnector = $("#StreetViewLabelRibbonConnection");
-      $spansModeSwitches = $('span.modeSwitch');
+      $divStreetViewHolder =
+      $ribbonButtonBottomLines =
 
       self.ribbonMenu = {};
-      self.ribbonMenu.streetViewHolder = $divStreetViewHolder;
-      self.ribbonMenu.buttons = $spansModeSwitches;
-      self.ribbonMenu.bottonBottomBorders = $ribbonButtonBottomLines;
-      self.ribbonMenu.connector = $ribbonConnector;
+      self.ribbonMenu.streetViewHolder = $("#Holder_StreetView");
+      self.ribbonMenu.buttons = $('span.modeSwitch');
+      self.ribbonMenu.curbRampButton = $("#ModeSwitchButton_CurbRamp");
+      self.ribbonMenu.missingCurbRampButton = $("#ModeSwitchButton_NoCurbRamp");
+      self.ribbonMenu.bottonBottomBorders = $(".RibbonModeSwitchHorizontalLine");
+      self.ribbonMenu.connector = $("#StreetViewLabelRibbonConnection");
 
       // Zoom control
       self.zoomControl = {};
@@ -10708,12 +10732,17 @@ function UI ($, params) {
       self.form.skipButton = $("#skip-button");
       self.form.submitButton = $("#submit-button");
 
-      self.onboarding = {};
-      self.onboarding.holder = $("#onboarding-holder");
-      if ("onboarding" in params && params.onboarding) {
-        self.onboarding.holder.append("<div id='Holder_OnboardingCanvas'><canvas id='onboardingCanvas' width='720px' height='480px'></canvas><div id='Holder_OnboardingMessageBox'><div id='Holder_OnboardingMessage'></div></div></div>");
-      }
+      // Annotation
+      self.annotation = {};
+      self.annotation.holder = $("#annotation-holder");
 
+      if ("onboarding" in svl) {
+        self.onboarding = {};
+        self.onboarding.holder = $("#onboarding-holder");
+        self.onboarding.holder.append("<canvas id='onboarding-canvas' width='720px' height='480px'></canvas>");
+        self.onboarding.canvas = $("#onboarding-canvas");
+        svl.onboarding.ctx = self.onboarding.canvas[0].getContext('2d');
+      }
     }
 
     _init(params);
@@ -12271,8 +12300,6 @@ function shuffle(array) {
 
     return copy;
 }
-
-
 function getBusStopPositionLabel() {
     return {
         'NextToCurb' : {

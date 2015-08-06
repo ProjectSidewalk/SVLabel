@@ -216,4 +216,3 @@ function shuffle(array) {
 
     return copy;
 }
-
